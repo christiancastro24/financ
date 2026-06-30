@@ -1110,18 +1110,23 @@
         <!-- Cards -->
         <div class="card-grid">
           <div class="card">
+            <div class="card-icon">💰</div>
+            <div class="card-label">Salário</div>
+            <div class="card-value" id="monthly-salary">R$ 6.400,00</div>
+          </div>
+          <div class="card">
             <div class="card-icon">💳</div>
-            <div class="card-label">Total do Mês</div>
+            <div class="card-label">Total de Gastos</div>
             <div class="card-value" id="expense-total-month">R$ 0,00</div>
           </div>
           <div class="card accent-green">
             <div class="card-icon">✅</div>
-            <div class="card-label">Pagos</div>
-            <div class="card-value" id="expense-paid">R$ 0,00</div>
+            <div class="card-label">Saldo Restante</div>
+            <div class="card-value" id="expense-remaining">R$ 6.400,00</div>
           </div>
           <div class="card accent-amber">
             <div class="card-icon">⏳</div>
-            <div class="card-label">Pendentes</div>
+            <div class="card-label">Gastos Pendentes</div>
             <div class="card-value" id="expense-pending">R$ 0,00</div>
           </div>
         </div>
@@ -1223,6 +1228,8 @@
       // ============================================
       // UTILITY FUNCTIONS
       // ============================================
+      const MONTHLY_SALARY = 6400;
+
       function formatBRL(value) {
         return new Intl.NumberFormat("pt-BR", {
           style: "currency",
@@ -1862,13 +1869,24 @@
             .filter((e) => e.paid)
             .reduce((sum, e) => sum + e.value, 0);
           const pendingMonth = totalMonth - paidMonth;
+          const remaining = MONTHLY_SALARY - totalMonth;
 
+          document.getElementById("monthly-salary").textContent =
+            formatBRL(MONTHLY_SALARY);
           document.getElementById("expense-total-month").textContent =
             formatBRL(totalMonth);
-          document.getElementById("expense-paid").textContent =
-            formatBRL(paidMonth);
+          document.getElementById("expense-remaining").textContent =
+            formatBRL(remaining);
           document.getElementById("expense-pending").textContent =
             formatBRL(pendingMonth);
+
+          // Muda a cor do saldo restante
+          const remainingEl = document.getElementById("expense-remaining");
+          if (remaining < 0) {
+            remainingEl.style.color = "var(--accent-red)";
+          } else {
+            remainingEl.style.color = "var(--accent-green)";
+          }
 
           const tbody = document.getElementById("expense-list");
           if (filtered.length === 0) {
@@ -1989,6 +2007,7 @@
 
       console.log("🚀 Dashboard Financeiro carregado com sucesso!");
       console.log("📊 Dados salvos no localStorage");
+      console.log(`💰 Salário padrão: ${formatBRL(MONTHLY_SALARY)}`);
       console.log("🎯 Meta final: R$ 70.000,00");
     </script>
   </body>
