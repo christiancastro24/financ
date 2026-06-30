@@ -508,6 +508,16 @@
         font-size: 12px;
       }
 
+      .btn-copy {
+        background: var(--accent-purple);
+        color: white;
+      }
+
+      .btn-copy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+      }
+
       /* ============================================
                    TABELAS E LISTAS
                    ============================================ */
@@ -710,6 +720,7 @@
         background: var(--gradient-card);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
+        flex-wrap: wrap;
       }
 
       .month-nav button {
@@ -735,6 +746,51 @@
         color: var(--text-primary);
         min-width: 200px;
         text-align: center;
+      }
+
+      .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: 20px;
+        padding-left: 20px;
+        border-left: 1px solid var(--border-color);
+      }
+
+      .copy-container select {
+        padding: 6px 12px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 13px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .copy-container select:focus {
+        border-color: var(--accent-blue);
+      }
+
+      @media (max-width: 768px) {
+        .copy-container {
+          margin-left: 0;
+          padding-left: 0;
+          border-left: none;
+          width: 100%;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .month-nav {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .month-nav .month-label {
+          order: -1;
+          width: 100%;
+        }
       }
 
       /* ============================================
@@ -860,17 +916,6 @@
         .toast {
           min-width: auto;
           width: calc(100vw - 48px);
-        }
-
-        .month-nav {
-          flex-wrap: wrap;
-        }
-
-        .month-nav .month-label {
-          min-width: auto;
-          font-size: 16px;
-          order: -1;
-          width: 100%;
         }
       }
 
@@ -1143,6 +1188,18 @@
           >
             📅 Hoje
           </button>
+
+          <div class="copy-container">
+            <span style="color: var(--text-muted); font-size: 13px"
+              >📋 Copiar de:</span
+            >
+            <select id="copy-from-month">
+              <option value="">Selecione um mês</option>
+            </select>
+            <button class="btn btn-sm btn-copy" id="copy-expenses">
+              Copiar Gastos
+            </button>
+          </div>
         </div>
 
         <!-- Formulário -->
@@ -1253,6 +1310,24 @@
       function getShortDayName(dayIndex) {
         const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
         return days[dayIndex];
+      }
+
+      function getMonthName(monthIndex) {
+        const months = [
+          "Janeiro",
+          "Fevereiro",
+          "Março",
+          "Abril",
+          "Maio",
+          "Junho",
+          "Julho",
+          "Agosto",
+          "Setembro",
+          "Outubro",
+          "Novembro",
+          "Dezembro",
+        ];
+        return months[monthIndex];
       }
 
       // ============================================
@@ -1726,6 +1801,7 @@
           this.data = DataManager.getExpenses();
           this.render();
           this.setupEvents();
+          this.populateCopyMonths();
         },
 
         setupEvents() {
@@ -1752,6 +1828,7 @@
                 this.currentYear--;
               }
               this.render();
+              this.populateCopyMonths();
             });
 
           document
@@ -1763,6 +1840,7 @@
                 this.currentYear++;
               }
               this.render();
+              this.populateCopyMonths();
             });
 
           document
@@ -1772,11 +1850,112 @@
               this.currentMonth = today.getMonth();
               this.currentYear = today.getFullYear();
               this.render();
+              this.populateCopyMonths();
             });
 
           document
             .getElementById("export-expenses")
             .addEventListener("click", () => this.exportCSV());
+
+          document
+            .getElementById("copy-expenses")
+            .addEventListener("click", () => this.copyFromMonth());
+        },
+
+        populateCopyMonths() {
+          const select = document.getElementById("copy-from-month");
+          const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
+          const months = new Set();
+
+          // Coleta todos os meses que têm dados
+          this.data.forEach((exp) => {
+            const month = exp.date.slice(0, 7);
+            if (month !== currentMonthStr) {
+              months.add(month);
+            }
+          });
+
+          const sortedMonths = Array.from(months).sort();
+
+          select.innerHTML = `<option value="">Selecione um mês</option>`;
+
+          if (sortedMonths.length === 0) {
+            select.innerHTML +=
+              '<option value="" disabled>Nenhum mês com dados</option>';
+            return;
+          }
+
+          sortedMonths.forEach((month) => {
+            const [year, m] = month.split("-");
+            const label = `${getMonthName(parseInt(m) - 1)} ${year}`;
+            select.innerHTML += `<option value="${month}">${label}</option>`;
+          });
+        },
+
+        copyFromMonth() {
+          const select = document.getElementById("copy-from-month");
+          const sourceMonth = select.value;
+
+          if (!sourceMonth) {
+            showToast("Selecione um mês para copiar!", "warning");
+            return;
+          }
+
+          const targetMonth = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
+
+          // Verifica se o mês destino já tem dados
+          const hasTargetData = this.data.some((e) =>
+            e.date.startsWith(targetMonth),
+          );
+
+          if (hasTargetData) {
+            if (
+              !confirm(
+                `O mês ${getMonthName(this.currentMonth)} ${this.currentYear} já tem gastos. Deseja substituir todos?`,
+              )
+            ) {
+              return;
+            }
+            // Remove gastos do mês atual
+            this.data = this.data.filter(
+              (e) => !e.date.startsWith(targetMonth),
+            );
+          }
+
+          // Filtra gastos do mês de origem
+          const sourceExpenses = this.data.filter((e) =>
+            e.date.startsWith(sourceMonth),
+          );
+
+          if (sourceExpenses.length === 0) {
+            showToast("Nenhum gasto encontrado no mês selecionado!", "warning");
+            return;
+          }
+
+          // Cria novos gastos com a data do mês destino
+          const newExpenses = sourceExpenses.map((exp) => {
+            const newDate = exp.date.replace(sourceMonth, targetMonth);
+            return {
+              id: Date.now() + Math.random() * 1000,
+              name: exp.name,
+              category: exp.category,
+              value: exp.value,
+              date: newDate,
+              paid: false, // Todos começam como não pagos
+            };
+          });
+
+          this.data.push(...newExpenses);
+          DataManager.setExpenses(this.data);
+
+          // Atualiza a lista de meses disponíveis para cópia
+          this.populateCopyMonths();
+          this.render();
+
+          showToast(
+            `${newExpenses.length} gastos copiados de ${getMonthName(parseInt(sourceMonth.split("-")[1]) - 1)} ${sourceMonth.split("-")[0]}!`,
+            "success",
+          );
         },
 
         add() {
@@ -1802,6 +1981,7 @@
           });
 
           DataManager.setExpenses(this.data);
+          this.populateCopyMonths();
           this.render();
           document.getElementById("expense-form").reset();
           showToast(`Gasto "${name}" adicionado!`);
@@ -1820,6 +2000,7 @@
           if (!confirm("Excluir este gasto?")) return;
           this.data = this.data.filter((e) => e.id !== id);
           DataManager.setExpenses(this.data);
+          this.populateCopyMonths();
           this.render();
           showToast("Gasto removido!", "warning");
         },
@@ -1829,22 +2010,8 @@
           const yearStr = String(this.currentYear);
           const currentMonthStr = `${yearStr}-${monthStr}`;
 
-          const monthNames = [
-            "Janeiro",
-            "Fevereiro",
-            "Março",
-            "Abril",
-            "Maio",
-            "Junho",
-            "Julho",
-            "Agosto",
-            "Setembro",
-            "Outubro",
-            "Novembro",
-            "Dezembro",
-          ];
           document.getElementById("current-month-label").textContent =
-            `${monthNames[this.currentMonth]} ${this.currentYear}`;
+            `${getMonthName(this.currentMonth)} ${this.currentYear}`;
 
           const search = document
             .getElementById("expense-search")
@@ -1880,7 +2047,6 @@
           document.getElementById("expense-pending").textContent =
             formatBRL(pendingMonth);
 
-          // Muda a cor do saldo restante
           const remainingEl = document.getElementById("expense-remaining");
           if (remaining < 0) {
             remainingEl.style.color = "var(--accent-red)";
@@ -2009,6 +2175,7 @@
       console.log("📊 Dados salvos no localStorage");
       console.log(`💰 Salário padrão: ${formatBRL(MONTHLY_SALARY)}`);
       console.log("🎯 Meta final: R$ 70.000,00");
+      console.log("📋 Funcionalidade de copiar meses disponível!");
     </script>
   </body>
 </html>
