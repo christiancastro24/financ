@@ -518,6 +518,93 @@
         box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
       }
 
+      .btn-edit {
+        background: var(--accent-amber);
+        color: #1a2332;
+      }
+
+      .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(251, 191, 36, 0.3);
+      }
+
+      /* ============================================
+                   MODAL DE EDIÇÃO
+                   ============================================ */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 32px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: var(--shadow-hover);
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .modal .form-group {
+        margin-bottom: 20px;
+      }
+
+      .modal .form-group input,
+      .modal .form-group select {
+        width: 100%;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
       /* ============================================
                    TABELAS E LISTAS
                    ============================================ */
@@ -917,6 +1004,11 @@
           min-width: auto;
           width: calc(100vw - 48px);
         }
+
+        .modal {
+          padding: 20px;
+          width: 95%;
+        }
       }
 
       @media (max-width: 480px) {
@@ -990,6 +1082,57 @@
         </button>
       </div>
     </aside>
+
+    <!-- ============================================
+    MODAL DE EDIÇÃO
+    ============================================ -->
+    <div class="modal-overlay" id="edit-modal">
+      <div class="modal">
+        <h2>✏️ Editar Gasto</h2>
+        <form id="edit-form">
+          <div class="form-group">
+            <input
+              type="text"
+              id="edit-name"
+              placeholder="Descrição"
+              required
+              style="width: 100%"
+            />
+          </div>
+          <div class="form-group">
+            <select id="edit-category" required style="width: 100%">
+              <option value="">Categoria</option>
+              <option value="Moradia">Moradia</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Saúde">Saúde</option>
+              <option value="Educação">Educação</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input
+              type="number"
+              id="edit-value"
+              placeholder="Valor (R$)"
+              step="0.01"
+              required
+              style="width: 100%"
+            />
+          </div>
+          <div class="form-group">
+            <input type="date" id="edit-date" required style="width: 100%" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="cancel-edit">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">💾 Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- ============================================
     MAIN - CONTEÚDO PRINCIPAL
@@ -1392,8 +1535,8 @@
       const Investments = {
         data: [],
         chart: null,
-        annualReturn: 0.12, // 12% ao ano
-        finalGoal: 70000, // Meta final de R$ 70.000
+        annualReturn: 0.12,
+        finalGoal: 70000,
 
         init() {
           this.data = DataManager.getInvestments();
@@ -1796,6 +1939,7 @@
         data: [],
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
+        editingId: null,
 
         init() {
           this.data = DataManager.getExpenses();
@@ -1860,6 +2004,24 @@
           document
             .getElementById("copy-expenses")
             .addEventListener("click", () => this.copyFromMonth());
+
+          // Modal de edição
+          document
+            .getElementById("cancel-edit")
+            .addEventListener("click", () => this.closeModal());
+          document
+            .getElementById("edit-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) {
+                this.closeModal();
+              }
+            });
+          document
+            .getElementById("edit-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.saveEdit();
+            });
         },
 
         populateCopyMonths() {
@@ -1867,7 +2029,6 @@
           const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
           const months = new Set();
 
-          // Coleta todos os meses que têm dados
           this.data.forEach((exp) => {
             const month = exp.date.slice(0, 7);
             if (month !== currentMonthStr) {
@@ -1903,7 +2064,6 @@
 
           const targetMonth = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
 
-          // Verifica se o mês destino já tem dados
           const hasTargetData = this.data.some((e) =>
             e.date.startsWith(targetMonth),
           );
@@ -1916,13 +2076,11 @@
             ) {
               return;
             }
-            // Remove gastos do mês atual
             this.data = this.data.filter(
               (e) => !e.date.startsWith(targetMonth),
             );
           }
 
-          // Filtra gastos do mês de origem
           const sourceExpenses = this.data.filter((e) =>
             e.date.startsWith(sourceMonth),
           );
@@ -1932,7 +2090,6 @@
             return;
           }
 
-          // Cria novos gastos com a data do mês destino
           const newExpenses = sourceExpenses.map((exp) => {
             const newDate = exp.date.replace(sourceMonth, targetMonth);
             return {
@@ -1941,14 +2098,13 @@
               category: exp.category,
               value: exp.value,
               date: newDate,
-              paid: false, // Todos começam como não pagos
+              paid: false,
             };
           });
 
           this.data.push(...newExpenses);
           DataManager.setExpenses(this.data);
 
-          // Atualiza a lista de meses disponíveis para cópia
           this.populateCopyMonths();
           this.render();
 
@@ -2003,6 +2159,50 @@
           this.populateCopyMonths();
           this.render();
           showToast("Gasto removido!", "warning");
+        },
+
+        openModal(id) {
+          const expense = this.data.find((e) => e.id === id);
+          if (!expense) return;
+
+          this.editingId = id;
+          document.getElementById("edit-name").value = expense.name;
+          document.getElementById("edit-category").value = expense.category;
+          document.getElementById("edit-value").value = expense.value;
+          document.getElementById("edit-date").value = expense.date;
+
+          document.getElementById("edit-modal").classList.add("active");
+        },
+
+        closeModal() {
+          document.getElementById("edit-modal").classList.remove("active");
+          this.editingId = null;
+        },
+
+        saveEdit() {
+          const name = document.getElementById("edit-name").value.trim();
+          const category = document.getElementById("edit-category").value;
+          const value = parseFloat(document.getElementById("edit-value").value);
+          const date = document.getElementById("edit-date").value;
+
+          if (!name || !category || !value || !date) {
+            showToast("Preencha todos os campos!", "warning");
+            return;
+          }
+
+          const expense = this.data.find((e) => e.id === this.editingId);
+          if (expense) {
+            expense.name = name;
+            expense.category = category;
+            expense.value = value;
+            expense.date = date;
+
+            DataManager.setExpenses(this.data);
+            this.closeModal();
+            this.populateCopyMonths();
+            this.render();
+            showToast("Gasto atualizado com sucesso!");
+          }
         },
 
         render() {
@@ -2073,7 +2273,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})">🗑️</button>
+                                    <button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})" title="Editar">✏️</button>
+                                    <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})" title="Excluir">🗑️</button>
                                 </td>
                             </tr>
                         `,
@@ -2176,6 +2377,7 @@
       console.log(`💰 Salário padrão: ${formatBRL(MONTHLY_SALARY)}`);
       console.log("🎯 Meta final: R$ 70.000,00");
       console.log("📋 Funcionalidade de copiar meses disponível!");
+      console.log("✏️ Edição de gastos disponível!");
     </script>
   </body>
 </html>
