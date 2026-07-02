@@ -929,6 +929,155 @@
       }
 
       /* ============================================
+                   TODO - TOOLBAR E ESTILOS ADICIONAIS
+                   ============================================ */
+      .todo-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px 20px;
+        background: var(--gradient-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .todo-toolbar .toolbar-left,
+      .todo-toolbar .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .todo-toolbar .toolbar-label {
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .todo-toolbar .todo-day-select {
+        padding: 6px 12px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 13px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .todo-toolbar .todo-day-select:focus {
+        border-color: var(--accent-blue);
+      }
+
+      .btn-copy-day {
+        background: var(--gradient-primary);
+        color: white;
+      }
+
+      .btn-copy-day:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+      }
+
+      .todo-toolbar .todo-stats {
+        font-size: 13px;
+        color: var(--text-secondary);
+        padding: 4px 14px;
+        background: rgba(108, 99, 255, 0.08);
+        border-radius: 20px;
+        border: 1px solid rgba(108, 99, 255, 0.1);
+      }
+
+      /* BADGE DE QUANTIDADE NO KANBAN */
+      .kanban-column .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .kanban-column .column-header h3 {
+        margin: 0;
+        padding: 0;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .kanban-column .column-header .day-count {
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        background: rgba(108, 99, 255, 0.1);
+        color: var(--accent-blue);
+        font-weight: 600;
+      }
+
+      .kanban-column .column-header .day-count.has-tasks {
+        background: rgba(52, 211, 153, 0.1);
+        color: var(--accent-green);
+      }
+
+      .kanban-column .column-actions {
+        display: flex;
+        gap: 4px;
+        margin-top: 8px;
+        justify-content: center;
+        padding-top: 8px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .kanban-column .column-actions button {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: var(--transition);
+        font-size: 11px;
+      }
+
+      .kanban-column .column-actions button:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .kanban-column .column-actions button.copy-day:hover {
+        color: var(--accent-blue);
+      }
+
+      .kanban-column .column-actions button.clear-day:hover {
+        color: var(--accent-red);
+      }
+
+      /* ANIMAÇÃO DE COPY */
+      @keyframes copy-flash {
+        0% {
+          background: rgba(108, 99, 255, 0);
+        }
+        30% {
+          background: rgba(108, 99, 255, 0.2);
+        }
+        100% {
+          background: rgba(108, 99, 255, 0);
+        }
+      }
+
+      .kanban-column.copy-flash {
+        animation: copy-flash 0.8s ease;
+      }
+
+      /* ============================================
                    GRÁFICO
                    ============================================ */
       .chart-container {
@@ -1254,20 +1403,17 @@
         border-color: var(--border-light);
       }
 
-      .kanban-column h3 {
+      .kanban-column .column-header h3 {
         font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
-        margin-bottom: 12px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--border-color);
-        text-align: center;
-        letter-spacing: 0.5px;
+        margin: 0;
+        padding: 0;
+        border: none;
       }
 
-      .kanban-column .day-today {
+      .kanban-column .column-header .day-today {
         color: var(--accent-blue);
-        border-bottom-color: var(--accent-blue);
       }
 
       .kanban-card {
@@ -1575,6 +1721,14 @@
         .hero-title {
           font-size: 22px;
         }
+        .todo-toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .todo-toolbar .toolbar-left,
+        .todo-toolbar .toolbar-right {
+          justify-content: center;
+        }
       }
 
       @media (max-width: 768px) {
@@ -1735,6 +1889,12 @@
         .hero-stat .stat-value {
           font-size: 18px;
         }
+
+        .todo-toolbar .toolbar-left,
+        .todo-toolbar .toolbar-right {
+          flex-direction: column;
+          align-items: stretch;
+        }
       }
     </style>
   </head>
@@ -1860,9 +2020,10 @@
     ============================================ -->
     <main>
       <!-- ==========================================
-        SEÇÃO: TO-DO LIST (KANBAN)
+        SEÇÃO: TO-DO LIST (KANBAN) - VERSÃO TURBINADA
         ========================================== -->
       <section class="page-section active" id="section-todos">
+        <!-- FORMULÁRIO DE TAREFA -->
         <div class="form-card">
           <div class="form-title">➕ Nova Tarefa</div>
           <form id="todo-form" class="form-group">
@@ -1886,6 +2047,37 @@
           </form>
         </div>
 
+        <!-- BARRA DE FERRAMENTAS DO KANBAN -->
+        <div class="todo-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-label">📋 Gerenciar dias:</span>
+            <select id="todo-source-day" class="todo-day-select">
+              <option value="0">Domingo</option>
+              <option value="1">Segunda-feira</option>
+              <option value="2">Terça-feira</option>
+              <option value="3">Quarta-feira</option>
+              <option value="4">Quinta-feira</option>
+              <option value="5">Sexta-feira</option>
+              <option value="6">Sábado</option>
+            </select>
+            <button class="btn btn-sm btn-copy-day" id="copy-todo-day">
+              📋 Copiar para Hoje
+            </button>
+            <button class="btn btn-sm btn-outline" id="clear-todo-day">
+              🗑️ Limpar Dia
+            </button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-sm btn-success" id="toggle-all-todos">
+              ✅ Marcar Todas
+            </button>
+            <span class="todo-stats" id="todo-stats"
+              >📊 0 tarefas pendentes</span
+            >
+          </div>
+        </div>
+
+        <!-- KANBAN -->
         <div class="kanban-container" id="kanban-container"></div>
       </section>
 
@@ -3022,7 +3214,7 @@
       };
 
       // ============================================
-      // TODO MODULE
+      // TODO MODULE - VERSÃO TURBINADA
       // ============================================
       const Todos = {
         data: [],
@@ -3040,6 +3232,24 @@
               e.preventDefault();
               this.add();
             });
+
+          document
+            .getElementById("copy-todo-day")
+            .addEventListener("click", () => {
+              this.copyDayToToday();
+            });
+
+          document
+            .getElementById("clear-todo-day")
+            .addEventListener("click", () => {
+              this.clearDay();
+            });
+
+          document
+            .getElementById("toggle-all-todos")
+            .addEventListener("click", () => {
+              this.toggleAllToday();
+            });
         },
 
         add() {
@@ -3056,7 +3266,7 @@
           DataManager.setTodos(this.data);
           this.render();
           input.value = "";
-          showToast(`Tarefa "${text}" adicionada!`);
+          showToast(`✅ Tarefa "${text}" adicionada!`);
         },
 
         toggle(id) {
@@ -3073,25 +3283,154 @@
           this.data = this.data.filter((t) => t.id !== id);
           DataManager.setTodos(this.data);
           this.render();
-          showToast("Tarefa removida!", "warning");
+          showToast("🗑️ Tarefa removida!", "warning");
+        },
+
+        // COPIA TAREFAS DE UM DIA PARA O DIA ATUAL
+        copyDayToToday() {
+          const sourceDay = parseInt(
+            document.getElementById("todo-source-day").value,
+          );
+          const today = new Date().getDay();
+
+          if (sourceDay === today) {
+            showToast("⚠️ O dia selecionado já é hoje!", "warning");
+            return;
+          }
+
+          const sourceTasks = this.data.filter(
+            (t) => t.day === sourceDay && !t.done,
+          );
+
+          if (sourceTasks.length === 0) {
+            showToast("📭 Nenhuma tarefa pendente para copiar!", "warning");
+            return;
+          }
+
+          // Verifica se já existem tarefas para hoje
+          const todayTasks = this.data.filter(
+            (t) => t.day === today && !t.done,
+          );
+
+          if (todayTasks.length > 0) {
+            if (
+              !confirm(
+                `Já existem ${todayTasks.length} tarefas para hoje. Deseja adicionar mesmo assim?`,
+              )
+            ) {
+              return;
+            }
+          }
+
+          // Copia as tarefas
+          const newTasks = sourceTasks.map((task) => ({
+            id: Date.now() + Math.random() * 1000,
+            text: task.text,
+            day: today,
+            done: false,
+          }));
+
+          this.data.push(...newTasks);
+          DataManager.setTodos(this.data);
+          this.render();
+
+          // Efeito visual na coluna de hoje
+          const columns = document.querySelectorAll(".kanban-column");
+          const todayColumn = columns[today];
+          if (todayColumn) {
+            todayColumn.classList.remove("copy-flash");
+            void todayColumn.offsetWidth;
+            todayColumn.classList.add("copy-flash");
+          }
+
+          showToast(
+            `📋 ${newTasks.length} tarefas copiadas para hoje!`,
+            "success",
+          );
+        },
+
+        // LIMPA TODAS AS TAREFAS DE UM DIA
+        clearDay() {
+          const day = parseInt(
+            document.getElementById("todo-source-day").value,
+          );
+          const dayName = getDayName(day);
+          const tasks = this.data.filter((t) => t.day === day);
+
+          if (tasks.length === 0) {
+            showToast(`📭 Nenhuma tarefa para ${dayName}!`, "warning");
+            return;
+          }
+
+          if (
+            !confirm(
+              `Tem certeza que deseja remover TODAS as ${tasks.length} tarefas de ${dayName}?`,
+            )
+          ) {
+            return;
+          }
+
+          this.data = this.data.filter((t) => t.day !== day);
+          DataManager.setTodos(this.data);
+          this.render();
+          showToast(
+            `🗑️ ${tasks.length} tarefas removidas de ${dayName}!`,
+            "warning",
+          );
+        },
+
+        // MARCA/DESMARCA TODAS AS TAREFAS DO DIA ATUAL
+        toggleAllToday() {
+          const today = new Date().getDay();
+          const todayTasks = this.data.filter((t) => t.day === today);
+
+          if (todayTasks.length === 0) {
+            showToast("📭 Nenhuma tarefa para hoje!", "warning");
+            return;
+          }
+
+          const allDone = todayTasks.every((t) => t.done);
+          const newStatus = !allDone;
+
+          todayTasks.forEach((t) => (t.done = newStatus));
+          DataManager.setTodos(this.data);
+          this.render();
+
+          showToast(
+            `${newStatus ? "✅" : "↩️"} ${todayTasks.length} tarefas ${newStatus ? "marcadas como concluídas" : "desmarcadas"}!`,
+            "success",
+          );
         },
 
         render() {
           const container = document.getElementById("kanban-container");
           const today = new Date().getDay();
 
+          // Atualiza estatísticas
+          const totalPending = this.data.filter((t) => !t.done).length;
+          document.getElementById("todo-stats").textContent =
+            `📊 ${totalPending} tarefas pendentes`;
+
           let html = "";
           for (let i = 0; i < 7; i++) {
+            const dayName = getDayName(i);
             const shortName = getShortDayName(i);
             const isToday = i === today;
             const todos = this.data.filter((t) => t.day === i);
+            const pendingTodos = todos.filter((t) => !t.done);
+            const completedTodos = todos.filter((t) => t.done);
 
             html += `
               <div class="kanban-column">
-                <h3 class="${isToday ? "day-today" : ""}">
-                  ${isToday ? "⭐ " : ""}${shortName}
-                  ${isToday ? " (Hoje)" : ""}
-                </h3>
+                <div class="column-header">
+                  <h3 class="${isToday ? "day-today" : ""}">
+                    ${isToday ? "⭐ " : ""}${shortName}
+                    ${isToday ? " (Hoje)" : ""}
+                  </h3>
+                  <span class="day-count ${todos.length > 0 ? "has-tasks" : ""}">
+                    ${todos.length} (${pendingTodos.length} pendentes)
+                  </span>
+                </div>
                 <div>
                   ${
                     todos.length === 0
@@ -3099,25 +3438,44 @@
                       : todos
                           .map(
                             (todo) => `
-                      <div class="kanban-card ${todo.done ? "done" : ""}">
-                        <div class="card-text">${todo.text}</div>
-                        <div class="card-actions">
-                          <button class="done-btn" onclick="Todos.toggle(${todo.id})">
-                            ${todo.done ? "↩️" : "✅"}
-                          </button>
-                          <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
-                        </div>
-                      </div>
-                    `,
+                          <div class="kanban-card ${todo.done ? "done" : ""}">
+                            <div class="card-text">${todo.text}</div>
+                            <div class="card-actions">
+                              <button class="done-btn" onclick="Todos.toggle(${todo.id})">
+                                ${todo.done ? "↩️" : "✅"}
+                              </button>
+                              <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
+                            </div>
+                          </div>
+                        `,
                           )
                           .join("")
                   }
+                </div>
+                <div class="column-actions">
+                  <button class="copy-day" onclick="Todos.copyDayToDay(${i})" title="Copiar tarefas para hoje">
+                    📋 Copiar
+                  </button>
+                  <button class="clear-day" onclick="Todos.clearSpecificDay(${i})" title="Limpar todas as tarefas deste dia">
+                    🗑️ Limpar
+                  </button>
                 </div>
               </div>
             `;
           }
 
           container.innerHTML = html;
+        },
+
+        // Funções auxiliares para os botões dentro do Kanban
+        copyDayToDay(day) {
+          document.getElementById("todo-source-day").value = day;
+          this.copyDayToToday();
+        },
+
+        clearSpecificDay(day) {
+          document.getElementById("todo-source-day").value = day;
+          this.clearDay();
         },
       };
 
@@ -3562,6 +3920,7 @@
       console.log("💰 Salário padrão: R$ 6.400,00");
       console.log("🎯 Meta final: R$ 80.000,00");
       console.log("🏆 Sistema de conquistas ativado!");
+      console.log("📋 Sistema de cópia de tarefas ativado!");
     </script>
   </body>
 </html>
