@@ -398,6 +398,14 @@
         background: rgba(248, 113, 113, 0.12);
       }
 
+      .card .card-footer {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color);
+      }
+
       .card.accent-purple .card-icon {
         background: rgba(168, 85, 247, 0.1);
         color: var(--accent-purple);
@@ -417,6 +425,507 @@
       .card.accent-red .card-icon {
         background: rgba(248, 113, 113, 0.1);
         color: var(--accent-red);
+      }
+      .card.accent-gold .card-icon {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--accent-amber);
+      }
+
+      .card .card-badge {
+        font-size: 10px;
+        padding: 2px 12px;
+        background: rgba(108, 99, 255, 0.1);
+        border-radius: 12px;
+        color: var(--accent-blue);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* ============================================
+                   INVESTIMENTOS - ESTILOS GAMIFICADOS
+                   ============================================ */
+
+      /* HERO */
+      .invest-hero {
+        background: linear-gradient(
+          135deg,
+          rgba(26, 26, 46, 0.95) 0%,
+          rgba(15, 15, 26, 0.95) 100%
+        );
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 32px 40px;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .invest-hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 60%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(108, 99, 255, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .invest-hero-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        padding: 4px 16px;
+        background: rgba(108, 99, 255, 0.15);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        border-radius: 20px;
+        font-size: 11px;
+        color: var(--accent-blue);
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .hero-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 4px 0;
+      }
+
+      .hero-sub {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 32px;
+      }
+
+      .hero-stat {
+        text-align: center;
+      }
+
+      .hero-stat .stat-label {
+        display: block;
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .hero-stat .stat-value {
+        display: block;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-top: 4px;
+      }
+
+      /* PROGRESSO COM MARCOS */
+      .milestone-container {
+        background: var(--gradient-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px 32px;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .milestone-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .milestone-header h3 {
+        font-size: 17px;
+        color: var(--text-primary);
+      }
+
+      .milestone-info {
+        display: flex;
+        gap: 16px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        flex-wrap: wrap;
+      }
+
+      .milestone-info span {
+        background: rgba(108, 99, 255, 0.08);
+        padding: 4px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(108, 99, 255, 0.1);
+      }
+
+      .progress-track {
+        position: relative;
+        margin: 16px 0 8px;
+      }
+
+      .progress-bar-bg {
+        position: relative;
+        height: 36px;
+        background: var(--bg-input);
+        border-radius: 20px;
+        overflow: visible;
+        border: 2px solid var(--border-color);
+      }
+
+      .progress-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: linear-gradient(90deg, #6c63ff, #a855f7, #ec4899);
+        border-radius: 20px;
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+        overflow: hidden;
+      }
+
+      .progress-glare {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.15),
+          transparent
+        );
+        animation: glare 3s infinite;
+      }
+
+      @keyframes glare {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .progress-fill.milestone-reached {
+        animation: pulse-glow 0.8s ease 3;
+      }
+
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+        }
+        50% {
+          box-shadow:
+            0 0 60px rgba(108, 99, 255, 0.8),
+            0 0 120px rgba(168, 85, 247, 0.4);
+        }
+      }
+
+      /* MARCOS */
+      .milestone-markers {
+        position: absolute;
+        top: -8px;
+        left: 0;
+        right: 0;
+        height: 52px;
+        pointer-events: none;
+      }
+
+      .milestone-marker {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 24px;
+        height: 24px;
+        background: var(--bg-input);
+        border: 3px solid var(--border-color);
+        border-radius: 50%;
+        transition: all 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        pointer-events: auto;
+        cursor: pointer;
+        z-index: 2;
+      }
+
+      .milestone-marker.achieved {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-color: #fbbf24;
+        box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+        animation: achieve-pop 0.6s ease;
+      }
+
+      .milestone-marker.achieved .milestone-icon {
+        color: white;
+      }
+
+      @keyframes achieve-pop {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.6);
+        }
+        70% {
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      .milestone-marker .milestone-icon {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .milestone-marker .milestone-tooltip {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-hover);
+        z-index: 10;
+      }
+
+      .milestone-marker:hover .milestone-tooltip {
+        display: block;
+      }
+
+      .milestone-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        padding: 0 4px;
+      }
+
+      .milestone-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-align: center;
+        flex: 1;
+      }
+
+      .milestone-label.achieved {
+        color: var(--accent-amber);
+        font-weight: 600;
+      }
+
+      /* PRÓXIMOS MARCOS */
+      .next-milestones {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .next-milestone-item {
+        padding: 6px 16px;
+        background: rgba(108, 99, 255, 0.06);
+        border: 1px solid rgba(108, 99, 255, 0.1);
+        border-radius: 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .next-milestone-item .value {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .next-milestone-item .distance {
+        color: var(--accent-amber);
+        font-weight: 600;
+      }
+
+      /* CONQUISTAS */
+      .achievements-section {
+        margin-bottom: 32px;
+      }
+
+      .achievements-section h3 {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .achievement-card {
+        background: var(--gradient-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        text-align: center;
+        transition: var(--transition);
+        opacity: 0.3;
+        filter: grayscale(1);
+      }
+
+      .achievement-card.unlocked {
+        opacity: 1;
+        filter: grayscale(0);
+        border-color: rgba(251, 191, 36, 0.3);
+        background: linear-gradient(
+          145deg,
+          rgba(251, 191, 36, 0.05),
+          rgba(251, 191, 36, 0.02)
+        );
+      }
+
+      .achievement-card.unlocked:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(251, 191, 36, 0.15);
+      }
+
+      .achievement-card .achievement-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .achievement-card .achievement-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .achievement-card .achievement-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      /* GRÁFICO DE EVOLUÇÃO */
+      .evolution-chart-container {
+        background: var(--gradient-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .evolution-chart-container .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .evolution-chart-container .chart-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .evolution-chart-container .chart-header .chart-badge {
+        font-size: 12px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        background: rgba(108, 99, 255, 0.1);
+        color: var(--accent-blue);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+      }
+
+      .evolution-chart-wrapper {
+        width: 100%;
+        height: 200px;
+        position: relative;
+      }
+
+      .evolution-chart-wrapper canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* GRÁFICO DE DISTRIBUIÇÃO */
+      .dist-chart-wrapper {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .dist-chart-wrapper canvas {
+        max-width: 200px;
+        max-height: 200px;
+      }
+
+      .dist-chart-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .dist-chart-legend .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .dist-chart-legend .legend-item .color-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 4px;
+      }
+
+      /* FORMULÁRIO PREMIUM */
+      .form-card-premium {
+        border: 2px solid rgba(108, 99, 255, 0.1);
+        background: linear-gradient(
+          145deg,
+          rgba(26, 26, 46, 0.9),
+          rgba(15, 15, 26, 0.9)
+        );
+      }
+
+      .btn-large {
+        padding: 14px 32px;
+        font-size: 16px;
+        border-radius: var(--radius);
       }
 
       /* ============================================
@@ -1024,6 +1533,20 @@
       }
 
       /* ============================================
+                   CONFETTI
+                   ============================================ */
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================
                    RESPONSIVIDADE
                    ============================================ */
       @media (max-width: 1200px) {
@@ -1041,6 +1564,16 @@
         }
         .top-header .header-left .date-display {
           display: none;
+        }
+        .invest-hero-content {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .hero-stats {
+          justify-content: space-around;
+        }
+        .hero-title {
+          font-size: 22px;
         }
       }
 
@@ -1139,6 +1672,32 @@
           padding: 20px;
           width: 95%;
         }
+
+        .milestone-container {
+          padding: 16px;
+        }
+
+        .milestone-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .milestone-info {
+          flex-wrap: wrap;
+        }
+
+        .achievements-grid {
+          grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        }
+
+        .next-milestones {
+          flex-direction: column;
+        }
+
+        .dist-chart-wrapper {
+          flex-direction: column;
+          align-items: center;
+        }
       }
 
       @media (max-width: 480px) {
@@ -1162,6 +1721,19 @@
 
         .page-header h1 {
           font-size: 22px;
+        }
+
+        .invest-hero {
+          padding: 20px;
+        }
+
+        .hero-stats {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .hero-stat .stat-value {
+          font-size: 18px;
         }
       }
     </style>
@@ -1318,54 +1890,138 @@
       </section>
 
       <!-- ==========================================
-        SEÇÃO: INVESTIMENTOS
+        SEÇÃO: INVESTIMENTOS (VERSÃO GAMIFICADA)
         ========================================== -->
       <section class="page-section" id="section-investments">
+        <!-- HERO -->
+        <div class="invest-hero">
+          <div class="invest-hero-content">
+            <div>
+              <span class="hero-badge">🚀 JORNADA FINANCEIRA</span>
+              <h2 class="hero-title">Seu Patrimônio Está Crescendo!</h2>
+              <p class="hero-sub">
+                Cada aporte te aproxima da liberdade financeira
+              </p>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="stat-label">Patrimônio</span>
+                <span class="stat-value" id="hero-total">R$ 0</span>
+              </div>
+              <div class="hero-stat">
+                <span class="stat-label">Rentabilidade</span>
+                <span class="stat-value" id="hero-return">+0%</span>
+              </div>
+              <div class="hero-stat">
+                <span class="stat-label">Próximo Marco</span>
+                <span class="stat-value" id="hero-next-milestone"
+                  >R$ 5.000</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRESSO COM MARCOS -->
+        <div class="milestone-container">
+          <div class="milestone-header">
+            <h3>🎯 Evolução do Patrimônio</h3>
+            <div class="milestone-info">
+              <span id="current-milestone-text">0% do próximo marco</span>
+              <span id="milestone-count">🏆 0 conquistas</span>
+            </div>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-bar-bg">
+              <div class="progress-fill" id="progress-fill" style="width: 0%">
+                <div class="progress-glare"></div>
+              </div>
+              <div class="milestone-markers" id="milestone-markers"></div>
+            </div>
+            <div class="milestone-labels" id="milestone-labels"></div>
+          </div>
+
+          <div class="next-milestones" id="next-milestones"></div>
+        </div>
+
+        <!-- CONQUISTAS -->
+        <div class="achievements-section">
+          <h3>🏅 Conquistas Desbloqueadas</h3>
+          <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+
+        <!-- CARDS RESUMO -->
         <div class="card-grid" id="investment-cards">
           <div class="card">
             <div class="card-header">
               <div class="card-icon">💰</div>
+              <span class="card-badge">Total</span>
             </div>
             <div class="card-label">Patrimônio Total</div>
             <div class="card-value" id="total-invested">R$ 0,00</div>
+            <div class="card-footer" id="total-invested-footer">
+              💪 Continue assim!
+            </div>
           </div>
+
           <div class="card accent-purple">
             <div class="card-header">
-              <div class="card-icon">📊</div>
+              <div class="card-icon">📈</div>
+              <span class="card-badge">Rentabilidade</span>
             </div>
             <div class="card-label">Rentabilidade (12% a.a)</div>
             <div class="card-value" id="total-return">R$ 0,00</div>
             <div class="card-change positive" id="return-percent">📈 +0%</div>
           </div>
+
           <div class="card accent-cyan">
             <div class="card-header">
               <div class="card-icon">🏦</div>
+              <span class="card-badge">Ativos</span>
             </div>
-            <div class="card-label">Ativos</div>
+            <div class="card-label">Total de Ativos</div>
             <div class="card-value" id="total-assets">0</div>
+            <div class="card-footer">📊 Diversificados</div>
           </div>
-          <div class="card accent-amber">
+
+          <div class="card accent-gold">
             <div class="card-header">
               <div class="card-icon">🎯</div>
+              <span class="card-badge">Meta</span>
             </div>
             <div class="card-label">Meta Final</div>
             <div class="card-value" id="final-goal">R$ 80.000,00</div>
+            <div class="card-footer" id="goal-progress">0% concluído</div>
           </div>
         </div>
 
+        <!-- GRÁFICO DE EVOLUÇÃO -->
+        <div class="evolution-chart-container">
+          <div class="chart-header">
+            <h3>📈 Evolução dos Aportes</h3>
+            <span class="chart-badge" id="total-contributions">0 aportes</span>
+          </div>
+          <div class="evolution-chart-wrapper">
+            <canvas id="evolutionChart"></canvas>
+          </div>
+        </div>
+
+        <!-- GRÁFICO DE DISTRIBUIÇÃO -->
         <div class="chart-container">
           <div class="chart-header">
             <h3>📊 Distribuição da Carteira</h3>
             <span class="chart-badge">Atualizado</span>
           </div>
-          <div class="chart-wrapper">
+          <div class="dist-chart-wrapper">
             <canvas id="investChart" width="200" height="200"></canvas>
-            <div class="chart-legend" id="chart-legend"></div>
+            <div class="dist-chart-legend" id="chart-legend"></div>
           </div>
         </div>
 
-        <div class="form-card">
-          <div class="form-title">➕ Novo Investimento</div>
+        <!-- FORMULÁRIO -->
+        <div class="form-card form-card-premium">
+          <div class="form-title">🚀 Novo Aporte</div>
           <form id="invest-form" class="form-group">
             <input
               type="text"
@@ -1389,10 +2045,13 @@
               required
             />
             <input type="date" id="invest-date" required />
-            <button type="submit" class="btn btn-primary">Adicionar</button>
+            <button type="submit" class="btn btn-primary btn-large">
+              🚀 Realizar Aporte
+            </button>
           </form>
         </div>
 
+        <!-- TABELA -->
         <div class="table-wrapper">
           <div class="table-toolbar">
             <input
@@ -1676,17 +2335,109 @@
       }
 
       // ============================================
-      // INVESTMENTS MODULE
+      // INVESTMENTS MODULE - VERSÃO GAMIFICADA
       // ============================================
       const Investments = {
         data: [],
         annualReturn: 0.12,
         finalGoal: 80000,
+        milestoneInterval: 5000,
+        achievedMilestones: [],
+
+        achievementDefinitions: [
+          {
+            id: "first_invest",
+            name: "Primeiro Aporte",
+            icon: "🌱",
+            desc: "Seu primeiro investimento!",
+          },
+          {
+            id: "five_invests",
+            name: "Investidor Iniciante",
+            icon: "📊",
+            desc: "5 investimentos realizados",
+          },
+          {
+            id: "ten_invests",
+            name: "Investidor Dedicado",
+            icon: "🏆",
+            desc: "10 investimentos realizados",
+          },
+          {
+            id: "milestone_5k",
+            name: "Primeiro Marco",
+            icon: "⭐",
+            desc: "Atingiu R$ 5.000",
+          },
+          {
+            id: "milestone_10k",
+            name: "Dez Mil",
+            icon: "🌟",
+            desc: "Atingiu R$ 10.000",
+          },
+          {
+            id: "milestone_25k",
+            name: "Vinte e Cinco Mil",
+            icon: "💎",
+            desc: "Atingiu R$ 25.000",
+          },
+          {
+            id: "milestone_50k",
+            name: "Meio Caminho",
+            icon: "🔥",
+            desc: "Atingiu R$ 50.000",
+          },
+          {
+            id: "milestone_80k",
+            name: "Meta Alcançada!",
+            icon: "👑",
+            desc: "Você atingiu seu objetivo!",
+          },
+          {
+            id: "diversified",
+            name: "Diversificado",
+            icon: "🌈",
+            desc: "Investiu em 3 tipos diferentes",
+          },
+          {
+            id: "consistent",
+            name: "Consistente",
+            icon: "📅",
+            desc: "Aportes em meses diferentes",
+          },
+        ],
 
         init() {
           this.data = DataManager.getInvestments();
           this.render();
           this.setupEvents();
+        },
+
+        getTotal(data = this.data) {
+          return data.reduce((sum, inv) => sum + inv.value, 0);
+        },
+
+        getUnlockedAchievements() {
+          const total = this.getTotal();
+          const types = new Set(this.data.map((inv) => inv.type));
+          const months = new Set(this.data.map((inv) => inv.date.slice(0, 7)));
+
+          const conditions = {
+            first_invest: this.data.length >= 1,
+            five_invests: this.data.length >= 5,
+            ten_invests: this.data.length >= 10,
+            milestone_5k: total >= 5000,
+            milestone_10k: total >= 10000,
+            milestone_25k: total >= 25000,
+            milestone_50k: total >= 50000,
+            milestone_80k: total >= 80000,
+            diversified: types.size >= 3,
+            consistent: months.size >= 3,
+          };
+
+          return this.achievementDefinitions
+            .filter((def) => conditions[def.id])
+            .map((def) => def.id);
         },
 
         setupEvents() {
@@ -1720,11 +2471,66 @@
             return;
           }
 
+          const oldTotal = this.getTotal();
+          const oldMilestone = Math.floor(oldTotal / this.milestoneInterval);
+
           this.data.push({ id: Date.now(), name, type, value, date });
           DataManager.setInvestments(this.data);
+
+          const newTotal = this.getTotal();
+          const newMilestone = Math.floor(newTotal / this.milestoneInterval);
+
+          // Verifica novo marco
+          if (newMilestone > oldMilestone) {
+            const milestoneValue = newMilestone * this.milestoneInterval;
+            showToast(
+              `🎉 PARABÉNS! Você atingiu R$ ${milestoneValue.toLocaleString()}!`,
+              "success",
+            );
+            this.celebrateMilestone();
+          }
+
           this.render();
+          this.renderEvolutionChart();
           document.getElementById("invest-form").reset();
-          showToast(`Investimento "${name}" adicionado!`);
+          showToast(`🚀 Aporte de ${formatBRL(value)} em "${name}" realizado!`);
+        },
+
+        celebrateMilestone() {
+          const fill = document.getElementById("progress-fill");
+          fill.classList.remove("milestone-reached");
+          void fill.offsetWidth;
+          fill.classList.add("milestone-reached");
+          this.createConfetti();
+        },
+
+        createConfetti() {
+          const colors = [
+            "#6c63ff",
+            "#a855f7",
+            "#fbbf24",
+            "#34d399",
+            "#ec4899",
+            "#22d3ee",
+          ];
+          for (let i = 0; i < 40; i++) {
+            const el = document.createElement("div");
+            el.style.cssText = `
+              position: fixed;
+              width: ${Math.random() * 8 + 4}px;
+              height: ${Math.random() * 8 + 4}px;
+              background: ${colors[Math.floor(Math.random() * colors.length)]};
+              left: ${Math.random() * 100}vw;
+              top: -10px;
+              border-radius: 2px;
+              pointer-events: none;
+              z-index: 9999;
+              animation: confetti-fall ${Math.random() * 2 + 2}s linear forwards;
+              transform: rotate(${Math.random() * 360}deg);
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+          }
         },
 
         delete(id) {
@@ -1732,6 +2538,7 @@
           this.data = this.data.filter((inv) => inv.id !== id);
           DataManager.setInvestments(this.data);
           this.render();
+          this.renderEvolutionChart();
           showToast("Investimento removido!", "warning");
         },
 
@@ -1753,8 +2560,9 @@
           });
 
           const now = new Date();
-          const total = this.data.reduce((sum, inv) => sum + inv.value, 0);
+          const total = this.getTotal();
 
+          // Rentabilidade
           let totalReturn = 0;
           this.data.forEach((inv) => {
             const investDate = new Date(inv.date);
@@ -1766,6 +2574,17 @@
 
           const returnPercent = total > 0 ? (totalReturn / total) * 100 : 0;
 
+          // HERO
+          document.getElementById("hero-total").textContent = formatBRL(total);
+          document.getElementById("hero-return").textContent =
+            `${returnPercent >= 0 ? "+" : ""}${returnPercent.toFixed(1)}%`;
+
+          const nextMilestone =
+            Math.ceil(total / this.milestoneInterval) * this.milestoneInterval;
+          document.getElementById("hero-next-milestone").textContent =
+            formatBRL(nextMilestone);
+
+          // CARDS
           document.getElementById("total-invested").textContent =
             formatBRL(total);
           document.getElementById("total-return").textContent =
@@ -1776,12 +2595,43 @@
             this.finalGoal,
           );
 
-          const returnEl = document.getElementById("return-percent");
-          if (returnEl) {
-            returnEl.textContent = `${returnPercent >= 0 ? "📈" : "📉"} ${returnPercent.toFixed(1)}%`;
-            returnEl.className = `card-change ${returnPercent >= 0 ? "positive" : "negative"}`;
-          }
+          const goalPercent = Math.min((total / this.finalGoal) * 100, 100);
+          document.getElementById("goal-progress").textContent =
+            `${goalPercent.toFixed(1)}% concluído`;
 
+          const returnEl = document.getElementById("return-percent");
+          returnEl.textContent = `${returnPercent >= 0 ? "📈" : "📉"} ${returnPercent >= 0 ? "+" : ""}${returnPercent.toFixed(1)}%`;
+          returnEl.className = `card-change ${returnPercent >= 0 ? "positive" : "negative"}`;
+
+          document.getElementById("total-contributions").textContent =
+            `${this.data.length} aportes`;
+
+          // PROGRESSO
+          const progress = Math.min((total / this.finalGoal) * 100, 100);
+          const fill = document.getElementById("progress-fill");
+          fill.style.width = `${progress}%`;
+
+          const currentMilestone = Math.floor(total / this.milestoneInterval);
+          const nextMilestoneValue =
+            (currentMilestone + 1) * this.milestoneInterval;
+          const progressToNext =
+            ((total - currentMilestone * this.milestoneInterval) /
+              this.milestoneInterval) *
+            100;
+
+          document.getElementById("current-milestone-text").textContent =
+            `${Math.min(progressToNext, 100).toFixed(0)}% do próximo marco (${formatBRL(nextMilestoneValue)})`;
+
+          const unlocked = this.getUnlockedAchievements();
+          document.getElementById("milestone-count").textContent =
+            `🏆 ${unlocked.length} conquistas`;
+
+          // MARCOS
+          this.renderMilestones(total);
+          this.renderNextMilestones(total);
+          this.renderAchievements();
+
+          // TABELA
           const tbody = document.getElementById("invest-list");
           if (filtered.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum investimento cadastrado</td></tr>`;
@@ -1800,26 +2650,245 @@
                   inv.value > 0 ? (returnValue / inv.value) * 100 : 0;
 
                 return `
-                    <tr>
-                        <td><strong>${inv.name}</strong></td>
-                        <td><span class="badge-status" style="background:rgba(108,99,255,0.12);color:var(--accent-blue);">${inv.type}</span></td>
-                        <td>${formatBRL(inv.value)}</td>
-                        <td>${new Date(inv.date).toLocaleDateString("pt-BR")}</td>
-                        <td style="color:${returnPercentInv >= 0 ? "var(--accent-green)" : "var(--accent-red)"}">
-                            ${returnPercentInv >= 0 ? "+" : ""}${returnPercentInv.toFixed(1)}%
-                            <br><small style="color:var(--text-muted);">${formatBRL(returnValue)}</small>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="Investments.delete(${inv.id})">🗑️</button>
-                        </td>
-                    </tr>
-                `;
+                <tr>
+                  <td><strong>${inv.name}</strong></td>
+                  <td><span class="badge-status" style="background:rgba(108,99,255,0.12);color:var(--accent-blue);">${inv.type}</span></td>
+                  <td>${formatBRL(inv.value)}</td>
+                  <td>${new Date(inv.date).toLocaleDateString("pt-BR")}</td>
+                  <td style="color:${returnPercentInv >= 0 ? "var(--accent-green)" : "var(--accent-red)"}">
+                    ${returnPercentInv >= 0 ? "+" : ""}${returnPercentInv.toFixed(1)}%
+                    <br><small style="color:var(--text-muted);">${formatBRL(returnValue)}</small>
+                  </td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" onclick="Investments.delete(${inv.id})">🗑️</button>
+                  </td>
+                </tr>
+              `;
               })
               .join("");
           }
 
           this.updateChart();
           this.updateLegend();
+        },
+
+        renderMilestones(total) {
+          const container = document.getElementById("milestone-markers");
+          const labelsContainer = document.getElementById("milestone-labels");
+          const numMilestones = Math.floor(
+            this.finalGoal / this.milestoneInterval,
+          );
+
+          let markersHtml = "";
+          let labelsHtml = "";
+
+          for (let i = 1; i <= numMilestones; i++) {
+            const value = i * this.milestoneInterval;
+            const percentage = (value / this.finalGoal) * 100;
+            const achieved = total >= value;
+
+            markersHtml += `
+              <div class="milestone-marker ${achieved ? "achieved" : ""}" 
+                   style="left: ${percentage}%;">
+                <span class="milestone-icon">${achieved ? "⭐" : "●"}</span>
+                <div class="milestone-tooltip">${formatBRL(value)} ${achieved ? "✅" : "⏳"}</div>
+              </div>
+            `;
+
+            labelsHtml += `
+              <div class="milestone-label ${achieved ? "achieved" : ""}" 
+                   style="width: ${100 / numMilestones}%;">
+                ${value >= 1000 ? value / 1000 + "k" : value}
+              </div>
+            `;
+          }
+
+          container.innerHTML = markersHtml;
+          labelsContainer.innerHTML = labelsHtml;
+        },
+
+        renderNextMilestones(total) {
+          const container = document.getElementById("next-milestones");
+          const currentMilestone = Math.floor(total / this.milestoneInterval);
+          const nextMilestones = [];
+
+          for (let i = 1; i <= 3; i++) {
+            const value = (currentMilestone + i) * this.milestoneInterval;
+            if (value <= this.finalGoal) {
+              nextMilestones.push(value);
+            }
+          }
+
+          if (nextMilestones.length === 0) {
+            container.innerHTML =
+              '<span style="color:var(--text-muted);font-size:13px;">🎯 Todos os marcos alcançados!</span>';
+            return;
+          }
+
+          container.innerHTML = nextMilestones
+            .map((value) => {
+              const distance = value - total;
+              return `
+              <div class="next-milestone-item">
+                🎯 Próximo: <span class="value">${formatBRL(value)}</span>
+                <span class="distance">(faltam ${formatBRL(distance)})</span>
+              </div>
+            `;
+            })
+            .join("");
+        },
+
+        renderAchievements() {
+          const grid = document.getElementById("achievements-grid");
+          const unlocked = this.getUnlockedAchievements();
+
+          grid.innerHTML = this.achievementDefinitions
+            .map((def) => {
+              const isUnlocked = unlocked.includes(def.id);
+              return `
+              <div class="achievement-card ${isUnlocked ? "unlocked" : ""}">
+                <span class="achievement-icon">${isUnlocked ? def.icon : "🔒"}</span>
+                <div class="achievement-name">${isUnlocked ? def.name : "Bloqueado"}</div>
+                <div class="achievement-desc">${isUnlocked ? def.desc : "Continue investindo!"}</div>
+              </div>
+            `;
+            })
+            .join("");
+        },
+
+        renderEvolutionChart() {
+          const canvas = document.getElementById("evolutionChart");
+          if (!canvas) return;
+
+          const ctx = canvas.getContext("2d");
+          const rect = canvas.parentElement.getBoundingClientRect();
+          canvas.width = rect.width || 400;
+          canvas.height = 200;
+
+          const sorted = [...this.data].sort(
+            (a, b) => new Date(a.date) - new Date(b.date),
+          );
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          if (sorted.length === 0) {
+            ctx.fillStyle = "#6a7a9a";
+            ctx.font = "14px Inter, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(
+              "Sem dados para exibir",
+              canvas.width / 2,
+              canvas.height / 2,
+            );
+            return;
+          }
+
+          // Calcula acumulado
+          let runningTotal = 0;
+          const points = sorted.map((inv) => {
+            runningTotal += inv.value;
+            return { date: new Date(inv.date), value: runningTotal };
+          });
+
+          const padding = { top: 20, bottom: 30, left: 30, right: 20 };
+          const chartWidth = canvas.width - padding.left - padding.right;
+          const chartHeight = canvas.height - padding.top - padding.bottom;
+
+          const maxValue = Math.max(...points.map((p) => p.value), 1000);
+          const minDate = points[0].date;
+          const maxDate = points[points.length - 1].date;
+          const dateRange = maxDate - minDate || 1;
+
+          // Grid
+          ctx.strokeStyle = "rgba(255,255,255,0.05)";
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= 4; i++) {
+            const y = padding.top + (chartHeight / 4) * i;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(canvas.width - padding.right, y);
+            ctx.stroke();
+
+            const value = maxValue - (maxValue / 4) * i;
+            ctx.fillStyle = "rgba(255,255,255,0.2)";
+            ctx.font = "10px Inter, sans-serif";
+            ctx.textAlign = "right";
+            ctx.fillText(formatBRL(value), padding.left - 5, y + 3);
+          }
+
+          // Área
+          ctx.beginPath();
+          points.forEach((p, i) => {
+            const x =
+              padding.left + ((p.date - minDate) / dateRange) * chartWidth;
+            const y =
+              padding.top + chartHeight - (p.value / maxValue) * chartHeight;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+
+          const lastX =
+            padding.left +
+            ((points[points.length - 1].date - minDate) / dateRange) *
+              chartWidth;
+          ctx.lineTo(lastX, padding.top + chartHeight);
+          ctx.lineTo(padding.left, padding.top + chartHeight);
+          ctx.closePath();
+
+          const gradient = ctx.createLinearGradient(
+            0,
+            padding.top,
+            0,
+            padding.top + chartHeight,
+          );
+          gradient.addColorStop(0, "rgba(108,99,255,0.3)");
+          gradient.addColorStop(1, "rgba(108,99,255,0.02)");
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          // Linha
+          ctx.beginPath();
+          points.forEach((p, i) => {
+            const x =
+              padding.left + ((p.date - minDate) / dateRange) * chartWidth;
+            const y =
+              padding.top + chartHeight - (p.value / maxValue) * chartHeight;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.strokeStyle = "#6c63ff";
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Pontos
+          points.forEach((p) => {
+            const x =
+              padding.left + ((p.date - minDate) / dateRange) * chartWidth;
+            const y =
+              padding.top + chartHeight - (p.value / maxValue) * chartHeight;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = "#6c63ff";
+            ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.5)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          });
+
+          // Último valor
+          if (points.length > 0) {
+            const last = points[points.length - 1];
+            const x =
+              padding.left + ((last.date - minDate) / dateRange) * chartWidth;
+            const y =
+              padding.top + chartHeight - (last.value / maxValue) * chartHeight;
+
+            ctx.fillStyle = "rgba(255,255,255,0.8)";
+            ctx.font = "bold 12px Inter, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(formatBRL(last.value), x, y - 12);
+          }
         },
 
         updateChart() {
@@ -1881,12 +2950,12 @@
           ctx.stroke();
 
           ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 16px Inter, sans-serif";
+          ctx.font = "bold 14px Inter, sans-serif";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText("Total", 100, 95);
           ctx.fillStyle = "rgba(255,255,255,0.6)";
-          ctx.font = "12px Inter, sans-serif";
+          ctx.font = "11px Inter, sans-serif";
           ctx.fillText(formatBRL(total), 100, 115);
         },
 
@@ -1916,11 +2985,12 @@
 
           legend.innerHTML = types
             .map(
-              (type, i) =>
-                `<div class="legend-item">
-                <span class="color-dot" style="background:${colors[i % colors.length]}"></span>
-                ${type} (${total > 0 ? ((groups[type] / total) * 100).toFixed(1) : 0}%)
-            </div>`,
+              (type, i) => `
+            <div class="legend-item">
+              <span class="color-dot" style="background:${colors[i % colors.length]}"></span>
+              ${type} (${total > 0 ? ((groups[type] / total) * 100).toFixed(1) : 0}%)
+            </div>
+          `,
             )
             .join("");
         },
@@ -2017,33 +3087,33 @@
             const todos = this.data.filter((t) => t.day === i);
 
             html += `
-                <div class="kanban-column">
-                    <h3 class="${isToday ? "day-today" : ""}">
-                        ${isToday ? "⭐ " : ""}${shortName}
-                        ${isToday ? " (Hoje)" : ""}
-                    </h3>
-                    <div>
-                        ${
-                          todos.length === 0
-                            ? `<div class="empty-day">📭 Nenhuma tarefa</div>`
-                            : todos
-                                .map(
-                                  (todo) => `
-                            <div class="kanban-card ${todo.done ? "done" : ""}">
-                                <div class="card-text">${todo.text}</div>
-                                <div class="card-actions">
-                                    <button class="done-btn" onclick="Todos.toggle(${todo.id})">
-                                        ${todo.done ? "↩️" : "✅"}
-                                    </button>
-                                    <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
-                                </div>
-                            </div>
-                        `,
-                                )
-                                .join("")
-                        }
-                    </div>
+              <div class="kanban-column">
+                <h3 class="${isToday ? "day-today" : ""}">
+                  ${isToday ? "⭐ " : ""}${shortName}
+                  ${isToday ? " (Hoje)" : ""}
+                </h3>
+                <div>
+                  ${
+                    todos.length === 0
+                      ? `<div class="empty-day">📭 Nenhuma tarefa</div>`
+                      : todos
+                          .map(
+                            (todo) => `
+                      <div class="kanban-card ${todo.done ? "done" : ""}">
+                        <div class="card-text">${todo.text}</div>
+                        <div class="card-actions">
+                          <button class="done-btn" onclick="Todos.toggle(${todo.id})">
+                            ${todo.done ? "↩️" : "✅"}
+                          </button>
+                          <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
+                        </div>
+                      </div>
+                    `,
+                          )
+                          .join("")
+                  }
                 </div>
+              </div>
             `;
           }
 
@@ -2363,22 +3433,22 @@
             tbody.innerHTML = filtered
               .map(
                 (exp) => `
-                <tr>
-                    <td><strong>${exp.name}</strong></td>
-                    <td><span class="badge-status" style="background:rgba(168,85,247,0.12);color:var(--accent-purple);">${exp.category}</span></td>
-                    <td>${formatBRL(exp.value)}</td>
-                    <td>${new Date(exp.date).toLocaleDateString("pt-BR")}</td>
-                    <td>
-                        <span class="badge-status ${exp.paid ? "pago" : "pendente"}"
-                              style="cursor:pointer;" onclick="Expenses.togglePaid(${exp.id})">
-                            ${exp.paid ? "✅ Pago" : "⏳ Pendente"}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})" title="Editar">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})" title="Excluir">🗑️</button>
-                    </td>
-                </tr>
+              <tr>
+                <td><strong>${exp.name}</strong></td>
+                <td><span class="badge-status" style="background:rgba(168,85,247,0.12);color:var(--accent-purple);">${exp.category}</span></td>
+                <td>${formatBRL(exp.value)}</td>
+                <td>${new Date(exp.date).toLocaleDateString("pt-BR")}</td>
+                <td>
+                  <span class="badge-status ${exp.paid ? "pago" : "pendente"}" 
+                        style="cursor:pointer;" onclick="Expenses.togglePaid(${exp.id})">
+                    ${exp.paid ? "✅ Pago" : "⏳ Pendente"}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})" title="Editar">✏️</button>
+                  <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})" title="Excluir">🗑️</button>
+                </td>
+              </tr>
             `,
               )
               .join("");
@@ -2435,6 +3505,11 @@
             .querySelectorAll(".page-section")
             .forEach((s) => s.classList.remove("active"));
           document.getElementById(`section-${tab}`).classList.add("active");
+
+          // Atualiza gráfico de evolução quando mudar para investimentos
+          if (tab === "investments") {
+            setTimeout(() => Investments.renderEvolutionChart(), 100);
+          }
         });
       });
 
@@ -2478,9 +3553,15 @@
       Todos.init();
       Expenses.init();
 
+      // Redimensiona gráfico de evolução
+      window.addEventListener("resize", () => {
+        Investments.renderEvolutionChart();
+      });
+
       console.log("🚀 FinControl carregado com sucesso!");
       console.log("💰 Salário padrão: R$ 6.400,00");
-      console.log("🎯 Meta final: R$ 80.000,00 att");
+      console.log("🎯 Meta final: R$ 80.000,00");
+      console.log("🏆 Sistema de conquistas ativado!");
     </script>
   </body>
 </html>
