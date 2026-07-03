@@ -28,6 +28,8 @@
         --accent-red: #f87171;
         --accent-pink: #ec4899;
         --accent-cyan: #22d3ee;
+        --accent-orange: #fb923c;
+        --accent-rose: #f43f5e;
 
         --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
         --gradient-card: linear-gradient(
@@ -37,6 +39,7 @@
         );
         --gradient-success: linear-gradient(135deg, #34d399, #059669);
         --gradient-warning: linear-gradient(135deg, #fbbf24, #d97706);
+        --gradient-gold: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
 
         --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
         --shadow-glow: 0 0 60px rgba(108, 99, 255, 0.1);
@@ -429,6 +432,10 @@
       .card.accent-gold .card-icon {
         background: rgba(251, 191, 36, 0.15);
         color: var(--accent-amber);
+      }
+      .card.accent-rose .card-icon {
+        background: rgba(244, 63, 94, 0.1);
+        color: var(--accent-rose);
       }
 
       .card .card-badge {
@@ -1286,6 +1293,16 @@
         transform: translateY(-2px);
       }
 
+      .btn-gold {
+        background: var(--gradient-gold);
+        color: #1a1a2e;
+      }
+
+      .btn-gold:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4);
+      }
+
       /* ============================================
                    TABELAS
                    ============================================ */
@@ -2082,7 +2099,7 @@
       </section>
 
       <!-- ==========================================
-        SEÇÃO: INVESTIMENTOS (VERSÃO GAMIFICADA)
+        SEÇÃO: INVESTIMENTOS (VERSÃO GAMIFICADA - META 100K)
         ========================================== -->
       <section class="page-section" id="section-investments">
         <!-- HERO -->
@@ -2090,7 +2107,7 @@
           <div class="invest-hero-content">
             <div>
               <span class="hero-badge">🚀 JORNADA FINANCEIRA</span>
-              <h2 class="hero-title">Seu Patrimônio Está Crescendo!</h2>
+              <h2 class="hero-title">Rumo aos R$ 100.000!</h2>
               <p class="hero-sub">
                 Cada aporte te aproxima da liberdade financeira
               </p>
@@ -2183,7 +2200,7 @@
               <span class="card-badge">Meta</span>
             </div>
             <div class="card-label">Meta Final</div>
-            <div class="card-value" id="final-goal">R$ 80.000,00</div>
+            <div class="card-value" id="final-goal">R$ 100.000,00</div>
             <div class="card-footer" id="goal-progress">0% concluído</div>
           </div>
         </div>
@@ -2527,16 +2544,17 @@
       }
 
       // ============================================
-      // INVESTMENTS MODULE - VERSÃO GAMIFICADA
+      // INVESTMENTS MODULE - VERSÃO GAMIFICADA (META 100K)
       // ============================================
       const Investments = {
         data: [],
         annualReturn: 0.12,
-        finalGoal: 80000,
+        finalGoal: 100000,
         milestoneInterval: 5000,
         achievedMilestones: [],
 
         achievementDefinitions: [
+          // Conquistas de Aportes
           {
             id: "first_invest",
             name: "Primeiro Aporte",
@@ -2556,6 +2574,20 @@
             desc: "10 investimentos realizados",
           },
           {
+            id: "twenty_invests",
+            name: "Mestre dos Aportes",
+            icon: "👑",
+            desc: "20 investimentos realizados",
+          },
+          {
+            id: "fifty_invests",
+            name: "Lenda dos Investimentos",
+            icon: "💎",
+            desc: "50 investimentos realizados",
+          },
+
+          // Conquistas de Marcos (5k em 5k)
+          {
             id: "milestone_5k",
             name: "Primeiro Marco",
             icon: "⭐",
@@ -2568,23 +2600,115 @@
             desc: "Atingiu R$ 10.000",
           },
           {
+            id: "milestone_15k",
+            name: "Quinze Mil",
+            icon: "✨",
+            desc: "Atingiu R$ 15.000",
+          },
+          {
+            id: "milestone_20k",
+            name: "Vinte Mil",
+            icon: "🔥",
+            desc: "Atingiu R$ 20.000",
+          },
+          {
             id: "milestone_25k",
             name: "Vinte e Cinco Mil",
-            icon: "💎",
+            icon: "💪",
             desc: "Atingiu R$ 25.000",
+          },
+          {
+            id: "milestone_30k",
+            name: "Trinta Mil",
+            icon: "🚀",
+            desc: "Atingiu R$ 30.000",
+          },
+          {
+            id: "milestone_35k",
+            name: "Trinta e Cinco Mil",
+            icon: "🌈",
+            desc: "Atingiu R$ 35.000",
+          },
+          {
+            id: "milestone_40k",
+            name: "Quarenta Mil",
+            icon: "🎯",
+            desc: "Atingiu R$ 40.000",
+          },
+          {
+            id: "milestone_45k",
+            name: "Quarenta e Cinco Mil",
+            icon: "⚡",
+            desc: "Atingiu R$ 45.000",
           },
           {
             id: "milestone_50k",
             name: "Meio Caminho",
-            icon: "🔥",
+            icon: "🏅",
             desc: "Atingiu R$ 50.000",
           },
           {
-            id: "milestone_80k",
-            name: "Meta Alcançada!",
-            icon: "👑",
-            desc: "Você atingiu seu objetivo!",
+            id: "milestone_55k",
+            name: "Cinquenta e Cinco Mil",
+            icon: "🌟",
+            desc: "Atingiu R$ 55.000",
           },
+          {
+            id: "milestone_60k",
+            name: "Sessenta Mil",
+            icon: "💎",
+            desc: "Atingiu R$ 60.000",
+          },
+          {
+            id: "milestone_65k",
+            name: "Sessenta e Cinco Mil",
+            icon: "🔥",
+            desc: "Atingiu R$ 65.000",
+          },
+          {
+            id: "milestone_70k",
+            name: "Setenta Mil",
+            icon: "🚀",
+            desc: "Atingiu R$ 70.000",
+          },
+          {
+            id: "milestone_75k",
+            name: "Setenta e Cinco Mil",
+            icon: "🌈",
+            desc: "Atingiu R$ 75.000",
+          },
+          {
+            id: "milestone_80k",
+            name: "Oitenta Mil",
+            icon: "🎯",
+            desc: "Atingiu R$ 80.000",
+          },
+          {
+            id: "milestone_85k",
+            name: "Oitenta e Cinco Mil",
+            icon: "⚡",
+            desc: "Atingiu R$ 85.000",
+          },
+          {
+            id: "milestone_90k",
+            name: "Noventa Mil",
+            icon: "🏅",
+            desc: "Atingiu R$ 90.000",
+          },
+          {
+            id: "milestone_95k",
+            name: "Noventa e Cinco Mil",
+            icon: "🌟",
+            desc: "Atingiu R$ 95.000",
+          },
+          {
+            id: "milestone_100k",
+            name: "META ALCANÇADA! 🎉",
+            icon: "👑",
+            desc: "Você atingiu R$ 100.000!",
+          },
+
+          // Conquistas Especiais
           {
             id: "diversified",
             name: "Diversificado",
@@ -2595,7 +2719,25 @@
             id: "consistent",
             name: "Consistente",
             icon: "📅",
-            desc: "Aportes em meses diferentes",
+            desc: "Aportes em 3 meses diferentes",
+          },
+          {
+            id: "big_contributor",
+            name: "Grande Aportador",
+            icon: "💪",
+            desc: "Aporte único acima de R$ 5.000",
+          },
+          {
+            id: "milestone_master",
+            name: "Mestre dos Marcos",
+            icon: "🏆",
+            desc: "Atingiu 10 marcos de R$ 5.000",
+          },
+          {
+            id: "investor_legend",
+            name: "Lenda do Investimento",
+            icon: "👑",
+            desc: "Atingiu 20 marcos de R$ 5.000",
           },
         ],
 
@@ -2613,18 +2755,43 @@
           const total = this.getTotal();
           const types = new Set(this.data.map((inv) => inv.type));
           const months = new Set(this.data.map((inv) => inv.date.slice(0, 7)));
+          const maxSingle = this.data.reduce(
+            (max, inv) => Math.max(max, inv.value),
+            0,
+          );
+          const milestonesReached = Math.floor(total / this.milestoneInterval);
 
           const conditions = {
             first_invest: this.data.length >= 1,
             five_invests: this.data.length >= 5,
             ten_invests: this.data.length >= 10,
+            twenty_invests: this.data.length >= 20,
+            fifty_invests: this.data.length >= 50,
             milestone_5k: total >= 5000,
             milestone_10k: total >= 10000,
+            milestone_15k: total >= 15000,
+            milestone_20k: total >= 20000,
             milestone_25k: total >= 25000,
+            milestone_30k: total >= 30000,
+            milestone_35k: total >= 35000,
+            milestone_40k: total >= 40000,
+            milestone_45k: total >= 45000,
             milestone_50k: total >= 50000,
+            milestone_55k: total >= 55000,
+            milestone_60k: total >= 60000,
+            milestone_65k: total >= 65000,
+            milestone_70k: total >= 70000,
+            milestone_75k: total >= 75000,
             milestone_80k: total >= 80000,
+            milestone_85k: total >= 85000,
+            milestone_90k: total >= 90000,
+            milestone_95k: total >= 95000,
+            milestone_100k: total >= 100000,
             diversified: types.size >= 3,
             consistent: months.size >= 3,
+            big_contributor: maxSingle >= 5000,
+            milestone_master: milestonesReached >= 10,
+            investor_legend: milestonesReached >= 20,
           };
 
           return this.achievementDefinitions
@@ -2672,13 +2839,20 @@
           const newTotal = this.getTotal();
           const newMilestone = Math.floor(newTotal / this.milestoneInterval);
 
-          // Verifica novo marco
+          // Verifica novos marcos (pode ter pulado vários)
           if (newMilestone > oldMilestone) {
-            const milestoneValue = newMilestone * this.milestoneInterval;
-            showToast(
-              `🎉 PARABÉNS! Você atingiu R$ ${milestoneValue.toLocaleString()}!`,
-              "success",
-            );
+            for (let m = oldMilestone + 1; m <= newMilestone; m++) {
+              const milestoneValue = m * this.milestoneInterval;
+              setTimeout(
+                () => {
+                  showToast(
+                    `🎉 PARABÉNS! Você atingiu R$ ${milestoneValue.toLocaleString()}!`,
+                    "success",
+                  );
+                },
+                (m - oldMilestone) * 300,
+              );
+            }
             this.celebrateMilestone();
           }
 
@@ -2704,8 +2878,10 @@
             "#34d399",
             "#ec4899",
             "#22d3ee",
+            "#fb923c",
+            "#f43f5e",
           ];
-          for (let i = 0; i < 40; i++) {
+          for (let i = 0; i < 60; i++) {
             const el = document.createElement("div");
             el.style.cssText = `
               position: fixed;
@@ -2714,14 +2890,14 @@
               background: ${colors[Math.floor(Math.random() * colors.length)]};
               left: ${Math.random() * 100}vw;
               top: -10px;
-              border-radius: 2px;
+              border-radius: ${Math.random() > 0.5 ? "50%" : "2px"};
               pointer-events: none;
               z-index: 9999;
-              animation: confetti-fall ${Math.random() * 2 + 2}s linear forwards;
+              animation: confetti-fall ${Math.random() * 3 + 2}s linear forwards;
               transform: rotate(${Math.random() * 360}deg);
             `;
             document.body.appendChild(el);
-            setTimeout(() => el.remove(), 3500);
+            setTimeout(() => el.remove(), 5000);
           }
         },
 
@@ -2913,7 +3089,7 @@
 
           if (nextMilestones.length === 0) {
             container.innerHTML =
-              '<span style="color:var(--text-muted);font-size:13px;">🎯 Todos os marcos alcançados!</span>';
+              '<span style="color:var(--accent-gold);font-size:13px;font-weight:600;">🎯🎉 META DE R$ 100.000 ALCANÇADA! PARABÉNS! 🎉🎯</span>';
             return;
           }
 
@@ -3286,7 +3462,6 @@
           showToast("🗑️ Tarefa removida!", "warning");
         },
 
-        // COPIA TAREFAS DE UM DIA PARA O DIA ATUAL
         copyDayToToday() {
           const sourceDay = parseInt(
             document.getElementById("todo-source-day").value,
@@ -3307,7 +3482,6 @@
             return;
           }
 
-          // Verifica se já existem tarefas para hoje
           const todayTasks = this.data.filter(
             (t) => t.day === today && !t.done,
           );
@@ -3322,7 +3496,6 @@
             }
           }
 
-          // Copia as tarefas
           const newTasks = sourceTasks.map((task) => ({
             id: Date.now() + Math.random() * 1000,
             text: task.text,
@@ -3334,7 +3507,6 @@
           DataManager.setTodos(this.data);
           this.render();
 
-          // Efeito visual na coluna de hoje
           const columns = document.querySelectorAll(".kanban-column");
           const todayColumn = columns[today];
           if (todayColumn) {
@@ -3349,7 +3521,6 @@
           );
         },
 
-        // LIMPA TODAS AS TAREFAS DE UM DIA
         clearDay() {
           const day = parseInt(
             document.getElementById("todo-source-day").value,
@@ -3379,7 +3550,6 @@
           );
         },
 
-        // MARCA/DESMARCA TODAS AS TAREFAS DO DIA ATUAL
         toggleAllToday() {
           const today = new Date().getDay();
           const todayTasks = this.data.filter((t) => t.day === today);
@@ -3406,7 +3576,6 @@
           const container = document.getElementById("kanban-container");
           const today = new Date().getDay();
 
-          // Atualiza estatísticas
           const totalPending = this.data.filter((t) => !t.done).length;
           document.getElementById("todo-stats").textContent =
             `📊 ${totalPending} tarefas pendentes`;
@@ -3418,7 +3587,6 @@
             const isToday = i === today;
             const todos = this.data.filter((t) => t.day === i);
             const pendingTodos = todos.filter((t) => !t.done);
-            const completedTodos = todos.filter((t) => t.done);
 
             html += `
               <div class="kanban-column">
@@ -3467,7 +3635,6 @@
           container.innerHTML = html;
         },
 
-        // Funções auxiliares para os botões dentro do Kanban
         copyDayToDay(day) {
           document.getElementById("todo-source-day").value = day;
           this.copyDayToToday();
@@ -3864,7 +4031,6 @@
             .forEach((s) => s.classList.remove("active"));
           document.getElementById(`section-${tab}`).classList.add("active");
 
-          // Atualiza gráfico de evolução quando mudar para investimentos
           if (tab === "investments") {
             setTimeout(() => Investments.renderEvolutionChart(), 100);
           }
@@ -3911,15 +4077,14 @@
       Todos.init();
       Expenses.init();
 
-      // Redimensiona gráfico de evolução
       window.addEventListener("resize", () => {
         Investments.renderEvolutionChart();
       });
 
       console.log("🚀 FinControl carregado com sucesso!");
       console.log("💰 Salário padrão: R$ 6.400,00");
-      console.log("🎯 Meta final: R$ 80.000,00");
-      console.log("🏆 Sistema de conquistas ativado!");
+      console.log("🎯 META FINAL: R$ 100.000,00");
+      console.log("🏆 Sistema de conquistas com 30+ medalhas ativado!");
       console.log("📋 Sistema de cópia de tarefas ativado!");
     </script>
   </body>
