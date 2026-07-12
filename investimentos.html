@@ -412,6 +412,8 @@
         border-radius: var(--radius);
         padding: 12px 16px;
         box-shadow: var(--shadow-card);
+        min-height: 56px;
+        align-items: center;
       }
 
       .goals-tabs .tab-btn {
@@ -463,22 +465,82 @@
         background: rgba(108, 99, 255, 0.1);
       }
 
+      /* ============================================
+                   ESTADO VAZIO - SEM METAS
+                   ============================================ */
       .empty-goals {
         text-align: center;
-        padding: 40px 20px;
-        color: var(--text-muted);
+        padding: 60px 20px;
+        background: var(--gradient-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 32px;
+        animation: fadeSlideIn 0.5s ease;
       }
 
       .empty-goals .empty-icon {
-        font-size: 48px;
+        font-size: 64px;
         display: block;
         margin-bottom: 16px;
       }
 
       .empty-goals .empty-title {
-        font-size: 18px;
-        color: var(--text-secondary);
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
         margin-bottom: 8px;
+      }
+
+      .empty-goals .empty-subtitle {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .empty-goals .empty-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        max-width: 600px;
+        margin: 0 auto 32px;
+      }
+
+      .empty-goals .empty-features .feature-item {
+        padding: 16px;
+        background: var(--bg-input);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+      }
+
+      .empty-goals .empty-features .feature-item .feature-icon {
+        font-size: 28px;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .empty-goals .empty-features .feature-item .feature-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .empty-goals .btn-primary {
+        font-size: 16px;
+        padding: 14px 40px;
+      }
+
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       /* ============================================
@@ -498,17 +560,6 @@
 
       .goal-card.active {
         display: block;
-      }
-
-      @keyframes fadeSlideIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
       }
 
       .goal-card .goal-header {
@@ -668,6 +719,7 @@
         padding-top: 16px;
         border-top: 1px solid var(--border-color);
         justify-content: flex-end;
+        flex-wrap: wrap;
       }
 
       .goal-card .goal-actions button {
@@ -678,6 +730,17 @@
         font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
+      }
+
+      .goal-card .goal-actions .btn-edit-goal {
+        background: rgba(108, 99, 255, 0.15);
+        color: var(--accent-blue);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+      }
+
+      .goal-card .goal-actions .btn-edit-goal:hover {
+        background: rgba(108, 99, 255, 0.25);
+        transform: translateY(-2px);
       }
 
       .goal-card .goal-actions .btn-delete-goal {
@@ -868,7 +931,7 @@
       }
 
       /* ============================================
-                   MODAL DE NOVA META (MELHORADO)
+                   MODAL DE NOVA META
                    ============================================ */
       .modal-goal .form-group {
         margin-bottom: 16px;
@@ -934,7 +997,7 @@
 
       .modal-goal .form-group .checkbox-group {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 10px;
         padding: 12px 16px;
         background: rgba(108, 99, 255, 0.05);
@@ -954,6 +1017,7 @@
         accent-color: var(--accent-blue);
         cursor: pointer;
         flex-shrink: 0;
+        margin-top: 2px;
       }
 
       .modal-goal .form-group .checkbox-group .checkbox-label {
@@ -964,6 +1028,13 @@
 
       .modal-goal .form-group .checkbox-group .checkbox-label strong {
         color: var(--text-primary);
+      }
+
+      .modal-goal .form-group .checkbox-group .checkbox-label .helper-text {
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
       }
 
       .modal-goal .form-group .helper-text {
@@ -1615,6 +1686,9 @@
         .modal-goal .form-row {
           grid-template-columns: 1fr;
         }
+        .empty-goals .empty-features {
+          grid-template-columns: 1fr 1fr;
+        }
       }
 
       @media (max-width: 768px) {
@@ -1717,6 +1791,18 @@
         .goals-tabs .tab-btn {
           font-size: 11px;
           padding: 4px 10px;
+        }
+
+        .empty-goals {
+          padding: 40px 16px;
+        }
+
+        .empty-goals .empty-title {
+          font-size: 20px;
+        }
+
+        .empty-goals .empty-features {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -1869,7 +1955,7 @@
     </div>
 
     <!-- ============================================
-    MODAL DE NOVA META (MELHORADO)
+    MODAL DE NOVA META
     ============================================ -->
     <div class="modal-overlay modal-goal" id="goal-modal">
       <div class="modal">
@@ -1931,14 +2017,7 @@
               <input type="checkbox" id="use-existing" checked />
               <span class="checkbox-label">
                 ✅ Usar <strong>aportes existentes</strong> como base inicial
-                <span
-                  style="
-                    display: block;
-                    font-size: 12px;
-                    color: var(--text-muted);
-                    margin-top: 2px;
-                  "
-                >
+                <span class="helper-text">
                   O valor total já investido será considerado como ponto de
                   partida para esta meta
                 </span>
@@ -2002,7 +2081,6 @@
       <!-- TABS DE METAS -->
       <div class="goals-tabs" id="goals-tabs">
         <!-- Gerado via JS -->
-        <button class="tab-btn add-goal" id="add-goal-btn">➕ Nova Meta</button>
       </div>
 
       <!-- CONTAINER DE METAS -->
@@ -2497,7 +2575,7 @@
           this.data = DataManager.getInvestments();
           this.goals = DataManager.getGoals();
 
-          // Se não houver metas, não cria nenhuma - usuário cria a primeira
+          // NÃO CRIA META PADRÃO - começa vazio
           this.activeGoalId = this.goals.length > 0 ? this.goals[0].id : null;
           this.render();
           this.setupEvents();
@@ -2747,22 +2825,24 @@
         },
 
         deleteGoal(id) {
-          if (this.goals.length <= 1) {
-            showToast("Você precisa ter pelo menos uma meta!", "warning");
-            return;
-          }
-
-          if (!confirm("Tem certeza que deseja excluir esta meta?")) return;
-
+          // Remove a meta sem restrição
           this.goals = this.goals.filter((g) => g.id !== id);
           DataManager.setGoals(this.goals);
 
           if (this.activeGoalId === id) {
-            this.activeGoalId = this.goals[0]?.id || null;
+            this.activeGoalId = this.goals.length > 0 ? this.goals[0].id : null;
           }
 
           this.render();
-          showToast("Meta removida!", "warning");
+
+          if (this.goals.length === 0) {
+            showToast(
+              "🗑️ Todas as metas foram removidas. Crie uma nova meta!",
+              "warning",
+            );
+          } else {
+            showToast("Meta removida!", "warning");
+          }
         },
 
         switchGoal(id) {
@@ -2958,22 +3038,21 @@
 
         renderTabs() {
           const container = document.getElementById("goals-tabs");
-          const addBtn = container.querySelector("#add-goal-btn");
 
-          let html = "";
           if (this.goals.length === 0) {
-            // Se não tem metas, mostra apenas o botão de adicionar
             container.innerHTML = `
-              <button class="tab-btn add-goal" id="add-goal-btn">
+              <button class="tab-btn add-goal" id="add-goal-btn" style="width:100%;justify-content:center;">
                 ➕ Criar sua primeira meta
               </button>
             `;
-            document
-              .getElementById("add-goal-btn")
-              .addEventListener("click", () => this.openGoalModal());
+            const btn = document.getElementById("add-goal-btn");
+            if (btn) {
+              btn.addEventListener("click", () => this.openGoalModal());
+            }
             return;
           }
 
+          let html = "";
           this.goals.forEach((goal) => {
             const isActive = this.activeGoalId === goal.id;
             const total = this.getTotal();
@@ -2999,12 +3078,10 @@
             </button>
           `;
 
-          // Reatribui evento do botão de adicionar
-          document
-            .getElementById("add-goal-btn")
-            .addEventListener("click", () => {
-              this.openGoalModal();
-            });
+          const btn = document.getElementById("add-goal-btn");
+          if (btn) {
+            btn.addEventListener("click", () => this.openGoalModal());
+          }
         },
 
         renderGoals() {
@@ -3015,9 +3092,27 @@
               <div class="empty-goals">
                 <span class="empty-icon">🎯</span>
                 <div class="empty-title">Nenhuma meta criada ainda</div>
-                <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-                  Crie sua primeira meta para começar a acompanhar sua evolução!
-                </p>
+                <div class="empty-subtitle">
+                  Defina seus objetivos financeiros e acompanhe sua evolução em tempo real
+                </div>
+                <div class="empty-features">
+                  <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-text">Acompanhe seu progresso</div>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">💰</span>
+                    <div class="feature-text">Calcule aportes mensais</div>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-text">Metas personalizadas</div>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">🏆</span>
+                    <div class="feature-text">Conquistas e badges</div>
+                  </div>
+                </div>
                 <button class="btn btn-primary" onclick="Investments.openGoalModal()">
                   ➕ Criar Primeira Meta
                 </button>
@@ -3134,6 +3229,9 @@
                 </div>
 
                 <div class="goal-actions">
+                  <button class="btn-edit-goal" onclick="Investments.editGoal(${goal.id})">
+                    ✏️ Editar
+                  </button>
                   <button class="btn-delete-goal" onclick="Investments.deleteGoal(${goal.id})">
                     🗑️ Excluir Meta
                   </button>
@@ -3143,6 +3241,48 @@
           });
 
           container.innerHTML = html;
+        },
+
+        // ============================================
+        // EDITAR META
+        // ============================================
+        editGoal(id) {
+          const goal = this.goals.find((g) => g.id === id);
+          if (!goal) return;
+
+          const currentTotal = this.getTotal();
+          const currentInitial = goal.initialValue || 0;
+
+          const newInitial = prompt(
+            `✏️ Editando meta: "${goal.name}"\n\n` +
+              `Valor inicial atual: ${formatBRL(currentInitial)}\n` +
+              `Patrimônio atual: ${formatBRL(currentTotal)}\n\n` +
+              `Digite o novo valor inicial (ou deixe em branco para usar o patrimônio atual):`,
+            currentTotal > 0 ? currentTotal : currentInitial,
+          );
+
+          if (newInitial === null) return;
+
+          const cleaned = newInitial.replace(/[^0-9,.]/g, "").replace(",", ".");
+          const parsed = parseFloat(cleaned);
+
+          if (!isNaN(parsed) && parsed >= 0) {
+            goal.initialValue = parsed;
+            DataManager.setGoals(this.goals);
+            this.render();
+            showToast(
+              `✅ Valor inicial da meta atualizado para ${formatBRL(parsed)}!`,
+            );
+          } else if (newInitial === "") {
+            goal.initialValue = currentTotal;
+            DataManager.setGoals(this.goals);
+            this.render();
+            showToast(
+              `✅ Valor inicial atualizado para o patrimônio atual: ${formatBRL(currentTotal)}!`,
+            );
+          } else {
+            showToast("❌ Valor inválido! Digite um número.", "error");
+          }
         },
 
         renderTable() {
