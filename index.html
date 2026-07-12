@@ -674,6 +674,127 @@
       }
 
       /* ============================================
+                   MODAL DE CÓPIA
+                   ============================================ */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 32px;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: var(--shadow-hover);
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px) scale(0.95);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .modal h2 {
+        margin-bottom: 8px;
+        font-size: 22px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .modal .modal-subtitle {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .modal .form-group {
+        margin-bottom: 16px;
+      }
+
+      .modal .form-group label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+
+      .modal .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 14px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .modal .form-group select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+      }
+
+      .modal .form-group select option {
+        background: var(--bg-secondary);
+      }
+
+      .modal .modal-info {
+        background: rgba(108, 99, 255, 0.06);
+        border: 1px solid rgba(108, 99, 255, 0.1);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .modal .modal-info strong {
+        color: var(--text-primary);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 24px;
+      }
+
+      /* ============================================
                    TOAST
                    ============================================ */
       .toast-container {
@@ -807,6 +928,11 @@
         .top-header .header-right .user-badge span {
           display: none;
         }
+
+        .modal {
+          padding: 20px;
+          width: 95%;
+        }
       }
 
       @media (max-width: 480px) {
@@ -896,6 +1022,56 @@
     </aside>
 
     <!-- ============================================
+    MODAL DE CÓPIA
+    ============================================ -->
+    <div class="modal-overlay" id="copy-modal">
+      <div class="modal">
+        <h2>📋 Copiar Tarefas</h2>
+        <p class="modal-subtitle">Escolha de qual dia copiar e para qual dia</p>
+
+        <div class="form-group">
+          <label for="copy-source-day">📤 Copiar de:</label>
+          <select id="copy-source-day">
+            <option value="0">Domingo</option>
+            <option value="1">Segunda-feira</option>
+            <option value="2">Terça-feira</option>
+            <option value="3">Quarta-feira</option>
+            <option value="4">Quinta-feira</option>
+            <option value="5">Sexta-feira</option>
+            <option value="6">Sábado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="copy-target-day">📥 Copiar para:</label>
+          <select id="copy-target-day">
+            <option value="0">Domingo</option>
+            <option value="1">Segunda-feira</option>
+            <option value="2">Terça-feira</option>
+            <option value="3">Quarta-feira</option>
+            <option value="4">Quinta-feira</option>
+            <option value="5">Sexta-feira</option>
+            <option value="6">Sábado</option>
+          </select>
+        </div>
+
+        <div class="modal-info" id="copy-info">
+          <span
+            >ℹ️ Serão copiadas apenas as tarefas <strong>pendentes</strong> do
+            dia selecionado.</span
+          >
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="cancel-copy">Cancelar</button>
+          <button class="btn btn-primary" id="confirm-copy">
+            📋 Copiar Agora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
     MAIN - CONTEÚDO PRINCIPAL
     ============================================ -->
     <main>
@@ -926,8 +1102,11 @@
       <!-- BARRA DE FERRAMENTAS DO KANBAN -->
       <div class="todo-toolbar">
         <div class="toolbar-left">
-          <span class="toolbar-label">📋 Gerenciar dias:</span>
-          <select id="todo-source-day" class="todo-day-select">
+          <span class="toolbar-label">📋 Gerenciar:</span>
+          <button class="btn btn-sm btn-outline" id="clear-todo-day">
+            🗑️ Limpar Dia
+          </button>
+          <select id="todo-clear-day" class="todo-day-select">
             <option value="0">Domingo</option>
             <option value="1">Segunda-feira</option>
             <option value="2">Terça-feira</option>
@@ -936,12 +1115,6 @@
             <option value="5">Sexta-feira</option>
             <option value="6">Sábado</option>
           </select>
-          <button class="btn btn-sm btn-copy-day" id="copy-todo-day">
-            📋 Copiar para Hoje
-          </button>
-          <button class="btn btn-sm btn-outline" id="clear-todo-day">
-            🗑️ Limpar Dia
-          </button>
         </div>
         <div class="toolbar-right">
           <button class="btn btn-sm btn-success" id="toggle-all-todos">
@@ -1001,28 +1174,20 @@
       // DETECTA URL NO TEXTO
       // ============================================
       function detectUrls(text) {
-        // Regex para detectar URLs
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const urls = text.match(urlRegex);
         return urls || [];
       }
 
       function formatTextWithLinks(text) {
-        // Regex para substituir URLs por links clicáveis
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return text.replace(urlRegex, function (url) {
-          // Remove http:// ou https:// para exibição mais limpa
           let displayUrl = url.replace(/^https?:\/\//, "");
-          // Se a URL for muito longa, encurta
           if (displayUrl.length > 40) {
             displayUrl = displayUrl.substring(0, 40) + "...";
           }
           return `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">🔗 ${displayUrl}</a>`;
         });
-      }
-
-      function hasUrl(text) {
-        return /(https?:\/\/[^\s]+)/g.test(text);
       }
 
       // ============================================
@@ -1070,6 +1235,7 @@
       // ============================================
       const Todos = {
         data: [],
+        targetDayForCopy: null,
 
         init() {
           this.data = DataManager.getTodos();
@@ -1086,12 +1252,6 @@
             });
 
           document
-            .getElementById("copy-todo-day")
-            .addEventListener("click", () => {
-              this.copyDayToToday();
-            });
-
-          document
             .getElementById("clear-todo-day")
             .addEventListener("click", () => {
               this.clearDay();
@@ -1101,6 +1261,25 @@
             .getElementById("toggle-all-todos")
             .addEventListener("click", () => {
               this.toggleAllToday();
+            });
+
+          // Modal de cópia
+          document
+            .getElementById("cancel-copy")
+            .addEventListener("click", () => {
+              this.closeCopyModal();
+            });
+
+          document
+            .getElementById("copy-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeCopyModal();
+            });
+
+          document
+            .getElementById("confirm-copy")
+            .addEventListener("click", () => {
+              this.executeCopy();
             });
         },
 
@@ -1114,7 +1293,6 @@
             return;
           }
 
-          // Detecta se tem URL
           const urls = detectUrls(text);
           const hasLink = urls.length > 0;
 
@@ -1156,14 +1334,74 @@
           showToast("🗑️ Tarefa removida!", "warning");
         },
 
-        copyDayToToday() {
-          const sourceDay = parseInt(
-            document.getElementById("todo-source-day").value,
-          );
-          const today = new Date().getDay();
+        // ============================================
+        // MODAL DE CÓPIA
+        // ============================================
+        openCopyModal(targetDay) {
+          this.targetDayForCopy = targetDay;
 
-          if (sourceDay === today) {
-            showToast("⚠️ O dia selecionado já é hoje!", "warning");
+          // Define o dia de destino no select
+          document.getElementById("copy-target-day").value = targetDay;
+
+          // Define o dia de origem como o dia anterior (se for diferente)
+          const sourceDay = targetDay > 0 ? targetDay - 1 : 6;
+          document.getElementById("copy-source-day").value = sourceDay;
+
+          // Atualiza a informação
+          this.updateCopyInfo();
+
+          document.getElementById("copy-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        closeCopyModal() {
+          document.getElementById("copy-modal").classList.remove("active");
+          document.body.style.overflow = "";
+          this.targetDayForCopy = null;
+        },
+
+        updateCopyInfo() {
+          const sourceDay = parseInt(
+            document.getElementById("copy-source-day").value,
+          );
+          const targetDay = parseInt(
+            document.getElementById("copy-target-day").value,
+          );
+          const sourceName = getDayName(sourceDay);
+          const targetName = getDayName(targetDay);
+
+          const sourceTasks = this.data.filter(
+            (t) => t.day === sourceDay && !t.done,
+          );
+          const info = document.getElementById("copy-info");
+
+          if (sourceDay === targetDay) {
+            info.innerHTML = `⚠️ <strong>ATENÇÃO:</strong> Você está copiando do mesmo dia! Selecione dias diferentes.`;
+            info.style.borderColor = "var(--accent-red)";
+            info.style.background = "rgba(248,113,113,0.06)";
+          } else if (sourceTasks.length === 0) {
+            info.innerHTML = `📭 <strong>${sourceName}:</strong> Não há tarefas pendentes para copiar.`;
+            info.style.borderColor = "var(--border-color)";
+            info.style.background = "rgba(108,99,255,0.06)";
+          } else {
+            info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefa${sourceTasks.length > 1 ? "s" : ""} pendente${sourceTasks.length > 1 ? "s" : ""} de <strong>${sourceName}</strong> para <strong>${targetName}</strong>`;
+            info.style.borderColor = "rgba(108,99,255,0.1)";
+            info.style.background = "rgba(108,99,255,0.06)";
+          }
+        },
+
+        executeCopy() {
+          const sourceDay = parseInt(
+            document.getElementById("copy-source-day").value,
+          );
+          const targetDay = parseInt(
+            document.getElementById("copy-target-day").value,
+          );
+          const sourceName = getDayName(sourceDay);
+          const targetName = getDayName(targetDay);
+
+          if (sourceDay === targetDay) {
+            showToast("⚠️ Selecione dias diferentes para copiar!", "warning");
             return;
           }
 
@@ -1172,28 +1410,33 @@
           );
 
           if (sourceTasks.length === 0) {
-            showToast("📭 Nenhuma tarefa pendente para copiar!", "warning");
+            showToast(
+              `📭 Nenhuma tarefa pendente em ${sourceName}!`,
+              "warning",
+            );
             return;
           }
 
-          const todayTasks = this.data.filter(
-            (t) => t.day === today && !t.done,
+          // Verifica se já existem tarefas no destino
+          const targetTasks = this.data.filter(
+            (t) => t.day === targetDay && !t.done,
           );
 
-          if (todayTasks.length > 0) {
+          if (targetTasks.length > 0) {
             if (
               !confirm(
-                `Já existem ${todayTasks.length} tarefas para hoje. Deseja adicionar mesmo assim?`,
+                `Já existem ${targetTasks.length} tarefas pendentes em ${targetName}. Deseja adicionar as novas tarefas mesmo assim?`,
               )
             ) {
               return;
             }
           }
 
+          // Copia as tarefas
           const newTasks = sourceTasks.map((task) => ({
             id: Date.now() + Math.random() * 1000,
             text: task.text,
-            day: today,
+            day: targetDay,
             done: false,
             hasLink: task.hasLink || false,
             urls: task.urls || [],
@@ -1202,25 +1445,28 @@
           this.data.push(...newTasks);
           DataManager.setTodos(this.data);
           this.render();
+          this.closeCopyModal();
 
+          // Efeito visual na coluna de destino
           const columns = document.querySelectorAll(".kanban-column");
-          const todayColumn = columns[today];
-          if (todayColumn) {
-            todayColumn.classList.remove("copy-flash");
-            void todayColumn.offsetWidth;
-            todayColumn.classList.add("copy-flash");
+          const targetColumn = columns[targetDay];
+          if (targetColumn) {
+            targetColumn.classList.remove("copy-flash");
+            void targetColumn.offsetWidth;
+            targetColumn.classList.add("copy-flash");
           }
 
           showToast(
-            `📋 ${newTasks.length} tarefas copiadas para hoje!`,
+            `📋 ${newTasks.length} tarefas copiadas de ${sourceName} para ${targetName}!`,
             "success",
           );
         },
 
+        // ============================================
+        // LIMPAR DIA
+        // ============================================
         clearDay() {
-          const day = parseInt(
-            document.getElementById("todo-source-day").value,
-          );
+          const day = parseInt(document.getElementById("todo-clear-day").value);
           const dayName = getDayName(day);
           const tasks = this.data.filter((t) => t.day === day);
 
@@ -1246,6 +1492,9 @@
           );
         },
 
+        // ============================================
+        // MARCAR/DESMARCAR TODAS
+        // ============================================
         toggleAllToday() {
           const today = new Date().getDay();
           const todayTasks = this.data.filter((t) => t.day === today);
@@ -1270,6 +1519,9 @@
           );
         },
 
+        // ============================================
+        // RENDER
+        // ============================================
         render() {
           const container = document.getElementById("kanban-container");
           const today = new Date().getDay();
@@ -1320,7 +1572,7 @@
                     }
                   </div>
                   <div class="column-actions">
-                    <button class="copy-day" onclick="Todos.copyDayToDay(${i})" title="Copiar tarefas para hoje">
+                    <button class="copy-day" onclick="Todos.openCopyModal(${i})" title="Copiar tarefas para este dia">
                       📋 Copiar
                     </button>
                     <button class="clear-day" onclick="Todos.clearSpecificDay(${i})" title="Limpar todas as tarefas deste dia">
@@ -1334,16 +1586,41 @@
           container.innerHTML = html;
         },
 
-        copyDayToDay(day) {
-          document.getElementById("todo-source-day").value = day;
-          this.copyDayToToday();
-        },
-
         clearSpecificDay(day) {
-          document.getElementById("todo-source-day").value = day;
+          document.getElementById("todo-clear-day").value = day;
           this.clearDay();
         },
+
+        // Atualiza informações do modal quando os selects mudam
+        setupCopyModalEvents() {
+          document
+            .getElementById("copy-source-day")
+            .addEventListener("change", () => {
+              this.updateCopyInfo();
+            });
+          document
+            .getElementById("copy-target-day")
+            .addEventListener("change", () => {
+              this.updateCopyInfo();
+            });
+        },
       };
+
+      // Inicializa eventos do modal de cópia
+      Todos.setupCopyModalEvents =
+        Todos.setupCopyModalEvents ||
+        function () {
+          document
+            .getElementById("copy-source-day")
+            .addEventListener("change", () => {
+              this.updateCopyInfo();
+            });
+          document
+            .getElementById("copy-target-day")
+            .addEventListener("change", () => {
+              this.updateCopyInfo();
+            });
+        };
 
       // ============================================
       // THEME TOGGLE
@@ -1382,9 +1659,23 @@
       // ============================================
       updateDateDisplay();
       Todos.init();
+      // Configura eventos do modal de cópia após o init
+      setTimeout(() => {
+        document
+          .getElementById("copy-source-day")
+          .addEventListener("change", () => {
+            Todos.updateCopyInfo();
+          });
+        document
+          .getElementById("copy-target-day")
+          .addEventListener("change", () => {
+            Todos.updateCopyInfo();
+          });
+      }, 100);
 
       console.log("📋 FinControl - To-Do List carregado!");
       console.log("🔗 Suporte a URLs ativado!");
+      console.log("📋 Copiar tarefas via modal!");
     </script>
   </body>
 </html>
