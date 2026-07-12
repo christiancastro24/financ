@@ -569,6 +569,23 @@
         color: var(--text-secondary);
       }
 
+      .kanban-card .card-text a {
+        color: var(--accent-blue);
+        text-decoration: none;
+        word-break: break-all;
+        transition: var(--transition);
+      }
+
+      .kanban-card .card-text a:hover {
+        color: var(--accent-purple);
+        text-decoration: underline;
+      }
+
+      .kanban-card .card-text .url-icon {
+        display: inline-block;
+        margin-right: 4px;
+      }
+
       .kanban-card .card-actions {
         display: flex;
         gap: 4px;
@@ -889,7 +906,7 @@
           <input
             type="text"
             id="todo-input"
-            placeholder="Descreva a tarefa..."
+            placeholder="Descreva a tarefa (URLs são detectadas automaticamente)"
             required
             style="flex: 2"
           />
@@ -981,6 +998,34 @@
       }
 
       // ============================================
+      // DETECTA URL NO TEXTO
+      // ============================================
+      function detectUrls(text) {
+        // Regex para detectar URLs
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const urls = text.match(urlRegex);
+        return urls || [];
+      }
+
+      function formatTextWithLinks(text) {
+        // Regex para substituir URLs por links clicáveis
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, function (url) {
+          // Remove http:// ou https:// para exibição mais limpa
+          let displayUrl = url.replace(/^https?:\/\//, "");
+          // Se a URL for muito longa, encurta
+          if (displayUrl.length > 40) {
+            displayUrl = displayUrl.substring(0, 40) + "...";
+          }
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">🔗 ${displayUrl}</a>`;
+        });
+      }
+
+      function hasUrl(text) {
+        return /(https?:\/\/[^\s]+)/g.test(text);
+      }
+
+      // ============================================
       // DATA MANAGER
       // ============================================
       const DataManager = {
@@ -1069,11 +1114,29 @@
             return;
           }
 
-          this.data.push({ id: Date.now(), text, day, done: false });
+          // Detecta se tem URL
+          const urls = detectUrls(text);
+          const hasLink = urls.length > 0;
+
+          this.data.push({
+            id: Date.now(),
+            text: text,
+            day,
+            done: false,
+            hasLink: hasLink,
+            urls: urls,
+          });
           DataManager.setTodos(this.data);
           this.render();
           input.value = "";
-          showToast(`✅ Tarefa "${text}" adicionada!`);
+
+          if (hasLink) {
+            showToast(
+              `✅ Tarefa com link adicionada! (${urls.length} URL${urls.length > 1 ? "s" : ""})`,
+            );
+          } else {
+            showToast(`✅ Tarefa "${text}" adicionada!`);
+          }
         },
 
         toggle(id) {
@@ -1132,6 +1195,8 @@
             text: task.text,
             day: today,
             done: false,
+            hasLink: task.hasLink || false,
+            urls: task.urls || [],
           }));
 
           this.data.push(...newTasks);
@@ -1239,7 +1304,9 @@
                             .map(
                               (todo) => `
                           <div class="kanban-card ${todo.done ? "done" : ""}">
-                            <div class="card-text">${todo.text}</div>
+                            <div class="card-text">
+                              ${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}
+                            </div>
                             <div class="card-actions">
                               <button class="done-btn" onclick="Todos.toggle(${todo.id})">
                                 ${todo.done ? "↩️" : "✅"}
@@ -1317,6 +1384,7 @@
       Todos.init();
 
       console.log("📋 FinControl - To-Do List carregado!");
+      console.log("🔗 Suporte a URLs ativado!");
     </script>
   </body>
 </html>
