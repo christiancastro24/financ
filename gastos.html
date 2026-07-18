@@ -38,6 +38,7 @@
           rgba(15, 15, 26, 0.9)
         );
         --gradient-success: linear-gradient(135deg, #34d399, #059669);
+        --gradient-danger: linear-gradient(135deg, #f87171, #dc2626);
 
         --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
         --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.7);
@@ -168,7 +169,6 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         padding: 4px 8px;
-        cursor: pointer;
       }
 
       .profile-selector .profile-avatar {
@@ -221,11 +221,12 @@
         color: var(--text-primary);
       }
 
-      .profile-selector .profile-salary {
+      .profile-selector .profile-income {
         font-size: 11px;
-        color: var(--text-muted);
+        color: var(--accent-green);
         padding: 0 8px;
         border-left: 1px solid var(--border-color);
+        font-weight: 600;
       }
 
       .top-header .header-right .theme-toggle {
@@ -449,6 +450,14 @@
         margin-top: 4px;
       }
 
+      .card .card-value.positive {
+        color: var(--accent-green);
+      }
+
+      .card .card-value.negative {
+        color: var(--accent-red);
+      }
+
       .card .card-change {
         font-size: 12px;
         margin-top: 8px;
@@ -481,6 +490,10 @@
       .card.accent-amber .card-icon {
         background: rgba(251, 191, 36, 0.1);
         color: var(--accent-amber);
+      }
+      .card.accent-red .card-icon {
+        background: rgba(248, 113, 113, 0.1);
+        color: var(--accent-red);
       }
 
       /* ============================================
@@ -636,6 +649,16 @@
         box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
       }
 
+      .btn-success {
+        background: var(--gradient-success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(52, 211, 153, 0.3);
+      }
+
       .btn-danger {
         background: var(--accent-red);
         color: white;
@@ -682,6 +705,17 @@
 
       .btn-edit:hover {
         background: rgba(251, 191, 36, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .btn-income {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--accent-green);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+      }
+
+      .btn-income:hover {
+        background: rgba(52, 211, 153, 0.25);
         transform: translateY(-2px);
       }
 
@@ -777,6 +811,16 @@
         color: var(--accent-amber);
       }
 
+      .badge-status.entrada {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--accent-green);
+      }
+
+      .badge-status.saida {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--accent-red);
+      }
+
       /* ============================================
                    MODAL
                    ============================================ */
@@ -813,7 +857,7 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 32px;
-        max-width: 480px;
+        max-width: 520px;
         width: 90%;
         box-shadow: var(--shadow-hover);
         animation: slideUp 0.3s ease;
@@ -855,6 +899,131 @@
       }
 
       /* ============================================
+                   MODAL DE GERENCIAR PERFIS
+                   ============================================ */
+      .modal-wide {
+        max-width: 700px;
+      }
+
+      .income-item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        margin-bottom: 6px;
+      }
+
+      .income-item .income-name {
+        flex: 2;
+        font-size: 13px;
+        color: var(--text-primary);
+      }
+
+      .income-item .income-value {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-align: right;
+      }
+
+      .income-item .income-type {
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+      }
+
+      .income-item .income-type.type-entrada {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--accent-green);
+      }
+
+      .income-item .income-type.type-saida {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--accent-red);
+      }
+
+      .income-item .income-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .income-item .income-actions button {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: var(--transition);
+        font-size: 14px;
+      }
+
+      .income-item .income-actions button:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .income-item .income-actions button.delete-income:hover {
+        color: var(--accent-red);
+      }
+
+      .add-income-form {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+
+      .add-income-form input,
+      .add-income-form select {
+        padding: 8px 12px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 13px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .add-income-form input:focus,
+      .add-income-form select:focus {
+        border-color: var(--accent-blue);
+      }
+
+      .add-income-form input {
+        flex: 2;
+        min-width: 100px;
+      }
+
+      .add-income-form select {
+        flex: 1;
+        min-width: 80px;
+      }
+
+      .add-income-form button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        background: var(--gradient-primary);
+        color: white;
+      }
+
+      .add-income-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+      }
+
+      /* ============================================
                    TOAST
                    ============================================ */
       .toast-container {
@@ -892,6 +1061,9 @@
       .toast.warning {
         border-left: 4px solid var(--accent-amber);
       }
+      .toast.info {
+        border-left: 4px solid var(--accent-blue);
+      }
 
       @keyframes slideInRight {
         from {
@@ -922,8 +1094,11 @@
           min-width: 60px;
           font-size: 12px;
         }
-        .profile-selector .profile-salary {
+        .profile-selector .profile-income {
           display: none;
+        }
+        .modal-wide {
+          max-width: 95%;
         }
       }
 
@@ -1028,6 +1203,27 @@
           padding: 20px;
           width: 95%;
         }
+
+        .income-item {
+          flex-wrap: wrap;
+        }
+
+        .income-item .income-name {
+          flex: 1 1 100%;
+        }
+
+        .income-item .income-value {
+          flex: 1;
+        }
+
+        .add-income-form {
+          flex-direction: column;
+        }
+
+        .add-income-form input,
+        .add-income-form select {
+          width: 100%;
+        }
       }
 
       @media (max-width: 480px) {
@@ -1081,8 +1277,8 @@
             <option value="personal">👤 Eu</option>
             <option value="aunt">👩 Tia</option>
           </select>
-          <span class="profile-salary" id="profile-salary-display"
-            >R$ 6.400</span
+          <span class="profile-income" id="profile-income-display"
+            >💰 R$ 0</span
           >
         </div>
 
@@ -1143,7 +1339,7 @@
     </aside>
 
     <!-- ============================================
-    MODAL DE EDIÇÃO
+    MODAL DE EDIÇÃO DE GASTO
     ============================================ -->
     <div class="modal-overlay" id="edit-modal">
       <div class="modal">
@@ -1194,31 +1390,63 @@
     </div>
 
     <!-- ============================================
+    MODAL DE GERENCIAR PERFIS (COM ENTRADAS/SAÍDAS)
+    ============================================ -->
+    <div class="modal-overlay" id="profile-modal">
+      <div class="modal modal-wide">
+        <h2>👤 Gerenciar Perfis</h2>
+        <p
+          style="
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+          "
+        >
+          Gerencie os perfis e suas entradas e saídas (salários, rendas extras,
+          etc.)
+        </p>
+        <form id="profile-form">
+          <div class="form-group" id="profiles-list">
+            <!-- Gerado via JS -->
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="cancel-profile">
+              Fechar
+            </button>
+            <button type="submit" class="btn btn-primary">💾 Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================
     MAIN - CONTEÚDO PRINCIPAL
     ============================================ -->
     <main>
       <!-- CARDS -->
       <div class="card-grid">
-        <div class="card accent-cyan">
+        <div class="card accent-green">
           <div class="card-header">
             <div class="card-icon">💰</div>
           </div>
-          <div class="card-label">Salário</div>
-          <div class="card-value" id="monthly-salary">R$ 6.400,00</div>
+          <div class="card-label">Total de Entradas</div>
+          <div class="card-value positive" id="total-income">R$ 0,00</div>
         </div>
-        <div class="card">
+        <div class="card accent-red">
           <div class="card-header">
             <div class="card-icon">💳</div>
           </div>
           <div class="card-label">Total de Gastos</div>
-          <div class="card-value" id="expense-total-month">R$ 0,00</div>
+          <div class="card-value negative" id="expense-total-month">
+            R$ 0,00
+          </div>
         </div>
-        <div class="card accent-green">
+        <div class="card accent-cyan">
           <div class="card-header">
             <div class="card-icon">✅</div>
           </div>
-          <div class="card-label">Saldo Restante</div>
-          <div class="card-value" id="expense-remaining">R$ 6.400,00</div>
+          <div class="card-label">Saldo do Mês</div>
+          <div class="card-value" id="expense-remaining">R$ 0,00</div>
         </div>
         <div class="card accent-amber">
           <div class="card-header">
@@ -1390,15 +1618,16 @@
         setExpenses(profile, data) {
           this.set(`expenses_${profile}`, data);
         },
+        getIncomes(profile = "personal") {
+          return this.get(`incomes_${profile}`, []);
+        },
+        setIncomes(profile, data) {
+          this.set(`incomes_${profile}`, data);
+        },
         getProfiles() {
           return this.get("profiles", {
-            personal: {
-              name: "Eu",
-              salary: 6400,
-              emoji: "👤",
-              color: "personal",
-            },
-            aunt: { name: "Tia", salary: 4800, emoji: "👩", color: "aunt" },
+            personal: { name: "Eu", emoji: "👤", color: "personal" },
+            aunt: { name: "Tia", emoji: "👩", color: "aunt" },
           });
         },
         setProfiles(data) {
@@ -1419,7 +1648,7 @@
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        const icons = { success: "✅", error: "❌", warning: "⚠️" };
+        const icons = { success: "✅", error: "❌", warning: "⚠️", info: "ℹ️" };
         toast.innerHTML = `<span>${icons[type] || "📌"}</span> ${message}`;
         container.appendChild(toast);
         setTimeout(() => {
@@ -1430,10 +1659,11 @@
       }
 
       // ============================================
-      // EXPENSES MODULE - COM MIGRAÇÃO AUTOMÁTICA
+      // EXPENSES MODULE - COM ENTRADAS/SAÍDAS
       // ============================================
       const Expenses = {
         data: [],
+        incomes: [],
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
         editingId: null,
@@ -1441,14 +1671,13 @@
         profiles: {},
 
         init() {
-          // ============================================
-          // PASSO 1: MIGRAÇÃO AUTOMÁTICA DOS DADOS ANTIGOS
-          // ============================================
+          // Migração dos dados antigos
           this.migrateOldData();
 
           this.profiles = DataManager.getProfiles();
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getExpenses(this.activeProfile);
+          this.incomes = DataManager.getIncomes(this.activeProfile);
           this.render();
           this.setupEvents();
           this.populateCopyMonths();
@@ -1460,16 +1689,13 @@
         // ============================================
         migrateOldData() {
           try {
-            // Verifica se existem dados antigos na chave 'expenses'
+            // Migra gastos antigos
             const oldData = localStorage.getItem("expenses");
             const personalData = localStorage.getItem("expenses_personal");
 
             if (oldData) {
               const parsedOld = JSON.parse(oldData);
-
-              // Se tem dados antigos E o perfil 'personal' está vazio
               if (parsedOld && parsedOld.length > 0) {
-                // Verifica se 'expenses_personal' existe e tem dados
                 let hasPersonalData = false;
                 if (personalData) {
                   const parsedPersonal = JSON.parse(personalData);
@@ -1477,40 +1703,60 @@
                     hasPersonalData = true;
                   }
                 }
-
                 if (!hasPersonalData) {
-                  // Copia os dados antigos para 'expenses_personal'
                   localStorage.setItem("expenses_personal", oldData);
                   console.log(
                     `✅ Migrados ${parsedOld.length} gastos para o perfil "Eu"!`,
                   );
-
-                  // Mostra um toast informativo
                   setTimeout(() => {
                     showToast(
                       `📦 ${parsedOld.length} gastos migrados para seu perfil!`,
                       "success",
                     );
                   }, 500);
-                } else {
-                  console.log(
-                    `ℹ️ Perfil "Eu" já tem ${JSON.parse(personalData).length} gastos. Nada foi migrado.`,
-                  );
                 }
               }
             }
 
-            // Verifica se precisa criar o perfil "Tia" vazio
-            const auntData = localStorage.getItem("expenses_aunt");
-            if (!auntData) {
-              localStorage.setItem("expenses_aunt", "[]");
+            // Cria perfis vazios se não existirem
+            ["expenses_aunt", "expenses_guest"].forEach((key) => {
+              if (!localStorage.getItem(key)) {
+                localStorage.setItem(key, "[]");
+              }
+            });
+
+            // Migra dados de entrada (salário antigo)
+            const oldSalary = localStorage.getItem("monthly_salary");
+            const personalIncomes = localStorage.getItem("incomes_personal");
+
+            if (oldSalary && !personalIncomes) {
+              const salary = parseFloat(oldSalary);
+              if (!isNaN(salary) && salary > 0) {
+                const defaultIncome = [
+                  {
+                    id: Date.now(),
+                    name: "Salário",
+                    value: salary,
+                    type: "entrada",
+                    createdAt: new Date().toISOString(),
+                  },
+                ];
+                localStorage.setItem(
+                  "incomes_personal",
+                  JSON.stringify(defaultIncome),
+                );
+                console.log(
+                  `✅ Migrado salário de ${formatBRL(salary)} para o perfil "Eu"!`,
+                );
+              }
             }
 
-            // Verifica se precisa criar o perfil "Convidado" vazio
-            const guestData = localStorage.getItem("expenses_guest");
-            if (!guestData) {
-              localStorage.setItem("expenses_guest", "[]");
-            }
+            // Cria incomes vazios para outros perfis
+            ["incomes_aunt", "incomes_guest"].forEach((key) => {
+              if (!localStorage.getItem(key)) {
+                localStorage.setItem(key, "[]");
+              }
+            });
           } catch (e) {
             console.error("❌ Erro na migração:", e);
           }
@@ -1594,12 +1840,27 @@
               this.switchProfile(e.target.value);
             });
 
-          // Click no avatar para abrir modal de gerenciar perfis
+          // Avatar abre modal de gerenciar perfis
           document
             .getElementById("profile-avatar")
             .addEventListener("click", () => {
-              // Por enquanto só mostra um toast
-              showToast("👤 Clique no nome do perfil para alternar", "info");
+              this.openProfileModal();
+            });
+
+          // Modal de perfis
+          document
+            .getElementById("cancel-profile")
+            .addEventListener("click", () => this.closeProfileModal());
+          document
+            .getElementById("profile-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeProfileModal();
+            });
+          document
+            .getElementById("profile-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.saveProfiles();
             });
         },
 
@@ -1609,10 +1870,12 @@
         switchProfile(profileId) {
           // Salva os dados do perfil atual
           DataManager.setExpenses(this.activeProfile, this.data);
+          DataManager.setIncomes(this.activeProfile, this.incomes);
 
           this.activeProfile = profileId;
           DataManager.setActiveProfile(profileId);
           this.data = DataManager.getExpenses(profileId);
+          this.incomes = DataManager.getIncomes(profileId);
 
           this.updateProfileUI();
           this.render();
@@ -1636,13 +1899,190 @@
           avatar.textContent = profile.emoji || "👤";
           avatar.className = `profile-avatar ${profile.color || "personal"}`;
 
-          document.getElementById("profile-salary-display").textContent =
-            formatBRL(profile.salary || 0);
-
-          // Atualiza o card de salário
-          document.getElementById("monthly-salary").textContent = formatBRL(
-            profile.salary || 0,
+          // Calcula total de entradas
+          const totalIncome = this.incomes.reduce(
+            (sum, inc) => sum + inc.value,
+            0,
           );
+          document.getElementById("profile-income-display").textContent =
+            `💰 ${formatBRL(totalIncome)}`;
+        },
+
+        // ============================================
+        // MODAL DE GERENCIAR PERFIS
+        // ============================================
+        openProfileModal() {
+          this.renderProfileModal();
+          document.getElementById("profile-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        closeProfileModal() {
+          document.getElementById("profile-modal").classList.remove("active");
+          document.body.style.overflow = "";
+        },
+
+        renderProfileModal() {
+          const container = document.getElementById("profiles-list");
+          let html = "";
+
+          Object.entries(this.profiles).forEach(([id, profile]) => {
+            const colorClass = profile.color || "personal";
+            const profileIncomes = DataManager.getIncomes(id);
+            const totalIncome = profileIncomes.reduce(
+              (sum, inc) => sum + inc.value,
+              0,
+            );
+
+            html += `
+              <div style="padding:16px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border-color);margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                  <span style="font-size:24px;">${profile.emoji || "👤"}</span>
+                  <input 
+                    type="text" 
+                    value="${profile.name}" 
+                    data-profile="${id}" 
+                    data-field="name"
+                    placeholder="Nome"
+                    style="flex:1;padding:6px 12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:14px;"
+                  />
+                  <input 
+                    type="text" 
+                    value="${profile.emoji || "👤"}" 
+                    data-profile="${id}" 
+                    data-field="emoji"
+                    placeholder="Emoji"
+                    maxlength="2"
+                    style="width:50px;padding:6px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:18px;text-align:center;"
+                  />
+                  <span style="font-size:12px;color:var(--text-muted);background:rgba(108,99,255,0.08);padding:2px 10px;border-radius:12px;">
+                    Total: ${formatBRL(totalIncome)}
+                  </span>
+                </div>
+                
+                <div style="margin-top:8px;">
+                  <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">📊 Entradas / Saídas:</div>
+                  <div id="incomes-${id}">
+                    ${profileIncomes.length === 0 ? '<span style="font-size:12px;color:var(--text-muted);">Nenhuma entrada cadastrada</span>' : ""}
+                    ${profileIncomes
+                      .map(
+                        (inc) => `
+                      <div class="income-item">
+                        <span class="income-name">${inc.name}</span>
+                        <span class="income-type type-${inc.type}">${inc.type === "entrada" ? "📈 Entrada" : "📉 Saída"}</span>
+                        <span class="income-value" style="color: ${inc.type === "entrada" ? "var(--accent-green)" : "var(--accent-red)"}">
+                          ${inc.type === "entrada" ? "+" : "-"} ${formatBRL(inc.value)}
+                        </span>
+                        <div class="income-actions">
+                          <button class="delete-income" onclick="Expenses.deleteIncome('${id}', ${inc.id})" title="Remover">✕</button>
+                        </div>
+                      </div>
+                    `,
+                      )
+                      .join("")}
+                  </div>
+                  
+                  <div class="add-income-form">
+                    <input type="text" placeholder="Nome (ex: Salário)" id="income-name-${id}" />
+                    <input type="number" placeholder="Valor" step="0.01" id="income-value-${id}" />
+                    <select id="income-type-${id}">
+                      <option value="entrada">📈 Entrada</option>
+                      <option value="saida">📉 Saída</option>
+                    </select>
+                    <button type="button" onclick="Expenses.addIncome('${id}')">➕</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+        },
+
+        addIncome(profileId) {
+          const nameInput = document.getElementById(`income-name-${profileId}`);
+          const valueInput = document.getElementById(
+            `income-value-${profileId}`,
+          );
+          const typeSelect = document.getElementById(
+            `income-type-${profileId}`,
+          );
+
+          const name = nameInput.value.trim();
+          const value = parseFloat(valueInput.value);
+          const type = typeSelect.value;
+
+          if (!name || !value || value <= 0) {
+            showToast("Preencha nome e valor corretamente!", "warning");
+            return;
+          }
+
+          const incomes = DataManager.getIncomes(profileId);
+          incomes.push({
+            id: Date.now() + Math.random() * 1000,
+            name,
+            value,
+            type,
+            createdAt: new Date().toISOString(),
+          });
+          DataManager.setIncomes(profileId, incomes);
+
+          // Se for o perfil atual, recarrega os dados
+          if (profileId === this.activeProfile) {
+            this.incomes = incomes;
+            this.updateProfileUI();
+            this.render();
+          }
+
+          // Recarrega o modal
+          this.renderProfileModal();
+          showToast(
+            `✅ ${type === "entrada" ? "Entrada" : "Saída"} "${name}" adicionada!`,
+            "success",
+          );
+        },
+
+        deleteIncome(profileId, incomeId) {
+          if (!confirm("Remover esta entrada/saída?")) return;
+
+          const incomes = DataManager.getIncomes(profileId);
+          const filtered = incomes.filter((inc) => inc.id !== incomeId);
+          DataManager.setIncomes(profileId, filtered);
+
+          if (profileId === this.activeProfile) {
+            this.incomes = filtered;
+            this.updateProfileUI();
+            this.render();
+          }
+
+          this.renderProfileModal();
+          showToast("🗑️ Removido!", "warning");
+        },
+
+        saveProfiles() {
+          const inputs = document.querySelectorAll(
+            "#profiles-list input[data-profile]",
+          );
+          const updatedProfiles = { ...this.profiles };
+
+          inputs.forEach((input) => {
+            const id = input.dataset.profile;
+            const field = input.dataset.field;
+            if (id && field) {
+              if (!updatedProfiles[id]) {
+                updatedProfiles[id] = { name: id, emoji: "👤", color: "guest" };
+              }
+              updatedProfiles[id][field] =
+                input.value.trim() || updatedProfiles[id][field];
+            }
+          });
+
+          this.profiles = updatedProfiles;
+          DataManager.setProfiles(updatedProfiles);
+          this.closeProfileModal();
+          this.updateProfileUI();
+          this.render();
+          showToast("✅ Perfis atualizados!", "success");
         },
 
         // ============================================
@@ -1851,22 +2291,30 @@
             .reduce((sum, e) => sum + e.value, 0);
           const pendingMonth = totalMonth - paidMonth;
 
-          const profile = this.profiles[this.activeProfile];
-          const salary = profile ? profile.salary : 6400;
-          const remaining = salary - totalMonth;
+          // Calcula total de entradas (incomes)
+          const totalIncome = this.incomes.reduce(
+            (sum, inc) => sum + inc.value,
+            0,
+          );
+          const remaining = totalIncome - totalMonth;
 
-          document.getElementById("monthly-salary").textContent =
-            formatBRL(salary);
+          // Atualiza cards
+          document.getElementById("total-income").textContent =
+            formatBRL(totalIncome);
           document.getElementById("expense-total-month").textContent =
             formatBRL(totalMonth);
-          document.getElementById("expense-remaining").textContent =
-            formatBRL(remaining);
+
+          const remainingEl = document.getElementById("expense-remaining");
+          remainingEl.textContent = formatBRL(remaining);
+          remainingEl.style.color =
+            remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
+          remainingEl.className = `card-value ${remaining < 0 ? "negative" : "positive"}`;
+
           document.getElementById("expense-pending").textContent =
             formatBRL(pendingMonth);
 
-          const remainingEl = document.getElementById("expense-remaining");
-          remainingEl.style.color =
-            remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
+          // Atualiza perfil com total de entradas
+          this.updateProfileUI();
 
           const tbody = document.getElementById("expense-list");
           if (filtered.length === 0) {
@@ -1971,17 +2419,10 @@
       Expenses.init();
 
       console.log("💳 FinControl - Gastos carregado!");
-      console.log("👤 Sistema de múltiplos perfis ativado!");
+      console.log(
+        "👤 Sistema de múltiplos perfis com entradas/saídas ativado!",
+      );
       console.log("📊 Perfis disponíveis:", Object.keys(Expenses.profiles));
-
-      // Verifica se os dados foram migrados
-      setTimeout(() => {
-        const personal = localStorage.getItem("expenses_personal");
-        if (personal) {
-          const parsed = JSON.parse(personal);
-          console.log(`📦 Perfil "Eu" tem ${parsed.length} gastos`);
-        }
-      }, 1000);
     </script>
   </body>
 </html>
