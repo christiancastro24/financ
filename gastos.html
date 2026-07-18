@@ -168,6 +168,7 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         padding: 4px 8px;
+        cursor: pointer;
       }
 
       .profile-selector .profile-avatar {
@@ -180,6 +181,12 @@
         font-size: 14px;
         font-weight: 600;
         flex-shrink: 0;
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .profile-selector .profile-avatar:hover {
+        transform: scale(1.1);
       }
 
       .profile-selector .profile-avatar.personal {
@@ -206,7 +213,7 @@
         outline: none;
         cursor: pointer;
         font-weight: 500;
-        min-width: 100px;
+        min-width: 80px;
       }
 
       .profile-selector select option {
@@ -912,7 +919,7 @@
           padding: 4px 10px;
         }
         .profile-selector select {
-          min-width: 80px;
+          min-width: 60px;
           font-size: 12px;
         }
         .profile-selector .profile-salary {
@@ -941,7 +948,7 @@
         }
 
         .profile-selector select {
-          min-width: 60px;
+          min-width: 50px;
           font-size: 11px;
           padding: 2px 4px;
         }
@@ -1043,7 +1050,7 @@
         }
 
         .profile-selector select {
-          min-width: 50px;
+          min-width: 40px;
           font-size: 10px;
         }
       }
@@ -1073,7 +1080,6 @@
           <select id="profile-select">
             <option value="personal">👤 Eu</option>
             <option value="aunt">👩 Tia</option>
-            <option value="guest">👥 Convidado</option>
           </select>
           <span class="profile-salary" id="profile-salary-display"
             >R$ 6.400</span
@@ -1180,35 +1186,6 @@
           <div class="modal-actions">
             <button type="button" class="btn btn-outline" id="cancel-edit">
               Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary">💾 Salvar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ============================================
-    MODAL DE GERENCIAR PERFIS
-    ============================================ -->
-    <div class="modal-overlay" id="profile-modal">
-      <div class="modal">
-        <h2>👤 Gerenciar Perfis</h2>
-        <p
-          style="
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 20px;
-          "
-        >
-          Configure os perfis e seus respectivos salários
-        </p>
-        <form id="profile-form">
-          <div class="form-group" id="profiles-list">
-            <!-- Gerado via JS -->
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="btn btn-outline" id="cancel-profile">
-              Fechar
             </button>
             <button type="submit" class="btn btn-primary">💾 Salvar</button>
           </div>
@@ -1422,12 +1399,6 @@
               color: "personal",
             },
             aunt: { name: "Tia", salary: 4800, emoji: "👩", color: "aunt" },
-            guest: {
-              name: "Convidado",
-              salary: 5000,
-              emoji: "👥",
-              color: "guest",
-            },
           });
         },
         setProfiles(data) {
@@ -1459,7 +1430,7 @@
       }
 
       // ============================================
-      // EXPENSES MODULE
+      // EXPENSES MODULE - COM MIGRAÇÃO AUTOMÁTICA
       // ============================================
       const Expenses = {
         data: [],
@@ -1470,6 +1441,11 @@
         profiles: {},
 
         init() {
+          // ============================================
+          // PASSO 1: MIGRAÇÃO AUTOMÁTICA DOS DADOS ANTIGOS
+          // ============================================
+          this.migrateOldData();
+
           this.profiles = DataManager.getProfiles();
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getExpenses(this.activeProfile);
@@ -1477,6 +1453,67 @@
           this.setupEvents();
           this.populateCopyMonths();
           this.updateProfileUI();
+        },
+
+        // ============================================
+        // FUNÇÃO DE MIGRAÇÃO
+        // ============================================
+        migrateOldData() {
+          try {
+            // Verifica se existem dados antigos na chave 'expenses'
+            const oldData = localStorage.getItem("expenses");
+            const personalData = localStorage.getItem("expenses_personal");
+
+            if (oldData) {
+              const parsedOld = JSON.parse(oldData);
+
+              // Se tem dados antigos E o perfil 'personal' está vazio
+              if (parsedOld && parsedOld.length > 0) {
+                // Verifica se 'expenses_personal' existe e tem dados
+                let hasPersonalData = false;
+                if (personalData) {
+                  const parsedPersonal = JSON.parse(personalData);
+                  if (parsedPersonal && parsedPersonal.length > 0) {
+                    hasPersonalData = true;
+                  }
+                }
+
+                if (!hasPersonalData) {
+                  // Copia os dados antigos para 'expenses_personal'
+                  localStorage.setItem("expenses_personal", oldData);
+                  console.log(
+                    `✅ Migrados ${parsedOld.length} gastos para o perfil "Eu"!`,
+                  );
+
+                  // Mostra um toast informativo
+                  setTimeout(() => {
+                    showToast(
+                      `📦 ${parsedOld.length} gastos migrados para seu perfil!`,
+                      "success",
+                    );
+                  }, 500);
+                } else {
+                  console.log(
+                    `ℹ️ Perfil "Eu" já tem ${JSON.parse(personalData).length} gastos. Nada foi migrado.`,
+                  );
+                }
+              }
+            }
+
+            // Verifica se precisa criar o perfil "Tia" vazio
+            const auntData = localStorage.getItem("expenses_aunt");
+            if (!auntData) {
+              localStorage.setItem("expenses_aunt", "[]");
+            }
+
+            // Verifica se precisa criar o perfil "Convidado" vazio
+            const guestData = localStorage.getItem("expenses_guest");
+            if (!guestData) {
+              localStorage.setItem("expenses_guest", "[]");
+            }
+          } catch (e) {
+            console.error("❌ Erro na migração:", e);
+          }
         },
 
         setupEvents() {
@@ -1557,23 +1594,12 @@
               this.switchProfile(e.target.value);
             });
 
-          // Modal de perfis
+          // Click no avatar para abrir modal de gerenciar perfis
           document
             .getElementById("profile-avatar")
-            .addEventListener("click", () => this.openProfileModal());
-          document
-            .getElementById("cancel-profile")
-            .addEventListener("click", () => this.closeProfileModal());
-          document
-            .getElementById("profile-modal")
-            .addEventListener("click", (e) => {
-              if (e.target === e.currentTarget) this.closeProfileModal();
-            });
-          document
-            .getElementById("profile-form")
-            .addEventListener("submit", (e) => {
-              e.preventDefault();
-              this.saveProfiles();
+            .addEventListener("click", () => {
+              // Por enquanto só mostra um toast
+              showToast("👤 Clique no nome do perfil para alternar", "info");
             });
         },
 
@@ -1593,7 +1619,10 @@
           this.populateCopyMonths();
 
           const profile = this.profiles[profileId];
-          showToast(`👤 Mudou para perfil: ${profile.name}`, "success");
+          showToast(
+            `👤 Mudou para perfil: ${profile ? profile.name : profileId}`,
+            "success",
+          );
         },
 
         updateProfileUI() {
@@ -1614,104 +1643,6 @@
           document.getElementById("monthly-salary").textContent = formatBRL(
             profile.salary || 0,
           );
-        },
-
-        openProfileModal() {
-          this.renderProfileModal();
-          document.getElementById("profile-modal").classList.add("active");
-          document.body.style.overflow = "hidden";
-        },
-
-        closeProfileModal() {
-          document.getElementById("profile-modal").classList.remove("active");
-          document.body.style.overflow = "";
-        },
-
-        renderProfileModal() {
-          const container = document.getElementById("profiles-list");
-          let html = "";
-
-          Object.entries(this.profiles).forEach(([id, profile]) => {
-            const colorClass = profile.color || "personal";
-            const colorMap = {
-              personal: "var(--accent-blue)",
-              aunt: "var(--accent-pink)",
-              guest: "var(--accent-green)",
-            };
-            const color = colorMap[colorClass] || "var(--accent-blue)";
-
-            html += `
-              <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border-color);margin-bottom:8px;">
-                <span style="font-size:24px;">${profile.emoji || "👤"}</span>
-                <div style="flex:1;">
-                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);">${profile.name}</div>
-                  <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-                    <input 
-                      type="text" 
-                      value="${profile.name}" 
-                      data-profile="${id}" 
-                      data-field="name"
-                      placeholder="Nome"
-                      style="flex:1;min-width:80px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:12px;"
-                    />
-                    <input 
-                      type="number" 
-                      value="${profile.salary || 0}" 
-                      data-profile="${id}" 
-                      data-field="salary"
-                      placeholder="Salário"
-                      style="flex:1;min-width:80px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:12px;"
-                    />
-                    <input 
-                      type="text" 
-                      value="${profile.emoji || "👤"}" 
-                      data-profile="${id}" 
-                      data-field="emoji"
-                      placeholder="Emoji"
-                      maxlength="2"
-                      style="width:50px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:14px;text-align:center;"
-                    />
-                  </div>
-                </div>
-                <span style="font-size:20px;opacity:0.3;">${id === this.activeProfile ? "⭐" : ""}</span>
-              </div>
-            `;
-          });
-
-          container.innerHTML = html;
-        },
-
-        saveProfiles() {
-          const inputs = document.querySelectorAll("#profiles-list input");
-          const updatedProfiles = { ...this.profiles };
-
-          inputs.forEach((input) => {
-            const id = input.dataset.profile;
-            const field = input.dataset.field;
-            if (id && field) {
-              if (!updatedProfiles[id]) {
-                updatedProfiles[id] = {
-                  name: id,
-                  salary: 0,
-                  emoji: "👤",
-                  color: "guest",
-                };
-              }
-              if (field === "salary") {
-                updatedProfiles[id][field] = parseFloat(input.value) || 0;
-              } else {
-                updatedProfiles[id][field] =
-                  input.value.trim() || updatedProfiles[id][field];
-              }
-            }
-          });
-
-          this.profiles = updatedProfiles;
-          DataManager.setProfiles(updatedProfiles);
-          this.closeProfileModal();
-          this.updateProfileUI();
-          this.render();
-          showToast("✅ Perfis atualizados!", "success");
         },
 
         // ============================================
@@ -2042,6 +1973,15 @@
       console.log("💳 FinControl - Gastos carregado!");
       console.log("👤 Sistema de múltiplos perfis ativado!");
       console.log("📊 Perfis disponíveis:", Object.keys(Expenses.profiles));
+
+      // Verifica se os dados foram migrados
+      setTimeout(() => {
+        const personal = localStorage.getItem("expenses_personal");
+        if (personal) {
+          const parsed = JSON.parse(personal);
+          console.log(`📦 Perfil "Eu" tem ${parsed.length} gastos`);
+        }
+      }, 1000);
     </script>
   </body>
 </html>
