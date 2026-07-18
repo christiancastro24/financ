@@ -28,6 +28,8 @@
         --accent-red: #f87171;
         --accent-pink: #ec4899;
         --accent-cyan: #22d3ee;
+        --accent-orange: #fb923c;
+        --accent-rose: #f43f5e;
 
         --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
         --gradient-card: linear-gradient(
@@ -155,6 +157,68 @@
         color: var(--accent-blue);
         background: rgba(108, 99, 255, 0.12);
         border-color: rgba(108, 99, 255, 0.2);
+      }
+
+      /* SELETOR DE PERFIL */
+      .profile-selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 4px 8px;
+      }
+
+      .profile-selector .profile-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .profile-selector .profile-avatar.personal {
+        background: var(--accent-blue);
+        color: white;
+      }
+
+      .profile-selector .profile-avatar.aunt {
+        background: var(--accent-pink);
+        color: white;
+      }
+
+      .profile-selector .profile-avatar.guest {
+        background: var(--accent-green);
+        color: white;
+      }
+
+      .profile-selector select {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 13px;
+        padding: 4px 8px;
+        outline: none;
+        cursor: pointer;
+        font-weight: 500;
+        min-width: 100px;
+      }
+
+      .profile-selector select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .profile-selector .profile-salary {
+        font-size: 11px;
+        color: var(--text-muted);
+        padding: 0 8px;
+        border-left: 1px solid var(--border-color);
       }
 
       .top-header .header-right .theme-toggle {
@@ -847,6 +911,13 @@
           font-size: 11px;
           padding: 4px 10px;
         }
+        .profile-selector select {
+          min-width: 80px;
+          font-size: 12px;
+        }
+        .profile-selector .profile-salary {
+          display: none;
+        }
       }
 
       @media (max-width: 768px) {
@@ -863,6 +934,22 @@
 
         .top-header .header-right .nav-links {
           display: none;
+        }
+
+        .profile-selector {
+          padding: 2px 4px;
+        }
+
+        .profile-selector select {
+          min-width: 60px;
+          font-size: 11px;
+          padding: 2px 4px;
+        }
+
+        .profile-selector .profile-avatar {
+          width: 22px;
+          height: 22px;
+          font-size: 11px;
         }
 
         main {
@@ -954,6 +1041,11 @@
         .card .card-value {
           font-size: 22px;
         }
+
+        .profile-selector select {
+          min-width: 50px;
+          font-size: 10px;
+        }
       }
     </style>
   </head>
@@ -974,6 +1066,20 @@
           <a href="investimentos.html">📈 Investimentos</a>
           <a href="gastos.html" class="active">💳 Gastos</a>
         </div>
+
+        <!-- SELETOR DE PERFIL -->
+        <div class="profile-selector" id="profile-selector">
+          <div class="profile-avatar personal" id="profile-avatar">👤</div>
+          <select id="profile-select">
+            <option value="personal">👤 Eu</option>
+            <option value="aunt">👩 Tia</option>
+            <option value="guest">👥 Convidado</option>
+          </select>
+          <span class="profile-salary" id="profile-salary-display"
+            >R$ 6.400</span
+          >
+        </div>
+
         <button class="theme-toggle" id="themeToggle" title="Alternar tema">
           🌓
         </button>
@@ -1074,6 +1180,35 @@
           <div class="modal-actions">
             <button type="button" class="btn btn-outline" id="cancel-edit">
               Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">💾 Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================
+    MODAL DE GERENCIAR PERFIS
+    ============================================ -->
+    <div class="modal-overlay" id="profile-modal">
+      <div class="modal">
+        <h2>👤 Gerenciar Perfis</h2>
+        <p
+          style="
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+          "
+        >
+          Configure os perfis e seus respectivos salários
+        </p>
+        <form id="profile-form">
+          <div class="form-group" id="profiles-list">
+            <!-- Gerado via JS -->
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="cancel-profile">
+              Fechar
             </button>
             <button type="submit" class="btn btn-primary">💾 Salvar</button>
           </div>
@@ -1220,8 +1355,6 @@
       // ============================================
       // UTILITY FUNCTIONS
       // ============================================
-      const MONTHLY_SALARY = 6400;
-
       function formatBRL(value) {
         return new Intl.NumberFormat("pt-BR", {
           style: "currency",
@@ -1274,11 +1407,37 @@
         set(key, data) {
           localStorage.setItem(key, JSON.stringify(data));
         },
-        getExpenses() {
-          return this.get("expenses", []);
+        getExpenses(profile = "personal") {
+          return this.get(`expenses_${profile}`, []);
         },
-        setExpenses(data) {
-          this.set("expenses", data);
+        setExpenses(profile, data) {
+          this.set(`expenses_${profile}`, data);
+        },
+        getProfiles() {
+          return this.get("profiles", {
+            personal: {
+              name: "Eu",
+              salary: 6400,
+              emoji: "👤",
+              color: "personal",
+            },
+            aunt: { name: "Tia", salary: 4800, emoji: "👩", color: "aunt" },
+            guest: {
+              name: "Convidado",
+              salary: 5000,
+              emoji: "👥",
+              color: "guest",
+            },
+          });
+        },
+        setProfiles(data) {
+          this.set("profiles", data);
+        },
+        getActiveProfile() {
+          return this.get("activeProfile", "personal");
+        },
+        setActiveProfile(profile) {
+          this.set("activeProfile", profile);
         },
       };
 
@@ -1307,12 +1466,17 @@
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
         editingId: null,
+        activeProfile: "personal",
+        profiles: {},
 
         init() {
-          this.data = DataManager.getExpenses();
+          this.profiles = DataManager.getProfiles();
+          this.activeProfile = DataManager.getActiveProfile();
+          this.data = DataManager.getExpenses(this.activeProfile);
           this.render();
           this.setupEvents();
           this.populateCopyMonths();
+          this.updateProfileUI();
         },
 
         setupEvents() {
@@ -1385,8 +1549,174 @@
               e.preventDefault();
               this.saveEdit();
             });
+
+          // Perfil selector
+          document
+            .getElementById("profile-select")
+            .addEventListener("change", (e) => {
+              this.switchProfile(e.target.value);
+            });
+
+          // Modal de perfis
+          document
+            .getElementById("profile-avatar")
+            .addEventListener("click", () => this.openProfileModal());
+          document
+            .getElementById("cancel-profile")
+            .addEventListener("click", () => this.closeProfileModal());
+          document
+            .getElementById("profile-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeProfileModal();
+            });
+          document
+            .getElementById("profile-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.saveProfiles();
+            });
         },
 
+        // ============================================
+        // PERFIL
+        // ============================================
+        switchProfile(profileId) {
+          // Salva os dados do perfil atual
+          DataManager.setExpenses(this.activeProfile, this.data);
+
+          this.activeProfile = profileId;
+          DataManager.setActiveProfile(profileId);
+          this.data = DataManager.getExpenses(profileId);
+
+          this.updateProfileUI();
+          this.render();
+          this.populateCopyMonths();
+
+          const profile = this.profiles[profileId];
+          showToast(`👤 Mudou para perfil: ${profile.name}`, "success");
+        },
+
+        updateProfileUI() {
+          const profile = this.profiles[this.activeProfile];
+          if (!profile) return;
+
+          const select = document.getElementById("profile-select");
+          select.value = this.activeProfile;
+
+          const avatar = document.getElementById("profile-avatar");
+          avatar.textContent = profile.emoji || "👤";
+          avatar.className = `profile-avatar ${profile.color || "personal"}`;
+
+          document.getElementById("profile-salary-display").textContent =
+            formatBRL(profile.salary || 0);
+
+          // Atualiza o card de salário
+          document.getElementById("monthly-salary").textContent = formatBRL(
+            profile.salary || 0,
+          );
+        },
+
+        openProfileModal() {
+          this.renderProfileModal();
+          document.getElementById("profile-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        closeProfileModal() {
+          document.getElementById("profile-modal").classList.remove("active");
+          document.body.style.overflow = "";
+        },
+
+        renderProfileModal() {
+          const container = document.getElementById("profiles-list");
+          let html = "";
+
+          Object.entries(this.profiles).forEach(([id, profile]) => {
+            const colorClass = profile.color || "personal";
+            const colorMap = {
+              personal: "var(--accent-blue)",
+              aunt: "var(--accent-pink)",
+              guest: "var(--accent-green)",
+            };
+            const color = colorMap[colorClass] || "var(--accent-blue)";
+
+            html += `
+              <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border-color);margin-bottom:8px;">
+                <span style="font-size:24px;">${profile.emoji || "👤"}</span>
+                <div style="flex:1;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);">${profile.name}</div>
+                  <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                    <input 
+                      type="text" 
+                      value="${profile.name}" 
+                      data-profile="${id}" 
+                      data-field="name"
+                      placeholder="Nome"
+                      style="flex:1;min-width:80px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:12px;"
+                    />
+                    <input 
+                      type="number" 
+                      value="${profile.salary || 0}" 
+                      data-profile="${id}" 
+                      data-field="salary"
+                      placeholder="Salário"
+                      style="flex:1;min-width:80px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:12px;"
+                    />
+                    <input 
+                      type="text" 
+                      value="${profile.emoji || "👤"}" 
+                      data-profile="${id}" 
+                      data-field="emoji"
+                      placeholder="Emoji"
+                      maxlength="2"
+                      style="width:50px;padding:4px 8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:14px;text-align:center;"
+                    />
+                  </div>
+                </div>
+                <span style="font-size:20px;opacity:0.3;">${id === this.activeProfile ? "⭐" : ""}</span>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+        },
+
+        saveProfiles() {
+          const inputs = document.querySelectorAll("#profiles-list input");
+          const updatedProfiles = { ...this.profiles };
+
+          inputs.forEach((input) => {
+            const id = input.dataset.profile;
+            const field = input.dataset.field;
+            if (id && field) {
+              if (!updatedProfiles[id]) {
+                updatedProfiles[id] = {
+                  name: id,
+                  salary: 0,
+                  emoji: "👤",
+                  color: "guest",
+                };
+              }
+              if (field === "salary") {
+                updatedProfiles[id][field] = parseFloat(input.value) || 0;
+              } else {
+                updatedProfiles[id][field] =
+                  input.value.trim() || updatedProfiles[id][field];
+              }
+            }
+          });
+
+          this.profiles = updatedProfiles;
+          DataManager.setProfiles(updatedProfiles);
+          this.closeProfileModal();
+          this.updateProfileUI();
+          this.render();
+          showToast("✅ Perfis atualizados!", "success");
+        },
+
+        // ============================================
+        // GASTOS
+        // ============================================
         populateCopyMonths() {
           const select = document.getElementById("copy-from-month");
           const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
@@ -1460,7 +1790,7 @@
           }));
 
           this.data.push(...newExpenses);
-          DataManager.setExpenses(this.data);
+          DataManager.setExpenses(this.activeProfile, this.data);
 
           this.populateCopyMonths();
           this.render();
@@ -1489,7 +1819,7 @@
             date,
             paid: false,
           });
-          DataManager.setExpenses(this.data);
+          DataManager.setExpenses(this.activeProfile, this.data);
           this.populateCopyMonths();
           this.render();
           document.getElementById("expense-form").reset();
@@ -1500,7 +1830,7 @@
           const expense = this.data.find((e) => e.id === id);
           if (expense) {
             expense.paid = !expense.paid;
-            DataManager.setExpenses(this.data);
+            DataManager.setExpenses(this.activeProfile, this.data);
             this.render();
           }
         },
@@ -1508,7 +1838,7 @@
         delete(id) {
           if (!confirm("Excluir este gasto?")) return;
           this.data = this.data.filter((e) => e.id !== id);
-          DataManager.setExpenses(this.data);
+          DataManager.setExpenses(this.activeProfile, this.data);
           this.populateCopyMonths();
           this.render();
           showToast("Gasto removido!", "warning");
@@ -1550,7 +1880,7 @@
             expense.value = value;
             expense.date = date;
 
-            DataManager.setExpenses(this.data);
+            DataManager.setExpenses(this.activeProfile, this.data);
             this.closeModal();
             this.populateCopyMonths();
             this.render();
@@ -1589,10 +1919,13 @@
             .filter((e) => e.paid)
             .reduce((sum, e) => sum + e.value, 0);
           const pendingMonth = totalMonth - paidMonth;
-          const remaining = MONTHLY_SALARY - totalMonth;
+
+          const profile = this.profiles[this.activeProfile];
+          const salary = profile ? profile.salary : 6400;
+          const remaining = salary - totalMonth;
 
           document.getElementById("monthly-salary").textContent =
-            formatBRL(MONTHLY_SALARY);
+            formatBRL(salary);
           document.getElementById("expense-total-month").textContent =
             formatBRL(totalMonth);
           document.getElementById("expense-remaining").textContent =
@@ -1661,7 +1994,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `gastos_${currentMonthStr}.csv`;
+          a.download = `gastos_${this.activeProfile}_${currentMonthStr}.csv`;
           a.click();
           URL.revokeObjectURL(url);
           showToast("CSV exportado!");
@@ -1707,7 +2040,8 @@
       Expenses.init();
 
       console.log("💳 FinControl - Gastos carregado!");
-      console.log("💰 Salário: R$ 6.400,00");
+      console.log("👤 Sistema de múltiplos perfis ativado!");
+      console.log("📊 Perfis disponíveis:", Object.keys(Expenses.profiles));
     </script>
   </body>
 </html>
