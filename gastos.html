@@ -962,140 +962,6 @@
         max-width: 700px;
       }
 
-      .income-item {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        padding: 8px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        margin-bottom: 6px;
-      }
-
-      .income-item .income-name {
-        flex: 2;
-        font-size: 13px;
-        color: var(--text-primary);
-      }
-
-      .income-item .income-value {
-        flex: 1;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--accent-green);
-        text-align: right;
-      }
-
-      .income-item .income-type {
-        font-size: 11px;
-        padding: 2px 10px;
-        border-radius: 12px;
-        font-weight: 600;
-      }
-
-      .income-item .income-type.type-entrada {
-        background: rgba(52, 211, 153, 0.15);
-        color: var(--accent-green);
-      }
-
-      .income-item .income-type.type-saida {
-        background: rgba(248, 113, 113, 0.15);
-        color: var(--accent-red);
-      }
-
-      .income-item .income-actions {
-        display: flex;
-        gap: 4px;
-      }
-
-      .income-item .income-actions button {
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 2px 6px;
-        border-radius: 4px;
-        transition: var(--transition);
-        font-size: 14px;
-      }
-
-      .income-item .income-actions button:hover {
-        color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .income-item .income-actions button.delete-income:hover {
-        color: var(--accent-red);
-      }
-
-      .add-income-form {
-        display: flex;
-        gap: 8px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-      }
-
-      .add-income-form input,
-      .add-income-form select {
-        padding: 8px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-size: 13px;
-        outline: none;
-        transition: var(--transition);
-      }
-
-      .add-income-form input:focus,
-      .add-income-form select:focus {
-        border-color: var(--accent-blue);
-      }
-
-      .add-income-form input {
-        flex: 2;
-        min-width: 100px;
-      }
-
-      .add-income-form select {
-        flex: 1;
-        min-width: 80px;
-      }
-
-      .add-income-form button {
-        padding: 8px 16px;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        background: var(--gradient-primary);
-        color: white;
-      }
-
-      .add-income-form button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
-      }
-
-      .copy-incomes-btn {
-        font-size: 11px;
-        padding: 4px 12px;
-        background: rgba(108, 99, 255, 0.12);
-        color: var(--accent-blue);
-        border: 1px solid rgba(108, 99, 255, 0.2);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: var(--transition);
-      }
-
-      .copy-incomes-btn:hover {
-        background: rgba(108, 99, 255, 0.25);
-        transform: translateY(-2px);
-      }
-
       /* ============================================
                    TOAST
                    ============================================ */
@@ -1284,27 +1150,6 @@
           padding: 20px;
           width: 95%;
         }
-
-        .income-item {
-          flex-wrap: wrap;
-        }
-
-        .income-item .income-name {
-          flex: 1 1 100%;
-        }
-
-        .income-item .income-value {
-          flex: 1;
-        }
-
-        .add-income-form {
-          flex-direction: column;
-        }
-
-        .add-income-form input,
-        .add-income-form select {
-          width: 100%;
-        }
       }
 
       @media (max-width: 480px) {
@@ -1473,7 +1318,7 @@
     ============================================ -->
     <div class="modal-overlay" id="edit-income-modal">
       <div class="modal">
-        <h2>✏️ Editar Entrada</h2>
+        <h2>✏️ Editar Entrada/Saída</h2>
         <form id="edit-income-form">
           <div class="form-group">
             <label for="edit-income-name">Nome</label>
@@ -1899,7 +1744,7 @@
             .getElementById("income-filter-type")
             .addEventListener("change", () => this.render());
 
-          // Navegação de meses
+          // Navegação de meses - CORRIGIDA
           document
             .getElementById("prev-month")
             .addEventListener("click", () => {
@@ -1908,8 +1753,10 @@
                 this.currentMonth = 11;
                 this.currentYear--;
               }
+              console.log('Mês anterior:', this.currentMonth, this.currentYear);
               this.render();
               this.populateCopyMonths();
+              this.updateProfileUI();
             });
 
           document
@@ -1920,8 +1767,10 @@
                 this.currentMonth = 0;
                 this.currentYear++;
               }
+              console.log('Próximo mês:', this.currentMonth, this.currentYear);
               this.render();
               this.populateCopyMonths();
+              this.updateProfileUI();
             });
 
           document
@@ -1930,8 +1779,10 @@
               const today = new Date();
               this.currentMonth = today.getMonth();
               this.currentYear = today.getFullYear();
+              console.log('Voltou para hoje:', this.currentMonth, this.currentYear);
               this.render();
               this.populateCopyMonths();
+              this.updateProfileUI();
             });
 
           // Exportar
@@ -2618,6 +2469,7 @@
       console.log("💳 FinControl - Gastos carregado!");
       console.log("👤 Sistema de múltiplos perfis com entradas/saídas mensais ativado!");
       console.log("📊 Perfis disponíveis:", Object.keys(Expenses.profiles));
+      console.log("📅 Mês atual:", Expenses.currentMonth + 1, Expenses.currentYear);
     </script>
   </body>
 </html>
