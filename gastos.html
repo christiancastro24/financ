@@ -729,10 +729,27 @@
         border-radius: var(--radius);
         overflow: hidden;
         box-shadow: var(--shadow-card);
+        margin-bottom: 24px;
+      }
+
+      .table-wrapper:last-child {
+        margin-bottom: 0;
+      }
+
+      .table-wrapper .table-title {
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: rgba(0, 0, 0, 0.15);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .table-toolbar {
-        padding: 16px 20px;
+        padding: 12px 20px;
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
@@ -762,6 +779,10 @@
         color: var(--text-muted);
       }
 
+      .table-toolbar .btn-sm {
+        margin-left: auto;
+      }
+
       table {
         width: 100%;
         border-collapse: collapse;
@@ -773,7 +794,7 @@
 
       th {
         text-align: left;
-        padding: 14px 20px;
+        padding: 12px 20px;
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -783,7 +804,7 @@
       }
 
       td {
-        padding: 14px 20px;
+        padding: 12px 20px;
         font-size: 14px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         color: var(--text-primary);
@@ -861,6 +882,8 @@
         width: 90%;
         box-shadow: var(--shadow-hover);
         animation: slideUp 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
       }
 
       @keyframes slideUp {
@@ -875,20 +898,54 @@
       }
 
       .modal h2 {
-        margin-bottom: 24px;
+        margin-bottom: 8px;
         font-size: 22px;
         background: var(--gradient-primary);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
 
+      .modal .modal-subtitle {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
       .modal .form-group {
         margin-bottom: 16px;
+      }
+
+      .modal .form-group label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+        font-weight: 500;
       }
 
       .modal .form-group input,
       .modal .form-group select {
         width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 14px;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      .modal .form-group input:focus,
+      .modal .form-group select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+      }
+
+      .modal .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
       }
 
       .modal-actions {
@@ -1023,6 +1080,22 @@
         box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
       }
 
+      .copy-incomes-btn {
+        font-size: 11px;
+        padding: 4px 12px;
+        background: rgba(108, 99, 255, 0.12);
+        color: var(--accent-blue);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .copy-incomes-btn:hover {
+        background: rgba(108, 99, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
       /* ============================================
                    TOAST
                    ============================================ */
@@ -1100,6 +1173,9 @@
         .modal-wide {
           max-width: 95%;
         }
+        .modal .form-row {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 768px) {
@@ -1159,6 +1235,11 @@
 
         .table-toolbar input,
         .table-toolbar select {
+          width: 100%;
+        }
+
+        .table-toolbar .btn-sm {
+          margin-left: 0;
           width: 100%;
         }
 
@@ -1277,9 +1358,7 @@
             <option value="personal">👤 Eu</option>
             <option value="aunt">👩 Tia</option>
           </select>
-          <span class="profile-income" id="profile-income-display"
-            >💰 R$ 0</span
-          >
+          <span class="profile-income" id="profile-income-display">💰 R$ 0</span>
         </div>
 
         <button class="theme-toggle" id="themeToggle" title="Alternar tema">
@@ -1390,20 +1469,62 @@
     </div>
 
     <!-- ============================================
-    MODAL DE GERENCIAR PERFIS (COM ENTRADAS/SAÍDAS)
+    MODAL DE EDIÇÃO DE ENTRADA
+    ============================================ -->
+    <div class="modal-overlay" id="edit-income-modal">
+      <div class="modal">
+        <h2>✏️ Editar Entrada</h2>
+        <form id="edit-income-form">
+          <div class="form-group">
+            <label for="edit-income-name">Nome</label>
+            <input
+              type="text"
+              id="edit-income-name"
+              placeholder="Ex: Salário, Renda Extra..."
+              required
+              style="width: 100%"
+            />
+          </div>
+          <div class="form-group">
+            <label for="edit-income-value">Valor (R$)</label>
+            <input
+              type="number"
+              id="edit-income-value"
+              placeholder="0,00"
+              step="0.01"
+              required
+              style="width: 100%"
+            />
+          </div>
+          <div class="form-group">
+            <label for="edit-income-type">Tipo</label>
+            <select id="edit-income-type" required style="width: 100%">
+              <option value="entrada">📈 Entrada</option>
+              <option value="saida">📉 Saída</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-income-date">Data</label>
+            <input type="date" id="edit-income-date" required style="width: 100%" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="cancel-edit-income">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">💾 Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================
+    MODAL DE GERENCIAR PERFIS
     ============================================ -->
     <div class="modal-overlay" id="profile-modal">
       <div class="modal modal-wide">
         <h2>👤 Gerenciar Perfis</h2>
-        <p
-          style="
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 20px;
-          "
-        >
-          Gerencie os perfis e suas entradas e saídas (salários, rendas extras,
-          etc.)
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+          Gerencie os perfis e suas entradas/saídas mensais
         </p>
         <form id="profile-form">
           <div class="form-group" id="profiles-list">
@@ -1437,9 +1558,7 @@
             <div class="card-icon">💳</div>
           </div>
           <div class="card-label">Total de Gastos</div>
-          <div class="card-value negative" id="expense-total-month">
-            R$ 0,00
-          </div>
+          <div class="card-value negative" id="expense-total-month">R$ 0,00</div>
         </div>
         <div class="card accent-cyan">
           <div class="card-header">
@@ -1478,40 +1597,41 @@
         </div>
       </div>
 
-      <!-- FORMULÁRIO -->
-      <div class="form-card">
-        <div class="form-title">➕ Novo Gasto</div>
-        <form id="expense-form" class="form-group">
+      <!-- TABELA DE ENTRADAS -->
+      <div class="table-wrapper">
+        <div class="table-title">📈 Entradas e Saídas do Mês</div>
+        <div class="table-toolbar">
           <input
             type="text"
-            id="expense-name"
-            placeholder="Descrição"
-            required
+            id="income-search"
+            placeholder="🔍 Filtrar entradas..."
           />
-          <select id="expense-category" required>
-            <option value="">Categoria</option>
-            <option value="Moradia">Moradia</option>
-            <option value="Alimentação">Alimentação</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Saúde">Saúde</option>
-            <option value="Educação">Educação</option>
-            <option value="Lazer">Lazer</option>
-            <option value="Outros">Outros</option>
+          <select id="income-filter-type">
+            <option value="all">Todos os tipos</option>
+            <option value="entrada">📈 Entradas</option>
+            <option value="saida">📉 Saídas</option>
           </select>
-          <input
-            type="number"
-            id="expense-value"
-            placeholder="Valor (R$)"
-            step="0.01"
-            required
-          />
-          <input type="date" id="expense-date" required />
-          <button type="submit" class="btn btn-primary">Adicionar</button>
-        </form>
+          <button class="btn btn-sm btn-income" id="add-income-btn">
+            ➕ Nova Entrada/Saída
+          </button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Valor</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="income-list"></tbody>
+        </table>
       </div>
 
-      <!-- TABELA -->
+      <!-- TABELA DE GASTOS -->
       <div class="table-wrapper">
+        <div class="table-title">💳 Gastos do Mês</div>
         <div class="table-toolbar">
           <input
             type="text"
@@ -1583,6 +1703,11 @@
           "Dezembro",
         ];
         return months[monthIndex];
+      }
+
+      function getMonthKey(date) {
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       }
 
       function updateDateDisplay() {
@@ -1659,7 +1784,7 @@
       }
 
       // ============================================
-      // EXPENSES MODULE - COM ENTRADAS/SAÍDAS
+      // EXPENSES MODULE
       // ============================================
       const Expenses = {
         data: [],
@@ -1667,11 +1792,11 @@
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
         editingId: null,
+        editingIncomeId: null,
         activeProfile: "personal",
         profiles: {},
 
         init() {
-          // Migração dos dados antigos
           this.migrateOldData();
 
           this.profiles = DataManager.getProfiles();
@@ -1690,8 +1815,8 @@
         migrateOldData() {
           try {
             // Migra gastos antigos
-            const oldData = localStorage.getItem("expenses");
-            const personalData = localStorage.getItem("expenses_personal");
+            const oldData = localStorage.getItem('expenses');
+            const personalData = localStorage.getItem('expenses_personal');
 
             if (oldData) {
               const parsedOld = JSON.parse(oldData);
@@ -1704,79 +1829,77 @@
                   }
                 }
                 if (!hasPersonalData) {
-                  localStorage.setItem("expenses_personal", oldData);
-                  console.log(
-                    `✅ Migrados ${parsedOld.length} gastos para o perfil "Eu"!`,
-                  );
-                  setTimeout(() => {
-                    showToast(
-                      `📦 ${parsedOld.length} gastos migrados para seu perfil!`,
-                      "success",
-                    );
-                  }, 500);
+                  localStorage.setItem('expenses_personal', oldData);
+                  console.log(`✅ Migrados ${parsedOld.length} gastos para o perfil "Eu"!`);
                 }
               }
             }
 
-            // Cria perfis vazios se não existirem
-            ["expenses_aunt", "expenses_guest"].forEach((key) => {
+            // Cria perfis vazios
+            ['expenses_aunt', 'expenses_guest'].forEach(key => {
               if (!localStorage.getItem(key)) {
-                localStorage.setItem(key, "[]");
+                localStorage.setItem(key, '[]');
               }
             });
 
-            // Migra dados de entrada (salário antigo)
-            const oldSalary = localStorage.getItem("monthly_salary");
-            const personalIncomes = localStorage.getItem("incomes_personal");
+            // Migra dados de entrada (salário antigo) para o mês atual
+            const oldSalary = localStorage.getItem('monthly_salary');
+            const personalIncomes = localStorage.getItem('incomes_personal');
 
             if (oldSalary && !personalIncomes) {
               const salary = parseFloat(oldSalary);
               if (!isNaN(salary) && salary > 0) {
-                const defaultIncome = [
-                  {
-                    id: Date.now(),
-                    name: "Salário",
-                    value: salary,
-                    type: "entrada",
-                    createdAt: new Date().toISOString(),
-                  },
-                ];
-                localStorage.setItem(
-                  "incomes_personal",
-                  JSON.stringify(defaultIncome),
-                );
-                console.log(
-                  `✅ Migrado salário de ${formatBRL(salary)} para o perfil "Eu"!`,
-                );
+                const now = new Date();
+                const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+                const defaultIncome = [{
+                  id: Date.now(),
+                  name: "Salário",
+                  value: salary,
+                  type: "entrada",
+                  date: date,
+                  createdAt: new Date().toISOString()
+                }];
+                localStorage.setItem('incomes_personal', JSON.stringify(defaultIncome));
+                console.log(`✅ Migrado salário de ${formatBRL(salary)} para o perfil "Eu"!`);
               }
             }
 
             // Cria incomes vazios para outros perfis
-            ["incomes_aunt", "incomes_guest"].forEach((key) => {
+            ['incomes_aunt', 'incomes_guest'].forEach(key => {
               if (!localStorage.getItem(key)) {
-                localStorage.setItem(key, "[]");
+                localStorage.setItem(key, '[]');
               }
             });
+
           } catch (e) {
-            console.error("❌ Erro na migração:", e);
+            console.error('❌ Erro na migração:', e);
           }
         },
 
         setupEvents() {
+          // Formulário de gasto
           document
             .getElementById("expense-form")
             .addEventListener("submit", (e) => {
               e.preventDefault();
-              this.add();
+              this.addExpense();
             });
 
+          // Filtros
           document
             .getElementById("expense-search")
             .addEventListener("input", () => this.render());
           document
             .getElementById("expense-filter-category")
             .addEventListener("change", () => this.render());
+          document
+            .getElementById("income-search")
+            .addEventListener("input", () => this.render());
+          document
+            .getElementById("income-filter-type")
+            .addEventListener("change", () => this.render());
 
+          // Navegação de meses
           document
             .getElementById("prev-month")
             .addEventListener("click", () => {
@@ -1811,27 +1934,52 @@
               this.populateCopyMonths();
             });
 
+          // Exportar
           document
             .getElementById("export-expenses")
             .addEventListener("click", () => this.exportCSV());
+
+          // Copiar gastos
           document
             .getElementById("copy-expenses")
             .addEventListener("click", () => this.copyFromMonth());
 
+          // Modal de edição de gasto
           document
             .getElementById("cancel-edit")
-            .addEventListener("click", () => this.closeModal());
+            .addEventListener("click", () => this.closeEditModal());
           document
             .getElementById("edit-modal")
             .addEventListener("click", (e) => {
-              if (e.target === e.currentTarget) this.closeModal();
+              if (e.target === e.currentTarget) this.closeEditModal();
             });
           document
             .getElementById("edit-form")
             .addEventListener("submit", (e) => {
               e.preventDefault();
-              this.saveEdit();
+              this.saveEditExpense();
             });
+
+          // Modal de edição de entrada
+          document
+            .getElementById("cancel-edit-income")
+            .addEventListener("click", () => this.closeEditIncomeModal());
+          document
+            .getElementById("edit-income-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeEditIncomeModal();
+            });
+          document
+            .getElementById("edit-income-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.saveEditIncome();
+            });
+
+          // Botão adicionar entrada
+          document
+            .getElementById("add-income-btn")
+            .addEventListener("click", () => this.openAddIncomeModal());
 
           // Perfil selector
           document
@@ -1868,48 +2016,45 @@
         // PERFIL
         // ============================================
         switchProfile(profileId) {
-          // Salva os dados do perfil atual
           DataManager.setExpenses(this.activeProfile, this.data);
           DataManager.setIncomes(this.activeProfile, this.incomes);
-
+          
           this.activeProfile = profileId;
           DataManager.setActiveProfile(profileId);
           this.data = DataManager.getExpenses(profileId);
           this.incomes = DataManager.getIncomes(profileId);
-
+          
           this.updateProfileUI();
           this.render();
           this.populateCopyMonths();
-
+          
           const profile = this.profiles[profileId];
-          showToast(
-            `👤 Mudou para perfil: ${profile ? profile.name : profileId}`,
-            "success",
-          );
+          showToast(`👤 Mudou para perfil: ${profile ? profile.name : profileId}`, "success");
         },
 
         updateProfileUI() {
           const profile = this.profiles[this.activeProfile];
           if (!profile) return;
-
+          
           const select = document.getElementById("profile-select");
           select.value = this.activeProfile;
-
+          
           const avatar = document.getElementById("profile-avatar");
           avatar.textContent = profile.emoji || "👤";
           avatar.className = `profile-avatar ${profile.color || "personal"}`;
-
-          // Calcula total de entradas
-          const totalIncome = this.incomes.reduce(
-            (sum, inc) => sum + inc.value,
-            0,
-          );
-          document.getElementById("profile-income-display").textContent =
-            `💰 ${formatBRL(totalIncome)}`;
+          
+          // Calcula total de entradas do mês atual
+          const monthKey = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}`;
+          const monthIncomes = this.incomes.filter(inc => {
+            const incMonth = getMonthKey(inc.date);
+            return incMonth === monthKey;
+          });
+          const totalIncome = monthIncomes.reduce((sum, inc) => sum + inc.value, 0);
+          document.getElementById("profile-income-display").textContent = `💰 ${formatBRL(totalIncome)}`;
         },
 
         // ============================================
-        // MODAL DE GERENCIAR PERFIS
+        // MODAL DE PERFIS
         // ============================================
         openProfileModal() {
           this.renderProfileModal();
@@ -1925,15 +2070,12 @@
         renderProfileModal() {
           const container = document.getElementById("profiles-list");
           let html = "";
-
+          
           Object.entries(this.profiles).forEach(([id, profile]) => {
             const colorClass = profile.color || "personal";
             const profileIncomes = DataManager.getIncomes(id);
-            const totalIncome = profileIncomes.reduce(
-              (sum, inc) => sum + inc.value,
-              0,
-            );
-
+            const totalIncome = profileIncomes.reduce((sum, inc) => sum + inc.value, 0);
+            
             html += `
               <div style="padding:16px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border-color);margin-bottom:12px;">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -1955,134 +2097,128 @@
                     maxlength="2"
                     style="width:50px;padding:6px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:4px;color:var(--text-primary);font-size:18px;text-align:center;"
                   />
-                  <span style="font-size:12px;color:var(--text-muted);background:rgba(108,99,255,0.08);padding:2px 10px;border-radius:12px;">
-                    Total: ${formatBRL(totalIncome)}
-                  </span>
                 </div>
-                
-                <div style="margin-top:8px;">
-                  <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">📊 Entradas / Saídas:</div>
-                  <div id="incomes-${id}">
-                    ${profileIncomes.length === 0 ? '<span style="font-size:12px;color:var(--text-muted);">Nenhuma entrada cadastrada</span>' : ""}
-                    ${profileIncomes
-                      .map(
-                        (inc) => `
-                      <div class="income-item">
-                        <span class="income-name">${inc.name}</span>
-                        <span class="income-type type-${inc.type}">${inc.type === "entrada" ? "📈 Entrada" : "📉 Saída"}</span>
-                        <span class="income-value" style="color: ${inc.type === "entrada" ? "var(--accent-green)" : "var(--accent-red)"}">
-                          ${inc.type === "entrada" ? "+" : "-"} ${formatBRL(inc.value)}
-                        </span>
-                        <div class="income-actions">
-                          <button class="delete-income" onclick="Expenses.deleteIncome('${id}', ${inc.id})" title="Remover">✕</button>
-                        </div>
-                      </div>
-                    `,
-                      )
-                      .join("")}
-                  </div>
-                  
-                  <div class="add-income-form">
-                    <input type="text" placeholder="Nome (ex: Salário)" id="income-name-${id}" />
-                    <input type="number" placeholder="Valor" step="0.01" id="income-value-${id}" />
-                    <select id="income-type-${id}">
-                      <option value="entrada">📈 Entrada</option>
-                      <option value="saida">📉 Saída</option>
-                    </select>
-                    <button type="button" onclick="Expenses.addIncome('${id}')">➕</button>
-                  </div>
+                <div style="font-size:12px;color:var(--text-muted);">
+                  Total de entradas/saídas cadastradas: <strong style="color:var(--text-primary);">${profileIncomes.length}</strong>
+                  (Total: ${formatBRL(totalIncome)})
                 </div>
               </div>
             `;
           });
-
+          
           container.innerHTML = html;
         },
 
-        addIncome(profileId) {
-          const nameInput = document.getElementById(`income-name-${profileId}`);
-          const valueInput = document.getElementById(
-            `income-value-${profileId}`,
-          );
-          const typeSelect = document.getElementById(
-            `income-type-${profileId}`,
-          );
-
-          const name = nameInput.value.trim();
-          const value = parseFloat(valueInput.value);
-          const type = typeSelect.value;
-
-          if (!name || !value || value <= 0) {
-            showToast("Preencha nome e valor corretamente!", "warning");
-            return;
-          }
-
-          const incomes = DataManager.getIncomes(profileId);
-          incomes.push({
-            id: Date.now() + Math.random() * 1000,
-            name,
-            value,
-            type,
-            createdAt: new Date().toISOString(),
-          });
-          DataManager.setIncomes(profileId, incomes);
-
-          // Se for o perfil atual, recarrega os dados
-          if (profileId === this.activeProfile) {
-            this.incomes = incomes;
-            this.updateProfileUI();
-            this.render();
-          }
-
-          // Recarrega o modal
-          this.renderProfileModal();
-          showToast(
-            `✅ ${type === "entrada" ? "Entrada" : "Saída"} "${name}" adicionada!`,
-            "success",
-          );
-        },
-
-        deleteIncome(profileId, incomeId) {
-          if (!confirm("Remover esta entrada/saída?")) return;
-
-          const incomes = DataManager.getIncomes(profileId);
-          const filtered = incomes.filter((inc) => inc.id !== incomeId);
-          DataManager.setIncomes(profileId, filtered);
-
-          if (profileId === this.activeProfile) {
-            this.incomes = filtered;
-            this.updateProfileUI();
-            this.render();
-          }
-
-          this.renderProfileModal();
-          showToast("🗑️ Removido!", "warning");
-        },
-
         saveProfiles() {
-          const inputs = document.querySelectorAll(
-            "#profiles-list input[data-profile]",
-          );
+          const inputs = document.querySelectorAll("#profiles-list input[data-profile]");
           const updatedProfiles = { ...this.profiles };
-
-          inputs.forEach((input) => {
+          
+          inputs.forEach(input => {
             const id = input.dataset.profile;
             const field = input.dataset.field;
             if (id && field) {
               if (!updatedProfiles[id]) {
                 updatedProfiles[id] = { name: id, emoji: "👤", color: "guest" };
               }
-              updatedProfiles[id][field] =
-                input.value.trim() || updatedProfiles[id][field];
+              updatedProfiles[id][field] = input.value.trim() || updatedProfiles[id][field];
             }
           });
-
+          
           this.profiles = updatedProfiles;
           DataManager.setProfiles(updatedProfiles);
           this.closeProfileModal();
           this.updateProfileUI();
           this.render();
           showToast("✅ Perfis atualizados!", "success");
+        },
+
+        // ============================================
+        // MODAL DE ADICIONAR ENTRADA
+        // ============================================
+        openAddIncomeModal() {
+          document.getElementById("edit-income-id").value = "";
+          document.getElementById("edit-income-name").value = "";
+          document.getElementById("edit-income-value").value = "";
+          document.getElementById("edit-income-type").value = "entrada";
+          
+          // Data padrão: primeiro dia do mês atual
+          const now = new Date(this.currentYear, this.currentMonth, 1);
+          const dateStr = now.toISOString().split('T')[0];
+          document.getElementById("edit-income-date").value = dateStr;
+          
+          document.getElementById("edit-income-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        openEditIncomeModal(id) {
+          const income = this.incomes.find(inc => inc.id === id);
+          if (!income) return;
+
+          this.editingIncomeId = id;
+          document.getElementById("edit-income-id").value = id;
+          document.getElementById("edit-income-name").value = income.name;
+          document.getElementById("edit-income-value").value = income.value;
+          document.getElementById("edit-income-type").value = income.type;
+          document.getElementById("edit-income-date").value = income.date;
+
+          document.getElementById("edit-income-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        closeEditIncomeModal() {
+          document.getElementById("edit-income-modal").classList.remove("active");
+          document.body.style.overflow = "";
+          this.editingIncomeId = null;
+        },
+
+        saveEditIncome() {
+          const id = document.getElementById("edit-income-id").value;
+          const name = document.getElementById("edit-income-name").value.trim();
+          const value = parseFloat(document.getElementById("edit-income-value").value);
+          const type = document.getElementById("edit-income-type").value;
+          const date = document.getElementById("edit-income-date").value;
+
+          if (!name || !value || !date) {
+            showToast("Preencha todos os campos!", "warning");
+            return;
+          }
+
+          if (id) {
+            // Editando
+            const income = this.incomes.find(inc => inc.id === parseFloat(id));
+            if (income) {
+              income.name = name;
+              income.value = value;
+              income.type = type;
+              income.date = date;
+            }
+          } else {
+            // Nova
+            this.incomes.push({
+              id: Date.now() + Math.random() * 1000,
+              name,
+              value,
+              type,
+              date,
+              createdAt: new Date().toISOString()
+            });
+          }
+
+          DataManager.setIncomes(this.activeProfile, this.incomes);
+          this.closeEditIncomeModal();
+          this.render();
+          this.updateProfileUI();
+          showToast(`✅ ${type === 'entrada' ? 'Entrada' : 'Saída'} "${name}" ${id ? 'atualizada' : 'adicionada'}!`, "success");
+        },
+
+        deleteIncome(id) {
+          if (!confirm("Remover esta entrada/saída?")) return;
+          
+          this.incomes = this.incomes.filter(inc => inc.id !== id);
+          DataManager.setIncomes(this.activeProfile, this.incomes);
+          this.render();
+          this.updateProfileUI();
+          showToast("🗑️ Removido!", "warning");
         },
 
         // ============================================
@@ -2169,7 +2305,7 @@
           showToast(`${newExpenses.length} gastos copiados!`, "success");
         },
 
-        add() {
+        addExpense() {
           const name = document.getElementById("expense-name").value.trim();
           const category = document.getElementById("expense-category").value;
           const value = parseFloat(
@@ -2206,7 +2342,7 @@
           }
         },
 
-        delete(id) {
+        deleteExpense(id) {
           if (!confirm("Excluir este gasto?")) return;
           this.data = this.data.filter((e) => e.id !== id);
           DataManager.setExpenses(this.activeProfile, this.data);
@@ -2215,7 +2351,7 @@
           showToast("Gasto removido!", "warning");
         },
 
-        openModal(id) {
+        openEditExpenseModal(id) {
           const expense = this.data.find((e) => e.id === id);
           if (!expense) return;
 
@@ -2226,14 +2362,16 @@
           document.getElementById("edit-date").value = expense.date;
 
           document.getElementById("edit-modal").classList.add("active");
+          document.body.style.overflow = "hidden";
         },
 
-        closeModal() {
+        closeEditModal() {
           document.getElementById("edit-modal").classList.remove("active");
+          document.body.style.overflow = "";
           this.editingId = null;
         },
 
-        saveEdit() {
+        saveEditExpense() {
           const name = document.getElementById("edit-name").value.trim();
           const category = document.getElementById("edit-category").value;
           const value = parseFloat(document.getElementById("edit-value").value);
@@ -2252,7 +2390,7 @@
             expense.date = date;
 
             DataManager.setExpenses(this.activeProfile, this.data);
-            this.closeModal();
+            this.closeEditModal();
             this.populateCopyMonths();
             this.render();
             showToast("Gasto atualizado!");
@@ -2267,7 +2405,35 @@
           document.getElementById("current-month-label").textContent =
             `${getMonthName(this.currentMonth)} ${this.currentYear}`;
 
-          const search = document
+          // ============================================
+          // RENDER ENTRADAS
+          // ============================================
+          const incomeSearch = document
+            .getElementById("income-search")
+            .value.toLowerCase();
+          const incomeFilter = document
+            .getElementById("income-filter-type")
+            .value;
+
+          let monthIncomes = this.incomes.filter((inc) => {
+            const incMonth = inc.date.slice(0, 7);
+            return incMonth === currentMonthStr;
+          });
+
+          let filteredIncomes = monthIncomes.filter((inc) => {
+            const matchSearch = inc.name.toLowerCase().includes(incomeSearch);
+            const matchType = incomeFilter === "all" || inc.type === incomeFilter;
+            return matchSearch && matchType;
+          });
+
+          const totalIncome = monthIncomes.reduce((sum, inc) => sum + inc.value, 0);
+          const totalEntradas = monthIncomes.filter(inc => inc.type === 'entrada').reduce((sum, inc) => sum + inc.value, 0);
+          const totalSaidas = monthIncomes.filter(inc => inc.type === 'saida').reduce((sum, inc) => sum + inc.value, 0);
+
+          // ============================================
+          // RENDER GASTOS
+          // ============================================
+          const expenseSearch = document
             .getElementById("expense-search")
             .value.toLowerCase();
           const categoryFilter = document.getElementById(
@@ -2278,8 +2444,8 @@
             e.date.startsWith(currentMonthStr),
           );
 
-          let filtered = monthExpenses.filter((exp) => {
-            const matchSearch = exp.name.toLowerCase().includes(search);
+          let filteredExpenses = monthExpenses.filter((exp) => {
+            const matchSearch = exp.name.toLowerCase().includes(expenseSearch);
             const matchCategory =
               categoryFilter === "all" || exp.category === categoryFilter;
             return matchSearch && matchCategory;
@@ -2290,37 +2456,68 @@
             .filter((e) => e.paid)
             .reduce((sum, e) => sum + e.value, 0);
           const pendingMonth = totalMonth - paidMonth;
+          
+          // Saldo = total de entradas - total de saídas - gastos
+          const saldoEntradas = totalEntradas - totalSaidas;
+          const remaining = saldoEntradas - totalMonth;
 
-          // Calcula total de entradas (incomes)
-          const totalIncome = this.incomes.reduce(
-            (sum, inc) => sum + inc.value,
-            0,
-          );
-          const remaining = totalIncome - totalMonth;
-
-          // Atualiza cards
-          document.getElementById("total-income").textContent =
-            formatBRL(totalIncome);
-          document.getElementById("expense-total-month").textContent =
-            formatBRL(totalMonth);
-
+          // ============================================
+          // ATUALIZA CARDS
+          // ============================================
+          document.getElementById("total-income").textContent = formatBRL(saldoEntradas);
+          document.getElementById("expense-total-month").textContent = formatBRL(totalMonth);
+          
           const remainingEl = document.getElementById("expense-remaining");
           remainingEl.textContent = formatBRL(remaining);
-          remainingEl.style.color =
-            remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
-          remainingEl.className = `card-value ${remaining < 0 ? "negative" : "positive"}`;
+          remainingEl.style.color = remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
+          remainingEl.className = `card-value ${remaining < 0 ? 'negative' : 'positive'}`;
+          
+          document.getElementById("expense-pending").textContent = formatBRL(pendingMonth);
 
-          document.getElementById("expense-pending").textContent =
-            formatBRL(pendingMonth);
-
-          // Atualiza perfil com total de entradas
+          // Atualiza perfil
           this.updateProfileUI();
 
-          const tbody = document.getElementById("expense-list");
-          if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum gasto encontrado para este mês</td></tr>`;
+          // ============================================
+          // TABELA DE ENTRADAS
+          // ============================================
+          const incomeTbody = document.getElementById("income-list");
+          if (filteredIncomes.length === 0) {
+            incomeTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Nenhuma entrada/saída para este mês</td></tr>`;
           } else {
-            tbody.innerHTML = filtered
+            incomeTbody.innerHTML = filteredIncomes
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .map(
+                (inc) => `
+              <tr>
+                <td><strong>${inc.name}</strong></td>
+                <td>
+                  <span class="badge-status ${inc.type === 'entrada' ? 'entrada' : 'saida'}">
+                    ${inc.type === 'entrada' ? '📈 Entrada' : '📉 Saída'}
+                  </span>
+                </td>
+                <td style="color: ${inc.type === 'entrada' ? 'var(--accent-green)' : 'var(--accent-red)'}; font-weight:600;">
+                  ${inc.type === 'entrada' ? '+' : '-'} ${formatBRL(inc.value)}
+                </td>
+                <td>${new Date(inc.date).toLocaleDateString("pt-BR")}</td>
+                <td>
+                  <button class="btn btn-edit btn-sm" onclick="Expenses.openEditIncomeModal(${inc.id})" title="Editar">✏️</button>
+                  <button class="btn btn-danger btn-sm" onclick="Expenses.deleteIncome(${inc.id})" title="Excluir">🗑️</button>
+                </td>
+              </tr>
+            `,
+              )
+              .join("");
+          }
+
+          // ============================================
+          // TABELA DE GASTOS
+          // ============================================
+          const expenseTbody = document.getElementById("expense-list");
+          if (filteredExpenses.length === 0) {
+            expenseTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Nenhum gasto encontrado para este mês</td></tr>`;
+          } else {
+            expenseTbody.innerHTML = filteredExpenses
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
               .map(
                 (exp) => `
               <tr>
@@ -2335,8 +2532,8 @@
                   </span>
                 </td>
                 <td>
-                  <button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})" title="Editar">✏️</button>
-                  <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})" title="Excluir">🗑️</button>
+                  <button class="btn btn-edit btn-sm" onclick="Expenses.openEditExpenseModal(${exp.id})" title="Editar">✏️</button>
+                  <button class="btn btn-danger btn-sm" onclick="Expenses.deleteExpense(${exp.id})" title="Excluir">🗑️</button>
                 </td>
               </tr>
             `,
@@ -2419,9 +2616,7 @@
       Expenses.init();
 
       console.log("💳 FinControl - Gastos carregado!");
-      console.log(
-        "👤 Sistema de múltiplos perfis com entradas/saídas ativado!",
-      );
+      console.log("👤 Sistema de múltiplos perfis com entradas/saídas mensais ativado!");
       console.log("📊 Perfis disponíveis:", Object.keys(Expenses.profiles));
     </script>
   </body>
