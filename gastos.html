@@ -1095,7 +1095,7 @@
             <option value="aunt">👩 Tia</option>
           </select>
           <span class="profile-salary" id="profile-salary-display"
-            >R$ 6.400</span
+            >R$ 0,00</span
           >
         </div>
 
@@ -1215,7 +1215,8 @@
             margin-bottom: 24px;
           "
         >
-          Configure os perfis e seus respectivos salários
+          Configure os perfis (salário é apenas uma referência inicial, você
+          controla tudo manualmente)
         </p>
         <form id="profile-form">
           <div class="form-group" id="profiles-list"></div>
@@ -1231,11 +1232,6 @@
 
     <main>
       <div class="card-grid">
-        <div class="card accent-cyan">
-          <div class="card-header"><div class="card-icon">💰</div></div>
-          <div class="card-label">Salário Base</div>
-          <div class="card-value" id="monthly-salary">R$ 6.400,00</div>
-        </div>
         <div class="card accent-green">
           <div class="card-header"><div class="card-icon">📥</div></div>
           <div class="card-label">Total Entradas</div>
@@ -1248,8 +1244,13 @@
         </div>
         <div class="card">
           <div class="card-header"><div class="card-icon">💎</div></div>
-          <div class="card-label">Saldo Restante</div>
-          <div class="card-value" id="expense-remaining">R$ 6.400,00</div>
+          <div class="card-label">Saldo do Mês</div>
+          <div class="card-value" id="expense-remaining">R$ 0,00</div>
+        </div>
+        <div class="card accent-amber">
+          <div class="card-header"><div class="card-icon">⏳</div></div>
+          <div class="card-label">Pendente (Saídas)</div>
+          <div class="card-value" id="expense-pending">R$ 0,00</div>
         </div>
       </div>
 
@@ -1416,13 +1417,8 @@
         },
         getProfiles() {
           return this.get("profiles", {
-            personal: {
-              name: "Eu",
-              salary: 6400,
-              emoji: "👤",
-              color: "personal",
-            },
-            aunt: { name: "Tia", salary: 4800, emoji: "👩", color: "aunt" },
+            personal: { name: "Eu", salary: 0, emoji: "👤", color: "personal" },
+            aunt: { name: "Tia", salary: 0, emoji: "👩", color: "aunt" },
           });
         },
         setProfiles(data) {
@@ -1631,9 +1627,6 @@
           avatar.className = `profile-avatar ${profile.color || "personal"}`;
           document.getElementById("profile-salary-display").textContent =
             formatBRL(profile.salary || 0);
-          document.getElementById("monthly-salary").textContent = formatBRL(
-            profile.salary || 0,
-          );
         },
 
         openProfileModal() {
@@ -1657,7 +1650,6 @@
                 <div class="profile-fields">
                   <input type="text" value="${profile.name}" data-profile="${id}" data-field="name" placeholder="Nome" />
                   <input type="text" value="${profile.emoji || "👤"}" data-profile="${id}" data-field="emoji" placeholder="Emoji" maxlength="2" style="max-width:50px;text-align:center;" />
-                  <input type="number" value="${profile.salary || 0}" data-profile="${id}" data-field="salary" placeholder="Salário" step="0.01" />
                 </div>
                 <span style="font-size:16px;opacity:0.3;">${id === this.activeProfile ? "⭐" : ""}</span>
               </div>
@@ -1682,11 +1674,8 @@
                   emoji: "👤",
                   color: "guest",
                 };
-              if (field === "salary")
-                updatedProfiles[id][field] = parseFloat(input.value) || 0;
-              else
-                updatedProfiles[id][field] =
-                  input.value.trim() || updatedProfiles[id][field];
+              updatedProfiles[id][field] =
+                input.value.trim() || updatedProfiles[id][field];
             }
           });
           this.profiles = updatedProfiles;
@@ -1872,12 +1861,28 @@
           let monthExpenses = this.data.filter((e) =>
             e.date.startsWith(currentMonthStr),
           );
+
           let filtered = monthExpenses.filter((exp) => {
             const matchSearch = exp.name.toLowerCase().includes(search);
             const matchCategory =
               categoryFilter === "all" || exp.category === categoryFilter;
-            const matchType = typeFilter === "all" || exp.type === typeFilter;
+            const matchType =
+              typeFilter === "all" ||
+              exp.type === typeFilter ||
+              (!exp.type && typeFilter === "saida");
             return matchSearch && matchCategory && matchType;
+          });
+
+          filtered.sort((a, b) => {
+            const typeA = a.type || "saida";
+            const typeB = b.type || "saida";
+            if (typeA === "entrada" && typeB === "saida") return -1;
+            if (typeA === "saida" && typeB === "entrada") return 1;
+            if (typeA === "saida" && typeB === "saida")
+              return b.value - a.value;
+            if (typeA === "entrada" && typeB === "entrada")
+              return b.value - a.value;
+            return 0;
           });
 
           const entradas = monthExpenses
@@ -1886,22 +1891,23 @@
           const saidas = monthExpenses
             .filter((e) => e.type === "saida" || !e.type)
             .reduce((sum, e) => sum + e.value, 0);
-          const profile = this.profiles[this.activeProfile];
-          const salary = profile ? profile.salary : 6400;
-          const totalDisponivel = salary + entradas;
-          const remaining = totalDisponivel - saidas;
+          const pendingSaidas = monthExpenses
+            .filter((e) => (e.type === "saida" || !e.type) && !e.paid)
+            .reduce((sum, e) => sum + e.value, 0);
+          const saldo = entradas - saidas;
 
-          document.getElementById("monthly-salary").textContent =
-            formatBRL(salary);
           document.getElementById("total-entradas").textContent =
             formatBRL(entradas);
           document.getElementById("total-saidas").textContent =
             formatBRL(saidas);
           document.getElementById("expense-remaining").textContent =
-            formatBRL(remaining);
-          const remainingEl = document.getElementById("expense-remaining");
-          remainingEl.style.color =
-            remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
+            formatBRL(saldo);
+          document.getElementById("expense-pending").textContent =
+            formatBRL(pendingSaidas);
+
+          const saldoEl = document.getElementById("expense-remaining");
+          saldoEl.style.color =
+            saldo < 0 ? "var(--accent-red)" : "var(--accent-green)";
 
           const tbody = document.getElementById("expense-list");
           if (filtered.length === 0) {
