@@ -3,39 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinControl - To-Do List</title>
+    <title>FinControl - Tarefas</title>
     <style>
+      /* ============================================
+         CSS VARIÁVEIS - TEMA MODERNO
+      ============================================ */
       :root {
-        --bg-primary: #0f0f1a;
-        --bg-secondary: #1a1a2e;
-        --bg-card: rgba(26, 26, 46, 0.8);
-        --bg-card-hover: rgba(40, 40, 70, 0.9);
-        --bg-input: #16162b;
-        --border-color: rgba(255, 255, 255, 0.06);
+        --bg-primary: #0b0f19;
+        --bg-secondary: #131722;
+        --bg-card: rgba(19, 23, 34, 0.8);
+        --bg-input: #1a1d2d;
+        --border-color: rgba(255, 255, 255, 0.05);
         --border-light: rgba(255, 255, 255, 0.1);
-        --text-primary: #ffffff;
-        --text-secondary: rgba(255, 255, 255, 0.7);
-        --text-muted: rgba(255, 255, 255, 0.4);
-        --accent-blue: #6c63ff;
+
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+
+        --accent-blue: #6366f1;
         --accent-purple: #a855f7;
-        --accent-green: #34d399;
-        --accent-amber: #fbbf24;
-        --accent-red: #f87171;
-        --accent-pink: #ec4899;
-        --accent-cyan: #22d3ee;
-        --accent-orange: #fb923c;
-        --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
+        --accent-green: #10b981;
+        --accent-amber: #f59e0b;
+        --accent-red: #ef4444;
+
+        --gradient-primary: linear-gradient(135deg, #6366f1, #a855f7);
         --gradient-card: linear-gradient(
           145deg,
-          rgba(26, 26, 46, 0.9),
-          rgba(15, 15, 26, 0.9)
+          rgba(30, 36, 59, 0.6),
+          rgba(15, 17, 26, 0.9)
         );
-        --gradient-success: linear-gradient(135deg, #34d399, #059669);
-        --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
-        --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.7);
-        --radius: 20px;
-        --radius-sm: 12px;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+        --radius: 16px;
+        --radius-sm: 10px;
+        --transition: all 0.25s ease;
       }
 
       * {
@@ -43,6 +44,7 @@
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
         font-family:
           "Inter",
@@ -57,68 +59,79 @@
         min-height: 100vh;
         overflow-x: hidden;
       }
+
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: var(--bg-secondary);
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
         background: var(--accent-blue);
         border-radius: 10px;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--accent-purple);
-      }
 
-      /* MENU LATERAL PADRONIZADO */
+      /* ============================================
+         MENU LATERAL PADRONIZADO
+      ============================================ */
       aside {
-        width: 220px;
-        background: rgba(10, 10, 20, 0.95);
-        backdrop-filter: blur(20px);
+        width: 250px;
+        background: #0b0f19;
         border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        padding: 20px 14px;
+        padding: 24px 16px;
         position: fixed;
         top: 0;
         left: 0;
         height: 100vh;
         z-index: 100;
-        transition: var(--transition);
       }
-      .menu-header {
-        padding: 6px 8px 20px;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 14px;
-      }
+
       .menu-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
         font-size: 20px;
         font-weight: 700;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 14px;
+        color: #fff;
+        margin-bottom: 32px;
+        padding: 0 8px;
       }
+
+      .menu-logo-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--accent-blue);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+
       .menu-profile {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        padding: 6px 10px;
+        gap: 12px;
+        background: #181b2b;
+        padding: 8px 12px;
+        border-radius: 12px;
+        margin-bottom: 24px;
         cursor: pointer;
+        border: 1px solid transparent;
         transition: var(--transition);
       }
+
       .menu-profile:hover {
-        border-color: var(--border-light);
+        border-color: rgba(255, 255, 255, 0.1);
       }
+
       .menu-profile .avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -126,138 +139,160 @@
         font-weight: 600;
         flex-shrink: 0;
       }
+
       .avatar.personal {
         background: var(--accent-blue);
         color: white;
       }
       .avatar.aunt {
-        background: var(--accent-pink);
+        background: var(--accent-purple);
         color: white;
       }
-      .avatar.guest {
-        background: var(--accent-green);
-        color: white;
-      }
+
       .menu-profile select {
         background: transparent;
         border: none;
-        color: var(--text-primary);
-        font-size: 13px;
-        outline: none;
-        cursor: pointer;
+        color: #fff;
+        font-size: 14px;
         font-weight: 500;
+        outline: none;
         width: 100%;
+        cursor: pointer;
+        appearance: none;
       }
+
       .menu-profile select option {
         background: var(--bg-secondary);
         color: var(--text-primary);
       }
+
       .menu-nav {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 8px;
         flex: 1;
       }
+
       .menu-nav a {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        color: var(--text-muted);
+        gap: 12px;
+        padding: 12px;
+        color: #94a3b8;
         text-decoration: none;
-        border-radius: var(--radius-sm);
+        border-radius: 10px;
         transition: var(--transition);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
       }
+
       .menu-nav a svg {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         stroke: currentColor;
-        flex-shrink: 0;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
+
       .menu-nav a:hover {
-        color: var(--text-secondary);
-        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
       }
+
       .menu-nav a.active {
-        color: white;
-        background: var(--accent-blue);
-        box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        color: #fff;
+        background: #1e243b;
       }
+
       .menu-footer {
         border-top: 1px solid var(--border-color);
-        padding-top: 12px;
-        font-size: 10px;
+        padding-top: 16px;
+        font-size: 11px;
         color: var(--text-muted);
         text-align: center;
       }
 
-      /* CONTEÚDO PRINCIPAL E HEADER INTERNO */
-      main {
-        margin-left: 220px;
-        flex: 1;
-        padding: 24px 44px;
-        min-height: 100vh;
-        transition: var(--transition);
-      }
-      .page-header {
+      /* ============================================
+         HEADER SUPERIOR
+      ============================================ */
+      .top-header {
+        position: fixed;
+        top: 0;
+        left: 250px;
+        right: 0;
+        height: 70px;
+        background: rgba(11, 15, 25, 0.9);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-color);
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
+        padding: 0 40px;
+        z-index: 99;
       }
-      .page-header h2 {
-        font-size: 24px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+
+      .top-header .header-left h1 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
       }
-      .page-header-actions {
+
+      .top-header .header-right {
         display: flex;
         align-items: center;
         gap: 16px;
-        flex-wrap: wrap;
       }
+
       .date-display {
-        font-size: 14px;
+        font-size: 13px;
         color: var(--text-secondary);
         font-weight: 500;
-        background: rgba(255, 255, 255, 0.04);
-        padding: 6px 14px;
-        border-radius: 30px;
       }
+
       .theme-toggle {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         color: var(--text-secondary);
         cursor: pointer;
         transition: var(--transition);
-        font-size: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
+
       .theme-toggle:hover {
-        background: var(--bg-card-hover);
+        background: rgba(255, 255, 255, 0.05);
         color: var(--text-primary);
-        transform: rotate(30deg);
       }
 
-      /* TODO COMPONENTES */
+      /* ============================================
+         MAIN - CONTEÚDO PRINCIPAL
+      ============================================ */
+      main {
+        margin-left: 250px;
+        margin-top: 70px;
+        flex: 1;
+        padding: 32px 40px;
+        min-height: calc(100vh - 70px);
+      }
+
+      /* ============================================
+         TODO - FORMULÁRIOS E KANBAN
+      ============================================ */
       .form-card {
         background: var(--gradient-card);
-        backdrop-filter: blur(10px);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 24px;
         margin-bottom: 24px;
         box-shadow: var(--shadow-card);
       }
+
       .form-card .form-title {
         font-size: 16px;
         font-weight: 600;
@@ -267,13 +302,16 @@
         align-items: center;
         gap: 8px;
       }
+
       .form-group {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
       }
+
       .form-group input,
-      .form-group select {
+      .form-group select,
+      .form-group textarea {
         flex: 1;
         min-width: 140px;
         padding: 12px 16px;
@@ -284,15 +322,15 @@
         font-size: 14px;
         transition: var(--transition);
         outline: none;
+        font-family: inherit;
       }
+
       .form-group input:focus,
-      .form-group select:focus {
+      .form-group select:focus,
+      .form-group textarea:focus {
         border-color: var(--accent-blue);
-        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
       }
-      .form-group input::placeholder {
-        color: var(--text-muted);
-      }
+
       .form-group select option {
         background: var(--bg-secondary);
       }
@@ -309,21 +347,17 @@
         align-items: center;
         gap: 8px;
       }
+
       .btn-primary {
-        background: var(--gradient-primary);
+        background: var(--accent-blue);
         color: white;
       }
       .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+        background: #4f46e5;
       }
       .btn-success {
-        background: var(--gradient-success);
+        background: var(--accent-green);
         color: white;
-      }
-      .btn-success:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(52, 211, 153, 0.3);
       }
       .btn-danger {
         background: var(--accent-red);
@@ -335,9 +369,8 @@
         color: var(--text-secondary);
       }
       .btn-outline:hover {
-        border-color: var(--accent-blue);
+        background: rgba(255, 255, 255, 0.05);
         color: var(--text-primary);
-        background: rgba(108, 99, 255, 0.08);
       }
       .btn-sm {
         padding: 6px 14px;
@@ -353,12 +386,11 @@
         gap: 12px;
         padding: 16px 20px;
         background: var(--gradient-card);
-        backdrop-filter: blur(10px);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         margin-bottom: 20px;
-        box-shadow: var(--shadow-card);
       }
+
       .todo-toolbar .toolbar-left,
       .todo-toolbar .toolbar-right {
         display: flex;
@@ -366,54 +398,63 @@
         gap: 10px;
         flex-wrap: wrap;
       }
+
       .todo-toolbar .toolbar-label {
         font-size: 13px;
         color: var(--text-secondary);
         font-weight: 500;
       }
+
+      /* CORREÇÃO DOS SELECTS DA TOOLBAR AQUI 👇 */
       .todo-toolbar .todo-day-select,
       .todo-toolbar .filter-select {
-        padding: 6px 12px;
         background: var(--bg-input);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         color: var(--text-primary);
+        padding: 8px 14px;
         font-size: 13px;
         outline: none;
+        cursor: pointer;
         transition: var(--transition);
       }
+
       .todo-toolbar .todo-day-select:focus,
       .todo-toolbar .filter-select:focus {
         border-color: var(--accent-blue);
       }
-      .todo-toolbar .todo-stats {
+
+      .todo-toolbar select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .todo-stats {
         font-size: 13px;
         color: var(--text-secondary);
         padding: 4px 14px;
-        background: rgba(108, 99, 255, 0.08);
+        background: rgba(99, 102, 241, 0.1);
         border-radius: 20px;
-        border: 1px solid rgba(108, 99, 255, 0.1);
+        color: var(--accent-blue);
+        font-weight: 500;
       }
 
+      /* KANBAN */
       .kanban-container {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 12px;
         margin-top: 20px;
       }
+
       .kanban-column {
-        background: var(--gradient-card);
-        backdrop-filter: blur(10px);
+        background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 16px;
         min-height: 350px;
-        box-shadow: var(--shadow-card);
-        transition: var(--transition);
       }
-      .kanban-column:hover {
-        border-color: var(--border-light);
-      }
+
       .kanban-column .column-header {
         display: flex;
         justify-content: space-between;
@@ -422,37 +463,31 @@
         padding-bottom: 10px;
         border-bottom: 1px solid var(--border-color);
       }
+
       .kanban-column .column-header h3 {
-        margin: 0;
         font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
       }
+
       .kanban-column .column-header .day-today {
         color: var(--accent-blue);
       }
+
       .kanban-column .column-header .day-count {
         font-size: 11px;
-        padding: 2px 10px;
+        padding: 2px 8px;
         border-radius: 12px;
-        background: rgba(108, 99, 255, 0.1);
-        color: var(--accent-blue);
-        font-weight: 600;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
       }
       .kanban-column .column-header .day-count.has-tasks {
-        background: rgba(52, 211, 153, 0.1);
-        color: var(--accent-green);
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--accent-blue);
       }
+
       .kanban-column.weekend {
-        border-color: rgba(108, 99, 255, 0.15);
-        background: linear-gradient(
-          145deg,
-          rgba(108, 99, 255, 0.05),
-          rgba(15, 15, 26, 0.9)
-        );
-      }
-      .kanban-column.weekend .column-header h3 {
-        color: var(--accent-purple);
+        background: rgba(255, 255, 255, 0.02);
       }
 
       .kanban-card {
@@ -463,78 +498,76 @@
         margin-bottom: 8px;
         transition: var(--transition);
       }
+
       .kanban-card:hover {
         border-color: var(--border-light);
-        transform: translateX(4px);
+        transform: translateY(-2px);
       }
+
       .kanban-card.done {
         opacity: 0.4;
         text-decoration: line-through;
       }
+
       .kanban-card .card-top {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         gap: 8px;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
       }
+
       .kanban-card .card-text {
         font-size: 13px;
         word-break: break-word;
         color: var(--text-secondary);
         flex: 1;
+        line-height: 1.4;
       }
+
       .kanban-card .card-text a {
         color: var(--accent-blue);
         text-decoration: none;
-        word-break: break-all;
-        transition: var(--transition);
       }
-      .kanban-card .card-text a:hover {
-        color: var(--accent-purple);
-        text-decoration: underline;
-      }
+
       .kanban-card .card-tag {
-        display: inline-block;
         font-size: 10px;
-        padding: 2px 10px;
+        padding: 2px 8px;
         border-radius: 12px;
         font-weight: 600;
-        letter-spacing: 0.3px;
         text-transform: uppercase;
-        margin-top: 4px;
         flex-shrink: 0;
       }
 
-      .kanban-card .card-tag.tag-estudos {
-        background: rgba(108, 99, 255, 0.2);
+      .tag-estudos {
+        background: rgba(99, 102, 241, 0.15);
         color: var(--accent-blue);
       }
-      .kanban-card .card-tag.tag-exercicios {
-        background: rgba(52, 211, 153, 0.2);
+      .tag-exercicios {
+        background: rgba(16, 185, 129, 0.15);
         color: var(--accent-green);
       }
-      .kanban-card .card-tag.tag-saude {
-        background: rgba(248, 113, 113, 0.2);
+      .tag-saude {
+        background: rgba(239, 68, 68, 0.15);
         color: var(--accent-red);
       }
-      .kanban-card .card-tag.tag-trabalho {
-        background: rgba(251, 191, 36, 0.2);
+      .tag-trabalho {
+        background: rgba(245, 158, 11, 0.15);
         color: var(--accent-amber);
       }
-      .kanban-card .card-tag.tag-pessoal {
-        background: rgba(236, 72, 153, 0.2);
+      .tag-pessoal {
+        background: rgba(236, 72, 153, 0.15);
         color: var(--accent-pink);
       }
-      .kanban-card .card-tag.tag-casa {
-        background: rgba(34, 211, 238, 0.2);
+      .tag-casa {
+        background: rgba(34, 211, 238, 0.15);
         color: var(--accent-cyan);
       }
-      .kanban-card .card-tag.tag-financas {
-        background: rgba(251, 146, 60, 0.2);
+      .tag-financas {
+        background: rgba(251, 146, 60, 0.15);
         color: var(--accent-orange);
       }
-      .kanban-card .card-tag.tag-outros {
+      .tag-outros {
         background: rgba(255, 255, 255, 0.05);
         color: var(--text-muted);
       }
@@ -542,10 +575,11 @@
       .kanban-card .card-actions {
         display: flex;
         gap: 4px;
-        margin-top: 8px;
         justify-content: flex-end;
-        flex-wrap: wrap;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 8px;
       }
+
       .kanban-card .card-actions button {
         background: none;
         border: none;
@@ -553,36 +587,30 @@
         cursor: pointer;
         padding: 4px 8px;
         border-radius: 4px;
-        transition: var(--transition);
         font-size: 12px;
       }
+
       .kanban-card .card-actions button:hover {
-        color: var(--text-primary);
         background: rgba(255, 255, 255, 0.05);
+        color: #fff;
       }
-      .kanban-card .card-actions button.delete:hover {
-        color: var(--accent-red);
-      }
-      .kanban-card .card-actions button.done-btn:hover {
-        color: var(--accent-green);
-      }
-      .kanban-card .card-actions button.edit-btn:hover {
-        color: var(--accent-blue);
-      }
+
       .empty-day {
         text-align: center;
         color: var(--text-muted);
         font-size: 12px;
         padding: 20px 0;
       }
+
       .kanban-column .column-actions {
         display: flex;
         gap: 4px;
-        margin-top: 8px;
         justify-content: center;
-        padding-top: 8px;
+        padding-top: 12px;
+        margin-top: 8px;
         border-top: 1px solid var(--border-color);
       }
+
       .kanban-column .column-actions button {
         background: none;
         border: none;
@@ -590,36 +618,15 @@
         cursor: pointer;
         padding: 4px 8px;
         border-radius: 4px;
-        transition: var(--transition);
         font-size: 11px;
       }
+
       .kanban-column .column-actions button:hover {
-        color: var(--text-primary);
         background: rgba(255, 255, 255, 0.05);
-      }
-      .kanban-column .column-actions button.copy-day:hover {
-        color: var(--accent-blue);
-      }
-      .kanban-column .column-actions button.clear-day:hover {
-        color: var(--accent-red);
+        color: #fff;
       }
 
-      @keyframes copy-flash {
-        0% {
-          background: rgba(108, 99, 255, 0);
-        }
-        30% {
-          background: rgba(108, 99, 255, 0.2);
-        }
-        100% {
-          background: rgba(108, 99, 255, 0);
-        }
-      }
-      .kanban-column.copy-flash {
-        animation: copy-flash 0.8s ease;
-      }
-
-      /* MODAIS E TOASTS */
+      /* MODAIS */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -628,23 +635,16 @@
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(8px);
         z-index: 2000;
         align-items: center;
         justify-content: center;
-        animation: fadeIn 0.3s ease;
       }
+
       .modal-overlay.active {
         display: flex;
       }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
+
       .modal {
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
@@ -652,77 +652,39 @@
         padding: 32px;
         max-width: 500px;
         width: 90%;
-        box-shadow: var(--shadow-hover);
-        animation: slideUp 0.3s ease;
       }
-      @keyframes slideUp {
-        from {
-          transform: translateY(30px) scale(0.95);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0) scale(1);
-          opacity: 1;
-        }
-      }
+
       .modal h2 {
         margin-bottom: 8px;
-        font-size: 22px;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 20px;
+        color: #fff;
       }
       .modal .modal-subtitle {
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 14px;
         margin-bottom: 20px;
       }
+
       .modal .form-group {
         margin-bottom: 16px;
+        display: block;
       }
       .modal .form-group label {
         display: block;
         font-size: 13px;
         color: var(--text-secondary);
         margin-bottom: 6px;
-        font-weight: 500;
       }
       .modal .form-group input,
       .modal .form-group select,
       .modal .form-group textarea {
         width: 100%;
-        padding: 12px 16px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-size: 14px;
-        outline: none;
-        transition: var(--transition);
-        font-family: inherit;
       }
       .modal .form-group textarea {
         resize: vertical;
-        min-height: 60px;
+        min-height: 80px;
       }
-      .modal .form-group input:focus,
-      .modal .form-group select:focus,
-      .modal .form-group textarea:focus {
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
-      }
-      .modal .modal-info {
-        background: rgba(108, 99, 255, 0.06);
-        border: 1px solid rgba(108, 99, 255, 0.1);
-        border-radius: var(--radius-sm);
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        font-size: 13px;
-        color: var(--text-secondary);
-      }
-      .modal .modal-info strong {
-        color: var(--text-primary);
-      }
+
       .modal-actions {
         display: flex;
         gap: 12px;
@@ -730,6 +692,7 @@
         margin-top: 24px;
       }
 
+      /* TOAST */
       .toast-container {
         position: fixed;
         bottom: 24px;
@@ -737,41 +700,21 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        z-index: 1000;
+        z-index: 3000;
       }
+
       .toast {
         padding: 14px 24px;
         border-radius: var(--radius-sm);
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
-        color: var(--text-primary);
+        color: #fff;
         font-size: 14px;
-        box-shadow: var(--shadow-hover);
-        animation: slideInRight 0.3s ease;
         display: flex;
         align-items: center;
         gap: 12px;
         min-width: 280px;
-        backdrop-filter: blur(10px);
-      }
-      .toast.success {
-        border-left: 4px solid var(--accent-green);
-      }
-      .toast.error {
-        border-left: 4px solid var(--accent-red);
-      }
-      .toast.warning {
-        border-left: 4px solid var(--accent-amber);
-      }
-      @keyframes slideInRight {
-        from {
-          opacity: 0;
-          transform: translateX(40px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       }
 
       /* RESPONSIVIDADE */
@@ -787,133 +730,127 @@
       }
       @media (max-width: 768px) {
         aside {
-          width: 180px;
-          padding: 14px 10px;
+          width: 80px;
+          padding: 24px 12px;
+          align-items: center;
+        }
+        .menu-logo {
+          padding: 0;
+          justify-content: center;
+        }
+        .menu-logo span.text {
+          display: none;
+        }
+        .menu-profile {
+          padding: 8px;
+          justify-content: center;
+        }
+        .menu-profile select {
+          display: none;
+        }
+        .menu-nav a {
+          padding: 12px;
+          justify-content: center;
+        }
+        .menu-nav a span {
+          display: none;
+        }
+        .top-header {
+          left: 80px;
+          padding: 0 20px;
         }
         main {
-          margin-left: 180px;
+          margin-left: 80px;
           padding: 20px;
-        }
-        .form-group {
-          flex-direction: column;
-        }
-        .form-group input,
-        .form-group select {
-          min-width: 100%;
         }
         .kanban-container {
           grid-template-columns: 1fr;
-          gap: 12px;
         }
         .kanban-column {
           min-height: auto;
-        }
-        .todo-toolbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .todo-toolbar .toolbar-left,
-        .todo-toolbar .toolbar-right {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .toast {
-          min-width: auto;
-          width: calc(100vw - 48px);
-        }
-        .modal {
-          padding: 20px;
-          width: 95%;
-        }
-        .page-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
         }
       }
     </style>
   </head>
   <body>
     <!-- ============================================
-    MENU LATERAL (ASIDE) PADRONIZADO
+    MENU LATERAL PADRONIZADO (VISÃO MENSAL)
     ============================================ -->
     <aside>
-      <div class="menu-header">
-        <div class="menu-logo">💰 FinControl</div>
-        <div
-          class="menu-profile"
-          onclick="document.getElementById('profile-avatar').click()"
-        >
-          <div class="avatar personal" id="profile-avatar">👤</div>
-          <select id="profile-select" onclick="(e) => e.stopPropagation()">
-            <option value="personal">👤 Eu</option>
-            <option value="aunt">👩 Tia</option>
-          </select>
-        </div>
+      <div class="menu-logo">
+        <div class="menu-logo-icon">💰</div>
+        <span class="text">FinControl</span>
       </div>
+
+      <div
+        class="menu-profile"
+        onclick="document.getElementById('profile-select').click()"
+      >
+        <div class="avatar personal" id="profile-avatar">👤</div>
+        <select id="profile-select" onclick="(e) => e.stopPropagation()">
+          <option value="personal">Minhas Finanças</option>
+          <option value="aunt">Finanças da Tia</option>
+        </select>
+      </div>
+
       <nav class="menu-nav">
         <a href="index.html" class="active">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
+          <svg>
             <path d="M9 11l3 3L22 4" />
             <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
           </svg>
-          To-Do
+          <span>Tarefas</span>
         </a>
         <a href="investimentos.html">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
-          Investimentos
+          <svg><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
+          <span>Investimentos</span>
         </a>
         <a href="gastos.html">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+          <svg>
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           </svg>
-          Gastos
+          <span>Lançamentos</span>
         </a>
         <a href="gastos-mensais.html">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4" />
-            <path d="M8 2v4" />
-            <path d="M3 10h18" />
+          <svg>
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          Gastos Mensais
+          <span>Visão Mensal</span>
         </a>
       </nav>
-      <div class="menu-footer">FinControl v1.0</div>
+
+      <div class="menu-footer">
+        <span class="text">FinControl Pro v2.0</span>
+      </div>
     </aside>
 
     <!-- ============================================
-    MODAIS
+    HEADER SUPERIOR
+    ============================================ -->
+    <header class="top-header">
+      <div class="header-left">
+        <h1>Organização de Tarefas</h1>
+      </div>
+      <div class="header-right">
+        <span class="date-display" id="current-date-display"></span>
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+          🌓
+        </button>
+      </div>
+    </header>
+
+    <!-- ============================================
+    MODAL DE CÓPIA
     ============================================ -->
     <div class="modal-overlay" id="copy-modal">
       <div class="modal">
         <h2>📋 Copiar Tarefas</h2>
         <p class="modal-subtitle">Escolha de qual dia copiar e para qual dia</p>
+
         <div class="form-group">
           <label for="copy-source-day">📤 Copiar de:</label>
           <select id="copy-source-day">
@@ -926,6 +863,7 @@
             <option value="0">Domingo</option>
           </select>
         </div>
+
         <div class="form-group">
           <label for="copy-target-day">📥 Copiar para:</label>
           <select id="copy-target-day">
@@ -938,21 +876,30 @@
             <option value="0">Domingo</option>
           </select>
         </div>
-        <div class="modal-info" id="copy-info">
+
+        <div
+          class="form-group"
+          id="copy-info"
+          style="color: var(--accent-blue); font-size: 13px"
+        >
           <span
-            >ℹ️ Serão copiadas apenas as tarefas <strong>pendentes</strong> do
-            dia selecionado.</span
+            >ℹ️ Serão copiadas apenas as tarefas
+            <strong>pendentes</strong>.</span
           >
         </div>
+
         <div class="modal-actions">
           <button class="btn btn-outline" id="cancel-copy">Cancelar</button>
           <button class="btn btn-primary" id="confirm-copy">
-            📋 Copiar Agora
+            Copiar Agora
           </button>
         </div>
       </div>
     </div>
 
+    <!-- ============================================
+    MODAL DE EDIÇÃO DE TAREFA
+    ============================================ -->
     <div class="modal-overlay" id="edit-todo-modal">
       <div class="modal">
         <h2>✏️ Editar Tarefa</h2>
@@ -962,12 +909,12 @@
             <label for="edit-todo-text">Descrição</label>
             <textarea
               id="edit-todo-text"
-              rows="3"
               placeholder="Descreva a tarefa..."
+              required
             ></textarea>
           </div>
           <div class="form-group">
-            <label for="edit-todo-day">Dia</label>
+            <label for="edit-todo-day">Dia da Semana</label>
             <select id="edit-todo-day">
               <option value="1">Segunda-feira</option>
               <option value="2">Terça-feira</option>
@@ -979,7 +926,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="edit-todo-tag">Categoria / Tag</label>
+            <label for="edit-todo-tag">Categoria</label>
             <select id="edit-todo-tag">
               <option value="estudos">📚 Estudos</option>
               <option value="exercicios">💪 Exercícios</option>
@@ -995,33 +942,26 @@
             <button type="button" class="btn btn-outline" id="cancel-edit-todo">
               Cancelar
             </button>
-            <button type="submit" class="btn btn-primary">💾 Salvar</button>
+            <button type="submit" class="btn btn-primary">
+              Salvar Alterações
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- ============================================
-    MAIN - CONTEÚDO PRINCIPAL
+    MAIN - CONTEÚDO
     ============================================ -->
     <main>
-      <div class="page-header">
-        <h2>📋 To-Do List</h2>
-        <div class="page-header-actions">
-          <span class="date-display" id="current-date-display"></span>
-          <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-            🌓
-          </button>
-        </div>
-      </div>
-
+      <!-- FORMULÁRIO DE TAREFA -->
       <div class="form-card">
-        <div class="form-title">➕ Nova Tarefa</div>
+        <div class="form-title">➕ Nova Tarefa Rápida</div>
         <form id="todo-form" class="form-group">
           <input
             type="text"
             id="todo-input"
-            placeholder="Descreva a tarefa (URLs detectadas automaticamente)"
+            placeholder="O que precisa ser feito? (Links são detectados automaticamente)"
             required
             style="flex: 2"
           />
@@ -1042,15 +982,16 @@
             <option value="pessoal">🧘 Pessoal</option>
             <option value="casa">🏠 Casa</option>
             <option value="financas">💰 Finanças</option>
-            <option value="outros">📌 Outros</option>
+            <option value="outros" selected>📌 Outros</option>
           </select>
           <button type="submit" class="btn btn-primary">Adicionar</button>
         </form>
       </div>
 
+      <!-- BARRA DE FERRAMENTAS DO KANBAN -->
       <div class="todo-toolbar">
         <div class="toolbar-left">
-          <span class="toolbar-label">📋 Gerenciar:</span>
+          <span class="toolbar-label">Gerenciar:</span>
           <button class="btn btn-sm btn-outline" id="clear-todo-day">
             🗑️ Limpar Dia
           </button>
@@ -1065,9 +1006,9 @@
           </select>
         </div>
         <div class="toolbar-right">
-          <span class="toolbar-label">🔍 Filtrar:</span>
+          <span class="toolbar-label">Filtrar:</span>
           <select id="filter-tag" class="filter-select">
-            <option value="all">📌 Todas</option>
+            <option value="all">Todas Categorias</option>
             <option value="estudos">📚 Estudos</option>
             <option value="exercicios">💪 Exercícios</option>
             <option value="saude">❤️ Saúde</option>
@@ -1078,18 +1019,22 @@
             <option value="outros">📌 Outros</option>
           </select>
           <button class="btn btn-sm btn-success" id="toggle-all-todos">
-            ✅ Marcar Todas
+            ✅ Marcar/Desmarcar Hoje
           </button>
-          <span class="todo-stats" id="todo-stats">📊 0 tarefas pendentes</span>
+          <span class="todo-stats" id="todo-stats">0 pendentes</span>
         </div>
       </div>
 
+      <!-- KANBAN -->
       <div class="kanban-container" id="kanban-container"></div>
     </main>
 
+    <!-- TOAST -->
     <div class="toast-container" id="toast-container"></div>
 
+    <!-- JAVASCRIPT -->
     <script>
+      // Utils
       function getDayName(dayIndex) {
         const days = [
           "Domingo",
@@ -1102,9 +1047,9 @@
         ];
         return days[dayIndex];
       }
-      function getDayOrder(dayIndex) {
-        const order = [6, 0, 1, 2, 3, 4, 5];
-        return order[dayIndex];
+      function getShortDayName(dayIndex) {
+        const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        return days[dayIndex];
       }
       function updateDateDisplay() {
         document.getElementById("current-date-display").textContent =
@@ -1120,12 +1065,13 @@
         return text.match(/(https?:\/\/[^\s]+)/g) || [];
       }
       function formatTextWithLinks(text) {
-        return text.replace(
-          /(https?:\/\/[^\s]+)/g,
-          (url) =>
-            `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">🔗 ${url.replace(/^https?:\/\//, "").substring(0, 40)}...</a>`,
-        );
+        return text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+          let display = url.replace(/^https?:\/\//, "");
+          if (display.length > 35) display = display.substring(0, 35) + "...";
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer">🔗 ${display}</a>`;
+        });
       }
+
       function getTagClass(tag) {
         const map = {
           estudos: "tag-estudos",
@@ -1166,6 +1112,20 @@
         return map[tag] || "Outros";
       }
 
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span>${{ success: "✅", error: "❌", warning: "⚠️" }[type] || "📌"}</span> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(40px)";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      // Banco de Dados Local
       const DataManager = {
         get(key, defaultValue) {
           try {
@@ -1183,8 +1143,12 @@
         },
         getProfiles() {
           return this.get("profiles", {
-            personal: { name: "Eu", emoji: "👤", color: "personal" },
-            aunt: { name: "Tia", emoji: "👩", color: "aunt" },
+            personal: {
+              name: "Minhas Finanças",
+              emoji: "👤",
+              color: "personal",
+            },
+            aunt: { name: "Finanças da Tia", emoji: "👩", color: "aunt" },
           });
         },
         getTodos(profile = this.getActiveProfile()) {
@@ -1195,30 +1159,43 @@
         },
       };
 
-      function showToast(message, type = "success") {
-        const container = document.getElementById("toast-container");
-        const toast = document.createElement("div");
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `<span>${{ success: "✅", error: "❌", warning: "⚠️" }[type] || "📌"}</span> ${message}`;
-        container.appendChild(toast);
-        setTimeout(() => {
-          toast.style.opacity = "0";
-          toast.style.transform = "translateX(40px)";
-          setTimeout(() => toast.remove(), 300);
-        }, 3000);
-      }
-
       const Todos = {
         data: [],
         editingId: null,
         activeProfile: "personal",
+
         init() {
+          this.migrateOldData();
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getTodos(this.activeProfile);
           this.updateProfileUI();
           this.render();
           this.setupEvents();
+
+          const today = new Date().getDay();
+          document.getElementById("todo-day").value = today;
+          document.getElementById("todo-clear-day").value = today;
         },
+
+        migrateOldData() {
+          try {
+            const oldData = localStorage.getItem("todos");
+            if (oldData && !localStorage.getItem("todos_personal")) {
+              localStorage.setItem("todos_personal", oldData);
+              setTimeout(
+                () =>
+                  showToast(
+                    `📦 Tarefas antigas restauradas com sucesso!`,
+                    "success",
+                  ),
+                1000,
+              );
+            }
+          } catch (e) {
+            console.error("Erro na migração do To-Do:", e);
+          }
+        },
+
         setupEvents() {
           document
             .getElementById("todo-form")
@@ -1235,17 +1212,7 @@
           document
             .getElementById("filter-tag")
             .addEventListener("change", () => this.render());
-          document
-            .getElementById("cancel-copy")
-            .addEventListener("click", () => this.closeCopyModal());
-          document
-            .getElementById("copy-modal")
-            .addEventListener("click", (e) => {
-              if (e.target === e.currentTarget) this.closeCopyModal();
-            });
-          document
-            .getElementById("confirm-copy")
-            .addEventListener("click", () => this.executeCopy());
+
           document
             .getElementById("cancel-edit-todo")
             .addEventListener("click", () => this.closeEditModal());
@@ -1260,25 +1227,41 @@
               e.preventDefault();
               this.saveEdit();
             });
+
+          document
+            .getElementById("cancel-copy")
+            .addEventListener("click", () => this.closeCopyModal());
+          document
+            .getElementById("copy-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeCopyModal();
+            });
+          document
+            .getElementById("confirm-copy")
+            .addEventListener("click", () => this.executeCopy());
           document
             .getElementById("copy-source-day")
             .addEventListener("change", () => this.updateCopyInfo());
           document
             .getElementById("copy-target-day")
             .addEventListener("change", () => this.updateCopyInfo());
+
           document
             .getElementById("profile-select")
             .addEventListener("change", (e) =>
               this.switchProfile(e.target.value),
             );
         },
+
         switchProfile(profileId) {
           DataManager.set("activeProfile", profileId);
           this.activeProfile = profileId;
           this.updateProfileUI();
           this.data = DataManager.getTodos(this.activeProfile);
           this.render();
+          showToast(`Perfil alterado!`, "success");
         },
+
         updateProfileUI() {
           const profile = DataManager.getProfiles()[this.activeProfile];
           if (!profile) return;
@@ -1287,28 +1270,30 @@
           avatar.textContent = profile.emoji || "👤";
           avatar.className = `avatar ${profile.color || "personal"}`;
         },
+
         add() {
           const input = document.getElementById("todo-input"),
             text = input.value.trim();
           const day = parseInt(document.getElementById("todo-day").value),
             tag = document.getElementById("todo-tag").value;
           if (!text) return showToast("Digite uma tarefa!", "warning");
-          const urls = detectUrls(text),
-            hasLink = urls.length > 0;
+
+          const urls = detectUrls(text);
           this.data.push({
             id: Date.now(),
             text,
             day,
             tag,
             done: false,
-            hasLink,
+            hasLink: urls.length > 0,
             urls,
           });
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           input.value = "";
-          showToast(`✅ Tarefa "${text}" adicionada em ${getTagName(tag)}!`);
+          showToast(`✅ Tarefa adicionada!`);
         },
+
         toggle(id) {
           const todo = this.data.find((t) => t.id === id);
           if (todo) {
@@ -1317,6 +1302,7 @@
             this.render();
           }
         },
+
         delete(id) {
           if (!confirm("Remover esta tarefa?")) return;
           this.data = this.data.filter((t) => t.id !== id);
@@ -1324,6 +1310,7 @@
           this.render();
           showToast("🗑️ Tarefa removida!", "warning");
         },
+
         openEditModal(id) {
           const todo = this.data.find((t) => t.id === id);
           if (!todo) return;
@@ -1332,32 +1319,33 @@
           document.getElementById("edit-todo-day").value = todo.day;
           document.getElementById("edit-todo-tag").value = todo.tag || "outros";
           document.getElementById("edit-todo-modal").classList.add("active");
-          document.body.style.overflow = "hidden";
         },
+
         closeEditModal() {
           document.getElementById("edit-todo-modal").classList.remove("active");
-          document.body.style.overflow = "";
           this.editingId = null;
         },
+
         saveEdit() {
-          const text = document.getElementById("edit-todo-text").value.trim(),
-            day = parseInt(document.getElementById("edit-todo-day").value),
-            tag = document.getElementById("edit-todo-tag").value;
-          if (!text) return showToast("Digite uma descrição!", "warning");
+          const text = document.getElementById("edit-todo-text").value.trim();
+          const day = parseInt(document.getElementById("edit-todo-day").value);
+          const tag = document.getElementById("edit-todo-tag").value;
+          if (!text) return showToast("Digite a tarefa!", "warning");
+
           const todo = this.data.find((t) => t.id === this.editingId);
           if (todo) {
-            const urls = detectUrls(text);
             todo.text = text;
             todo.day = day;
             todo.tag = tag;
-            todo.hasLink = urls.length > 0;
-            todo.urls = urls;
+            todo.urls = detectUrls(text);
+            todo.hasLink = todo.urls.length > 0;
             DataManager.setTodos(this.data, this.activeProfile);
             this.closeEditModal();
             this.render();
             showToast(`✏️ Tarefa atualizada!`);
           }
         },
+
         openCopyModal(targetDay) {
           document.getElementById("copy-target-day").value = targetDay;
           let sourceDay = targetDay > 1 ? targetDay - 1 : 6;
@@ -1365,123 +1353,132 @@
           document.getElementById("copy-source-day").value = sourceDay;
           this.updateCopyInfo();
           document.getElementById("copy-modal").classList.add("active");
-          document.body.style.overflow = "hidden";
         },
+
         closeCopyModal() {
           document.getElementById("copy-modal").classList.remove("active");
-          document.body.style.overflow = "";
         },
+
         updateCopyInfo() {
           const sourceDay = parseInt(
-              document.getElementById("copy-source-day").value,
-            ),
-            targetDay = parseInt(
-              document.getElementById("copy-target-day").value,
-            );
-          const info = document.getElementById("copy-info"),
-            sourceTasks = this.data.filter(
-              (t) => t.day === sourceDay && !t.done,
-            );
+            document.getElementById("copy-source-day").value,
+          );
+          const targetDay = parseInt(
+            document.getElementById("copy-target-day").value,
+          );
+          const info = document.getElementById("copy-info");
+          const sourceTasks = this.data.filter(
+            (t) => t.day === sourceDay && !t.done,
+          );
+
           if (sourceDay === targetDay) {
-            info.innerHTML =
-              "⚠️ <strong>ATENÇÃO:</strong> Copiando do mesmo dia!";
-            info.style.borderColor = "var(--accent-red)";
-            info.style.background = "rgba(248,113,113,0.06)";
+            info.innerHTML = "⚠️ Você está copiando para o mesmo dia!";
+            info.style.color = "var(--accent-red)";
           } else if (sourceTasks.length === 0) {
-            info.innerHTML = `📭 Não há tarefas pendentes.`;
-            info.style.borderColor = "var(--border-color)";
-            info.style.background = "rgba(108,99,255,0.06)";
+            info.innerHTML = "📭 Não há tarefas pendentes na origem.";
+            info.style.color = "var(--text-muted)";
           } else {
             info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefas de <strong>${getDayName(sourceDay)}</strong> para <strong>${getDayName(targetDay)}</strong>`;
-            info.style.borderColor = "rgba(108,99,255,0.1)";
-            info.style.background = "rgba(108,99,255,0.06)";
+            info.style.color = "var(--accent-blue)";
           }
         },
+
         executeCopy() {
           const sourceDay = parseInt(
-              document.getElementById("copy-source-day").value,
-            ),
-            targetDay = parseInt(
-              document.getElementById("copy-target-day").value,
-            );
+            document.getElementById("copy-source-day").value,
+          );
+          const targetDay = parseInt(
+            document.getElementById("copy-target-day").value,
+          );
           if (sourceDay === targetDay)
-            return showToast("⚠️ Selecione dias diferentes!", "warning");
+            return showToast("Selecione dias diferentes!", "warning");
+
           const sourceTasks = this.data.filter(
             (t) => t.day === sourceDay && !t.done,
           );
           if (sourceTasks.length === 0)
-            return showToast(`📭 Nenhuma tarefa pendente!`, "warning");
+            return showToast("Nenhuma tarefa para copiar!", "warning");
+
           const newTasks = sourceTasks.map((task) => ({
             id: Date.now() + Math.random() * 1000,
             text: task.text,
             day: targetDay,
-            tag: task.tag || "outros",
+            tag: task.tag,
             done: false,
             hasLink: task.hasLink,
             urls: task.urls,
           }));
+
           this.data.push(...newTasks);
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           this.closeCopyModal();
-          showToast(`📋 ${newTasks.length} tarefas copiadas!`, "success");
+          showToast(`📋 ${newTasks.length} tarefas copiadas!`);
         },
+
         clearDay() {
-          const day = parseInt(document.getElementById("todo-clear-day").value),
-            tasks = this.data.filter((t) => t.day === day);
+          const day = parseInt(document.getElementById("todo-clear-day").value);
+          const tasks = this.data.filter((t) => t.day === day);
           if (tasks.length === 0)
-            return showToast(`📭 Nenhuma tarefa!`, "warning");
-          if (!confirm(`Remover TODAS as ${tasks.length} tarefas?`)) return;
+            return showToast("Nenhuma tarefa no dia!", "warning");
+          if (!confirm(`Excluir todas as ${tasks.length} tarefas deste dia?`))
+            return;
           this.data = this.data.filter((t) => t.day !== day);
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
-          showToast(`🗑️ Tarefas removidas!`, "warning");
+          showToast("🗑️ Limpeza concluída!");
         },
+
         clearSpecificDay(day) {
           document.getElementById("todo-clear-day").value = day;
           this.clearDay();
         },
+
         toggleAllToday() {
-          const today = new Date().getDay(),
-            todayTasks = this.data.filter((t) => t.day === today);
+          const today = new Date().getDay();
+          const todayTasks = this.data.filter((t) => t.day === today);
           if (todayTasks.length === 0)
-            return showToast("📭 Nenhuma tarefa para hoje!", "warning");
-          const newStatus = !todayTasks.every((t) => t.done);
-          todayTasks.forEach((t) => (t.done = newStatus));
+            return showToast("Sem tarefas hoje!", "warning");
+          const allDone = todayTasks.every((t) => t.done);
+          todayTasks.forEach((t) => (t.done = !allDone));
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
-          showToast(
-            `${newStatus ? "✅" : "↩️"} Tarefas atualizadas!`,
-            "success",
-          );
+          showToast(allDone ? "Desmarcadas!" : "Todas marcadas!", "success");
         },
+
         render() {
-          const container = document.getElementById("kanban-container"),
-            filterTag = document.getElementById("filter-tag").value;
+          const container = document.getElementById("kanban-container");
+          const filterTag = document.getElementById("filter-tag").value;
+          const today = new Date().getDay();
+
           let filteredData =
             filterTag !== "all"
               ? this.data.filter((t) => t.tag === filterTag)
               : this.data;
+
           document.getElementById("todo-stats").textContent =
-            `📊 ${filteredData.filter((t) => !t.done).length} pendentes`;
+            `${filteredData.filter((t) => !t.done).length} pendentes`;
+
+          const dayOrder = [1, 2, 3, 4, 5, 6, 0];
           let html = "";
-          [1, 2, 3, 4, 5, 6, 0].forEach((day, index) => {
-            const shortName = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"][
-                index
-              ],
-              isToday = day === new Date().getDay(),
-              isWeekend = day === 0 || day === 6;
-            const dayTodos = filteredData.filter((t) => t.day === day),
-              groupedByTag = {};
-            dayTodos.forEach((todo) => {
-              const tag = todo.tag || "outros";
+
+          dayOrder.forEach((day) => {
+            const shortName = getShortDayName(day);
+            const isToday = day === today;
+            const isWeekend = day === 0 || day === 6;
+            const dayTodos = filteredData.filter((t) => t.day === day);
+
+            const groupedByTag = {};
+            dayTodos.forEach((t) => {
+              const tag = t.tag || "outros";
               if (!groupedByTag[tag]) groupedByTag[tag] = [];
-              groupedByTag[tag].push(todo);
+              groupedByTag[tag].push(t);
             });
+
             let todosHtml = "";
-            if (dayTodos.length === 0)
-              todosHtml = `<div class="empty-day">📭 Nenhuma tarefa</div>`;
-            else {
+            if (dayTodos.length === 0) {
+              todosHtml = `<div class="empty-day">Nenhuma tarefa</div>`;
+            } else {
               [
                 "estudos",
                 "exercicios",
@@ -1493,35 +1490,45 @@
                 "outros",
               ].forEach((tag) => {
                 if (groupedByTag[tag]) {
-                  todosHtml += `<div style="margin: 8px 0 4px 0;"><span style="font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">${getTagIcon(tag)} ${getTagName(tag)}</span></div>`;
+                  todosHtml += `<div style="margin: 12px 0 6px 0; font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">${getTagIcon(tag)} ${getTagName(tag)}</div>`;
                   groupedByTag[tag].forEach((todo) => {
                     todosHtml += `
                       <div class="kanban-card ${todo.done ? "done" : ""}">
-                        <div class="card-top"><div class="card-text">${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}</div><span class="card-tag ${getTagClass(todo.tag)}">${getTagIcon(todo.tag)}</span></div>
-                        <div class="card-actions">
-                          <button class="done-btn" onclick="Todos.toggle(${todo.id})">${todo.done ? "↩️" : "✅"}</button>
-                          <button class="edit-btn" onclick="Todos.openEditModal(${todo.id})">✏️</button>
-                          <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
+                        <div class="card-top">
+                          <div class="card-text">${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}</div>
                         </div>
-                      </div>`;
+                        <div class="card-actions">
+                          <button onclick="Todos.toggle(${todo.id})" title="Marcar feito">${todo.done ? "↩️" : "✅"}</button>
+                          <button onclick="Todos.openEditModal(${todo.id})" title="Editar">✏️</button>
+                          <button onclick="Todos.delete(${todo.id})" title="Excluir">🗑️</button>
+                        </div>
+                      </div>
+                    `;
                   });
                 }
               });
             }
+
             html += `
               <div class="kanban-column ${isWeekend ? "weekend" : ""}">
-                <div class="column-header"><h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${shortName}</h3><span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length}</span></div>
+                <div class="column-header">
+                  <h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${shortName}</h3>
+                  <span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length}</span>
+                </div>
                 <div>${todosHtml}</div>
                 <div class="column-actions">
-                  <button class="copy-day" onclick="Todos.openCopyModal(${day})">📋 Copiar</button>
-                  <button class="clear-day" onclick="Todos.clearSpecificDay(${day})">🗑️ Limpar</button>
+                  <button onclick="Todos.openCopyModal(${day})">📋 Copiar</button>
+                  <button onclick="Todos.clearSpecificDay(${day})">🗑️ Limpar</button>
                 </div>
-              </div>`;
+              </div>
+            `;
           });
+
           container.innerHTML = html;
         },
       };
 
+      // Tema
       let darkTheme = true;
       document
         .getElementById("themeToggle")
@@ -1529,28 +1536,29 @@
           darkTheme = !darkTheme;
           const root = document.documentElement;
           if (darkTheme) {
-            root.style.setProperty("--bg-primary", "#0f0f1a");
-            root.style.setProperty("--bg-secondary", "#1a1a2e");
-            root.style.setProperty("--bg-card", "rgba(26,26,46,0.8)");
-            root.style.setProperty("--bg-input", "#16162b");
-            root.style.setProperty("--text-primary", "#ffffff");
-            root.style.setProperty("--text-secondary", "rgba(255,255,255,0.7)");
-            root.style.setProperty("--text-muted", "rgba(255,255,255,0.4)");
-            root.style.setProperty("--border-color", "rgba(255,255,255,0.06)");
+            root.style.setProperty("--bg-primary", "#0b0f19");
+            root.style.setProperty("--bg-secondary", "#131722");
+            root.style.setProperty("--bg-card", "rgba(19,23,34,0.8)");
+            root.style.setProperty("--bg-input", "#1a1d2d");
+            root.style.setProperty("--text-primary", "#f8fafc");
+            root.style.setProperty("--text-secondary", "#cbd5e1");
+            root.style.setProperty("--text-muted", "#64748b");
+            root.style.setProperty("--border-color", "rgba(255,255,255,0.05)");
             this.textContent = "🌓";
           } else {
-            root.style.setProperty("--bg-primary", "#f0f2f8");
+            root.style.setProperty("--bg-primary", "#f1f5f9");
             root.style.setProperty("--bg-secondary", "#ffffff");
             root.style.setProperty("--bg-card", "rgba(255,255,255,0.9)");
-            root.style.setProperty("--bg-input", "#f0f2f8");
-            root.style.setProperty("--text-primary", "#1a1a2e");
-            root.style.setProperty("--text-secondary", "rgba(0,0,0,0.7)");
-            root.style.setProperty("--text-muted", "rgba(0,0,0,0.4)");
-            root.style.setProperty("--border-color", "rgba(0,0,0,0.06)");
+            root.style.setProperty("--bg-input", "#e2e8f0");
+            root.style.setProperty("--text-primary", "#0f172a");
+            root.style.setProperty("--text-secondary", "#334155");
+            root.style.setProperty("--text-muted", "#64748b");
+            root.style.setProperty("--border-color", "rgba(0,0,0,0.08)");
             this.textContent = "🌞";
           }
         });
 
+      // Iniciar
       updateDateDisplay();
       Todos.init();
     </script>
