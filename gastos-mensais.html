@@ -6,31 +6,30 @@
     <title>FinControl - Gastos Mensais</title>
     <style>
       :root {
-        --bg-primary: #0a0a14;
-        --bg-secondary: #12121f;
-        --bg-card: rgba(18, 18, 31, 0.7);
-        --bg-input: #0d0d1a;
-        --border-color: rgba(255, 255, 255, 0.05);
-        --text-primary: #f0f0ff;
-        --text-secondary: rgba(240, 240, 255, 0.65);
-        --text-muted: rgba(240, 240, 255, 0.35);
-        --accent-blue: #6c63ff;
-        --accent-purple: #a855f7;
-        --accent-green: #34d399;
-        --accent-amber: #fbbf24;
-        --accent-red: #f87171;
-        --accent-pink: #ec4899;
-        --accent-cyan: #22d3ee;
-        --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: rgba(30, 41, 59, 0.7);
+        --bg-input: #0f172a;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --accent-blue: #3b82f6;
+        --accent-purple: #8b5cf6;
+        --accent-green: #10b981;
+        --accent-amber: #f59e0b;
+        --accent-red: #ef4444;
+        --accent-cyan: #06b6d4;
+        --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
         --gradient-card: linear-gradient(
           145deg,
-          rgba(18, 18, 31, 0.8),
-          rgba(10, 10, 20, 0.9)
+          rgba(30, 41, 59, 0.8),
+          rgba(15, 23, 42, 0.9)
         );
-        --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.5);
-        --radius: 16px;
-        --radius-sm: 10px;
-        --transition: all 0.25s ease;
+        --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.4);
+        --radius: 20px;
+        --radius-sm: 12px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       * {
@@ -48,69 +47,107 @@
           Roboto,
           sans-serif;
         background: var(--bg-primary);
+        background-image:
+          radial-gradient(
+            circle at 15% 50%,
+            rgba(59, 130, 246, 0.05),
+            transparent 25%
+          ),
+          radial-gradient(
+            circle at 85% 30%,
+            rgba(139, 92, 246, 0.05),
+            transparent 25%
+          );
         color: var(--text-primary);
         display: flex;
         min-height: 100vh;
       }
 
+      /* SCROLLBAR CUSTOMIZATION */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
       /* MENU LATERAL */
       aside {
-        width: 220px;
-        background: rgba(10, 10, 20, 0.95);
+        width: 260px;
+        background: rgba(15, 23, 42, 0.8);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        padding: 20px 14px;
+        padding: 32px 20px;
         position: fixed;
         top: 0;
         left: 0;
         height: 100vh;
         z-index: 100;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
       }
 
       .menu-header {
-        padding: 6px 8px 20px;
+        padding-bottom: 24px;
         border-bottom: 1px solid var(--border-color);
-        margin-bottom: 14px;
+        margin-bottom: 24px;
       }
 
       .menu-logo {
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 24px;
+        font-weight: 800;
         background: var(--gradient-primary);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 14px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: -0.5px;
       }
 
       .menu-profile {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: var(--bg-input);
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
-        padding: 6px 10px;
+        padding: 8px 12px;
+        transition: var(--transition);
+      }
+
+      .menu-profile:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
       }
 
       .menu-profile .avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 16px;
         flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
       .avatar.personal {
-        background: var(--accent-blue);
+        background: var(--gradient-primary);
         color: white;
       }
       .avatar.aunt {
-        background: var(--accent-pink);
+        background: linear-gradient(135deg, #ec4899, #f43f5e);
         color: white;
       }
 
@@ -118,11 +155,12 @@
         background: transparent;
         border: none;
         color: var(--text-primary);
-        font-size: 13px;
+        font-size: 14px;
         outline: none;
         cursor: pointer;
-        font-weight: 500;
+        font-weight: 600;
         width: 100%;
+        appearance: none;
       }
       .menu-profile select option {
         background: var(--bg-secondary);
@@ -132,71 +170,112 @@
       .menu-nav {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 8px;
         flex: 1;
       }
 
       .menu-nav a {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
+        gap: 12px;
+        padding: 12px 16px;
         color: var(--text-muted);
         text-decoration: none;
         border-radius: var(--radius-sm);
         transition: var(--transition);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-nav a::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: var(--gradient-primary);
+        opacity: 0;
+        transition: var(--transition);
       }
 
       .menu-nav a svg {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         stroke: currentColor;
         flex-shrink: 0;
       }
 
       .menu-nav a:hover {
         color: var(--text-secondary);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.03);
       }
 
       .menu-nav a.active {
         color: white;
-        background: var(--accent-blue);
-        box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .menu-nav a.active::before {
+        opacity: 1;
+      }
+
+      .menu-nav a.active svg {
+        color: var(--accent-blue);
       }
 
       .menu-footer {
         border-top: 1px solid var(--border-color);
-        padding-top: 12px;
-        font-size: 10px;
+        padding-top: 20px;
+        font-size: 12px;
         color: var(--text-muted);
         text-align: center;
+        font-weight: 500;
       }
 
       /* CONTEÚDO */
       main {
-        margin-left: 220px;
+        margin-left: 260px;
         flex: 1;
-        padding: 24px;
+        padding: 32px 40px;
         min-height: 100vh;
+        max-width: 1400px;
+        margin-right: auto;
+      }
+
+      .page-header {
+        margin-bottom: 32px;
+      }
+
+      .page-header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+      }
+
+      .page-header p {
+        color: var(--text-muted);
+        font-size: 15px;
       }
 
       .page-grid {
         display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 20px;
-        height: calc(100vh - 48px);
+        grid-template-columns: 1fr 380px;
+        gap: 24px;
+        height: calc(100vh - 150px);
       }
 
       /* CALENDÁRIO */
       .calendar-section {
         background: var(--gradient-card);
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
-        padding: 20px;
+        padding: 24px;
         box-shadow: var(--shadow-card);
         display: flex;
         flex-direction: column;
@@ -207,59 +286,72 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 16px;
+        margin-bottom: 24px;
         flex-shrink: 0;
       }
       .calendar-header h2 {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 700;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
       }
       .calendar-nav {
         display: flex;
-        gap: 4px;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 4px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
       }
       .calendar-nav button {
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
+        background: transparent;
+        border: none;
         border-radius: 8px;
         color: var(--text-secondary);
-        padding: 5px 10px;
+        padding: 8px 12px;
         cursor: pointer;
-        font-size: 13px;
+        font-size: 14px;
+        font-weight: 500;
         transition: var(--transition);
       }
       .calendar-nav button:hover {
-        border-color: var(--accent-blue);
+        background: rgba(255, 255, 255, 0.1);
         color: white;
+      }
+      .calendar-nav .btn-today {
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--accent-blue);
+      }
+      .calendar-nav .btn-today:hover {
+        background: rgba(59, 130, 246, 0.3);
       }
 
       .calendar-grid-wrapper {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
+        padding-right: 4px;
       }
 
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 3px;
+        gap: 8px;
       }
 
       .calendar-day-header {
         text-align: center;
-        font-size: 10px;
-        font-weight: 700;
+        font-size: 12px;
+        font-weight: 600;
         text-transform: uppercase;
         color: var(--text-muted);
-        padding: 4px 0;
-        letter-spacing: 0.5px;
+        padding: 12px 0;
+        letter-spacing: 1px;
         position: sticky;
         top: 0;
-        background: rgba(18, 18, 31, 0.9);
+        background: var(--bg-secondary);
         z-index: 1;
+        border-radius: var(--radius-sm);
+        margin-bottom: 8px;
       }
 
       .calendar-day {
@@ -268,161 +360,245 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
         transition: var(--transition);
-        font-size: 12px;
-        font-weight: 600;
-        background: var(--bg-input);
-        border: 1px solid transparent;
-        min-height: 44px;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        min-height: 60px;
+        position: relative;
+        overflow: hidden;
+      }
+      .calendar-day::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--gradient-primary);
+        opacity: 0;
+        transition: var(--transition);
+        z-index: 0;
+      }
+      .calendar-day > * {
+        z-index: 1;
       }
       .calendar-day:hover {
-        border-color: var(--accent-blue);
-        background: rgba(108, 99, 255, 0.08);
+        border-color: rgba(59, 130, 246, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      .calendar-day:hover::before {
+        opacity: 0.1;
       }
       .calendar-day.empty {
         background: transparent;
+        border: none;
         cursor: default;
         pointer-events: none;
       }
-      .calendar-day.empty:hover {
-        border-color: transparent;
-        background: transparent;
-      }
       .calendar-day.today {
-        border-color: var(--accent-blue) !important;
-        box-shadow: 0 0 12px rgba(108, 99, 255, 0.2);
+        border-color: var(--accent-blue);
+        background: rgba(59, 130, 246, 0.1);
       }
       .calendar-day .day-number {
-        font-size: 11px;
+        font-size: 14px;
         font-weight: 700;
-        color: var(--text-primary);
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+      .calendar-day.today .day-number {
+        color: var(--accent-blue);
       }
       .calendar-day .day-value {
-        font-size: 9px;
-        margin-top: 1px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
       }
       .calendar-day .day-value.positive {
         color: var(--accent-green);
+        background: rgba(16, 185, 129, 0.1);
       }
       .calendar-day .day-value.negative {
         color: var(--accent-red);
-      }
-      .calendar-day .day-value.neutral {
-        color: var(--text-muted);
+        background: rgba(239, 68, 68, 0.1);
       }
       .calendar-day.future {
-        opacity: 0.4;
+        opacity: 0.3;
         cursor: not-allowed;
+      }
+      .calendar-day.future:hover {
+        transform: none;
+        border-color: rgba(255, 255, 255, 0.03);
+      }
+      .calendar-day.future:hover::before {
+        opacity: 0;
       }
 
       /* SIDEBAR */
       .sidebar-section {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 24px;
         overflow-y: auto;
+        padding-right: 4px;
       }
 
       .card {
         background: var(--gradient-card);
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
-        padding: 18px;
+        padding: 24px;
         box-shadow: var(--shadow-card);
         flex-shrink: 0;
+        transition: var(--transition);
+      }
+      .card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
       }
       .card h3 {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
       }
       .card .big-value {
-        font-size: 24px;
-        font-weight: 700;
+        font-size: 32px;
+        font-weight: 800;
         color: var(--text-primary);
-        letter-spacing: -0.5px;
+        letter-spacing: -1px;
+        margin-bottom: 4px;
       }
       .card .sub-text {
-        font-size: 11px;
+        font-size: 13px;
         color: var(--text-muted);
-        margin-top: 2px;
+        font-weight: 500;
       }
 
       .budget-setup {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 12px;
+      }
+      .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .input-group span {
+        position: absolute;
+        left: 16px;
+        color: var(--text-muted);
+        font-weight: 500;
       }
       .budget-setup input {
-        padding: 10px 14px;
-        background: var(--bg-input);
+        width: 100%;
+        padding: 14px 16px 14px 44px;
+        background: rgba(0, 0, 0, 0.2);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         color: var(--text-primary);
-        font-size: 14px;
+        font-size: 16px;
+        font-weight: 600;
         outline: none;
+        transition: var(--transition);
       }
       .budget-setup input:focus {
         border-color: var(--accent-blue);
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
 
       .btn {
-        padding: 10px 18px;
+        padding: 14px 24px;
         border: none;
         border-radius: var(--radius-sm);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 8px;
+        width: 100%;
       }
       .btn-primary {
         background: var(--gradient-primary);
         color: white;
-        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
       }
       .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.45);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
       }
       .btn-sm {
-        padding: 5px 10px;
-        font-size: 11px;
-        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 13px;
+        width: auto;
       }
       .btn-outline {
         background: transparent;
         border: 1px solid var(--border-color);
-        color: var(--text-secondary);
+        color: var(--text-primary);
+      }
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
       }
       .btn-danger {
-        background: var(--accent-red);
-        color: white;
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
       }
 
+      .progress-container {
+        margin: 24px 0 16px;
+      }
       .progress-mini {
         width: 100%;
-        height: 6px;
-        background: var(--bg-input);
-        border-radius: 6px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
         overflow: hidden;
-        margin-top: 8px;
       }
       .progress-mini-fill {
         height: 100%;
-        border-radius: 6px;
-        transition: width 0.5s ease;
+        border-radius: 8px;
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         background: var(--gradient-primary);
+        position: relative;
+      }
+      .progress-mini-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        animation: shimmer 2s infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
       }
       .progress-mini-fill.warning {
         background: linear-gradient(135deg, #fbbf24, #f59e0b);
@@ -435,15 +611,22 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 7px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 14px;
+      }
+      .day-detail-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
       }
       .day-detail-row .label {
         color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       .day-detail-row .value {
-        font-weight: 600;
+        font-weight: 700;
       }
 
       /* MODAL */
@@ -454,115 +637,192 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(12px);
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         z-index: 2000;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
       .modal-overlay.active {
         display: flex;
+        opacity: 1;
       }
       .modal {
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
-        padding: 24px;
-        max-width: 380px;
+        padding: 32px;
+        max-width: 420px;
         width: 90%;
-        box-shadow: var(--shadow-card);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .modal-overlay.active .modal {
+        transform: scale(1);
       }
       .modal h3 {
-        font-size: 16px;
-        margin-bottom: 12px;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 20px;
+        margin-bottom: 8px;
+        font-weight: 800;
+      }
+      .modal-subtitle {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+      .modal .input-group {
+        margin-bottom: 24px;
       }
       .modal input {
         width: 100%;
-        padding: 12px 16px;
-        background: var(--bg-input);
+        padding: 16px 16px 16px 44px;
+        background: rgba(0, 0, 0, 0.2);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         color: var(--text-primary);
-        font-size: 16px;
+        font-size: 20px;
+        font-weight: 700;
         outline: none;
-        margin-bottom: 14px;
-        text-align: center;
+        transition: var(--transition);
       }
       .modal input:focus {
         border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
       .modal-actions {
         display: flex;
-        gap: 8px;
-        justify-content: flex-end;
+        gap: 12px;
+      }
+      .modal-actions .btn {
+        flex: 1;
       }
 
       /* TOAST */
       .toast-container {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 32px;
+        right: 32px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        z-index: 1000;
+        gap: 12px;
+        z-index: 3000;
       }
       .toast {
-        padding: 12px 20px;
+        padding: 16px 24px;
         border-radius: var(--radius-sm);
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         color: var(--text-primary);
-        font-size: 13px;
-        box-shadow: var(--shadow-card);
-        animation: slideInRight 0.35s ease;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
       }
       .toast.success {
-        border-left: 3px solid var(--accent-green);
+        border-left: 4px solid var(--accent-green);
       }
       .toast.error {
-        border-left: 3px solid var(--accent-red);
+        border-left: 4px solid var(--accent-red);
       }
       @keyframes slideInRight {
         from {
           opacity: 0;
-          transform: translateX(40px);
+          transform: translateX(100%) scale(0.9);
         }
         to {
           opacity: 1;
-          transform: translateX(0);
+          transform: translateX(0) scale(1);
         }
       }
 
       /* RESPONSIVO */
+      @media (max-width: 1200px) {
+        main {
+          padding: 24px;
+        }
+        .page-grid {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+
       @media (max-width: 992px) {
+        aside {
+          width: 80px;
+          padding: 24px 12px;
+        }
+        .menu-logo {
+          justify-content: center;
+          font-size: 0;
+        }
+        .menu-logo::before {
+          content: "💰";
+          font-size: 24px;
+        }
+        .menu-profile {
+          padding: 8px;
+          justify-content: center;
+        }
+        .menu-profile select {
+          display: none;
+        }
+        .menu-nav a {
+          padding: 12px;
+          justify-content: center;
+          font-size: 0;
+        }
+        .menu-nav a svg {
+          width: 24px;
+          height: 24px;
+        }
+        .menu-footer {
+          display: none;
+        }
+        main {
+          margin-left: 80px;
+        }
         .page-grid {
           grid-template-columns: 1fr;
           height: auto;
         }
         .calendar-section {
-          min-height: 500px;
+          min-height: 600px;
         }
       }
 
       @media (max-width: 768px) {
-        aside {
-          width: 180px;
-          padding: 14px 10px;
-        }
         main {
-          margin-left: 180px;
-          padding: 14px;
+          padding: 16px;
         }
         .calendar-day {
-          min-height: 36px;
+          min-height: 50px;
+        }
+        .calendar-day .day-number {
+          font-size: 12px;
+        }
+        .calendar-day .day-value {
           font-size: 10px;
+          padding: 2px 4px;
+        }
+        .card {
+          padding: 20px;
+        }
+        .modal-actions {
+          flex-direction: column;
+        }
+        .toast-container {
+          bottom: 16px;
+          right: 16px;
+          left: 16px;
+        }
+        .toast {
+          justify-content: center;
         }
       }
     </style>
@@ -575,8 +835,8 @@
         <div class="menu-profile">
           <div class="avatar personal" id="profile-avatar">👤</div>
           <select id="profile-select">
-            <option value="personal">👤 Eu</option>
-            <option value="aunt">👩 Tia</option>
+            <option value="personal">Minhas Finanças</option>
+            <option value="aunt">Finanças da Tia</option>
           </select>
         </div>
       </div>
@@ -588,11 +848,13 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
             <path d="M9 11l3 3L22 4" />
             <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
           </svg>
-          To-Do
+          Tarefas
         </a>
         <a href="investimentos.html">
           <svg
@@ -600,10 +862,10 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
           Investimentos
         </a>
@@ -613,11 +875,13 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
-          Gastos
+          Lançamentos
         </a>
         <a href="gastos-mensais.html" class="active">
           <svg
@@ -625,67 +889,88 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4" />
-            <path d="M8 2v4" />
-            <path d="M3 10h18" />
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-          Gastos Mensais
+          Visão Mensal
         </a>
       </nav>
 
-      <div class="menu-footer">FinControl v1.0</div>
+      <div class="menu-footer">FinControl Pro v2.0</div>
     </aside>
 
     <!-- MODAL -->
     <div class="modal-overlay" id="day-modal">
       <div class="modal">
-        <h3 id="modal-title">📅 Dia X</h3>
-        <p
-          style="
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-bottom: 10px;
-          "
-          id="modal-subtitle"
-        ></p>
-        <input
-          type="number"
-          id="modal-value"
-          placeholder="Valor gasto (R$)"
-          step="0.01"
-        />
+        <h3 id="modal-title">Dia Selecionado</h3>
+        <p class="modal-subtitle" id="modal-subtitle">Detalhes do dia</p>
+
+        <div class="input-group">
+          <span>R$</span>
+          <input
+            type="number"
+            id="modal-value"
+            placeholder="0,00"
+            step="0.01"
+          />
+        </div>
+
         <div class="modal-actions">
           <button
-            class="btn btn-outline btn-sm"
+            class="btn btn-outline"
             onclick="
               document.getElementById('day-modal').classList.remove('active')
             "
           >
             Cancelar
           </button>
-          <button class="btn btn-danger btn-sm" id="modal-clear">
-            🗑️ Limpar
-          </button>
-          <button class="btn btn-primary btn-sm" id="modal-save">
-            💾 Salvar
-          </button>
+          <button class="btn btn-danger" id="modal-clear">Zerar Dia</button>
+          <button class="btn btn-primary" id="modal-save">Salvar Gasto</button>
         </div>
       </div>
     </div>
 
     <!-- CONTEÚDO -->
     <main>
+      <div class="page-header">
+        <h1>Visão Mensal de Gastos</h1>
+        <p>Acompanhe seu orçamento e controle seus limites diários.</p>
+      </div>
+
       <div class="page-grid">
         <div class="calendar-section">
           <div class="calendar-header">
-            <h2 id="calendar-title">Julho 2026</h2>
+            <h2 id="calendar-title">Carregando...</h2>
             <div class="calendar-nav">
-              <button id="prev-month-btn">◀</button>
-              <button id="next-month-btn">▶</button>
-              <button class="btn btn-sm btn-outline" id="today-btn">
-                Hoje
+              <button id="prev-month-btn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button class="btn-today" id="today-btn">Hoje</button>
+              <button id="next-month-btn">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
               </button>
             </div>
           </div>
@@ -696,28 +981,74 @@
 
         <div class="sidebar-section">
           <div class="card">
-            <h3>⚙️ Orçamento do Mês</h3>
+            <h3>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v8" />
+                <path d="M8 12h8" />
+              </svg>
+              Definir Orçamento
+            </h3>
             <div class="budget-setup">
-              <input
-                type="number"
-                id="budget-input"
-                placeholder="Ex: 1500.00"
-                step="0.01"
-              />
+              <div class="input-group">
+                <span>R$</span>
+                <input
+                  type="number"
+                  id="budget-input"
+                  placeholder="0,00"
+                  step="0.01"
+                />
+              </div>
               <button class="btn btn-primary" id="save-budget-btn">
-                💾 Definir Orçamento
+                Atualizar Orçamento
               </button>
             </div>
           </div>
 
           <div class="card">
-            <h3>📊 Resumo</h3>
-            <div class="big-value" id="resume-budget" style="font-size: 22px">
-              R$ 0,00
+            <h3>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M3 3v18h18" />
+                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+              </svg>
+              Resumo do Mês
+            </h3>
+            <div class="big-value" id="resume-budget">R$ 0,00</div>
+            <div class="sub-text">Orçamento total planejado</div>
+
+            <div class="progress-container">
+              <div class="progress-mini">
+                <div
+                  class="progress-mini-fill"
+                  id="resume-progress"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div
+                class="sub-text"
+                style="margin-top: 8px; text-align: right; font-weight: 600"
+                id="resume-percent"
+              >
+                0% utilizado
+              </div>
             </div>
-            <div class="sub-text">Orçamento total</div>
+
             <div class="day-detail-row">
-              <span class="label">💸 Gasto acumulado</span>
+              <span class="label">🔴 Gasto acumulado</span>
               <span
                 class="value"
                 id="resume-spent"
@@ -726,7 +1057,7 @@
               >
             </div>
             <div class="day-detail-row">
-              <span class="label">💰 Saldo restante</span>
+              <span class="label">🟢 Saldo disponível</span>
               <span
                 class="value"
                 id="resume-remaining"
@@ -735,37 +1066,63 @@
               >
             </div>
             <div class="day-detail-row">
-              <span class="label">📅 Dias restantes</span>
+              <span class="label">⏳ Dias restantes</span>
               <span class="value" id="resume-days">0</span>
             </div>
-            <div class="day-detail-row">
-              <span class="label">🎯 Ideal por dia</span>
+            <div
+              class="day-detail-row"
+              style="
+                margin-top: 8px;
+                padding-top: 16px;
+                border-top: 1px dashed var(--border-color);
+              "
+            >
+              <span
+                class="label"
+                style="color: var(--text-primary); font-weight: 600"
+                >🎯 Meta Diária</span
+              >
               <span
                 class="value"
                 id="resume-daily"
-                style="color: var(--accent-cyan)"
+                style="color: var(--accent-cyan); font-size: 18px"
                 >R$ 0,00</span
               >
             </div>
-            <div class="progress-mini">
-              <div
-                class="progress-mini-fill"
-                id="resume-progress"
-                style="width: 0%"
-              ></div>
-            </div>
-            <div class="sub-text" style="margin-top: 6px" id="resume-percent">
-              0% utilizado
-            </div>
           </div>
 
-          <div class="card">
-            <h3>📅 Dia Selecionado</h3>
+          <div class="card" id="selected-day-card">
+            <h3>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+                <path d="M8 14h.01" />
+                <path d="M12 14h.01" />
+                <path d="M16 14h.01" />
+                <path d="M8 18h.01" />
+                <path d="M12 18h.01" />
+                <path d="M16 18h.01" />
+              </svg>
+              Detalhes do Dia
+            </h3>
             <div
               id="selected-day-info"
-              style="color: var(--text-muted); font-size: 12px"
+              style="
+                color: var(--text-muted);
+                text-align: center;
+                padding: 20px 0;
+              "
             >
-              Clique em um dia no calendário
+              Selecione um dia no calendário para ver os detalhes
             </div>
           </div>
         </div>
@@ -775,6 +1132,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script>
+      // O Javascript original permanece o mesmo, apenas ajustando as classes e ícones gerados no HTML dinâmico do calendário
       function formatBRL(value) {
         return new Intl.NumberFormat("pt-BR", {
           style: "currency",
@@ -786,12 +1144,18 @@
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        toast.innerHTML = `<span>${type === "success" ? "✅" : "❌"}</span> ${message}`;
+
+        const icon =
+          type === "success"
+            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-green)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-red)"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+
+        toast.innerHTML = `${icon} <span>${message}</span>`;
         container.appendChild(toast);
         setTimeout(() => {
           toast.style.opacity = "0";
-          toast.style.transform = "translateX(40px)";
-          setTimeout(() => toast.remove(), 300);
+          toast.style.transform = "translateX(100%) scale(0.9)";
+          setTimeout(() => toast.remove(), 400);
         }, 3000);
       }
 
@@ -906,6 +1270,18 @@
               if (e.target === e.currentTarget)
                 document.getElementById("day-modal").classList.remove("active");
             });
+
+          // Add enter key support for inputs
+          document
+            .getElementById("budget-input")
+            .addEventListener("keypress", (e) => {
+              if (e.key === "Enter") this.saveBudget();
+            });
+          document
+            .getElementById("modal-value")
+            .addEventListener("keypress", (e) => {
+              if (e.key === "Enter") this.saveDayValue();
+            });
         },
 
         switchProfile(profileId) {
@@ -940,8 +1316,8 @@
           DataManager.setBudgets(this.activeProfile, budgets);
           this.budget = value;
           this.updateResume();
-          this.renderCalendar();
-          showToast(`Orçamento de ${formatBRL(value)} definido!`);
+          this.renderCalendar(); // Re-render to update the visual indicators based on new daily ideal
+          showToast(`Orçamento atualizado para ${formatBRL(value)}`);
         },
 
         getDayKey(day) {
@@ -950,43 +1326,49 @@
 
         openDayModal(day, isFuture) {
           if (isFuture) {
-            showToast("Não pode lançar gastos em dias futuros!", "error");
+            showToast("Não é possível lançar gastos em dias futuros.", "error");
             return;
           }
           this.selectedDay = day;
           const dayKey = this.getDayKey(day);
-          const currentValue = this.dailyExpenses[dayKey] || 0;
+          const currentValue = this.dailyExpenses[dayKey];
           const dateObj = new Date(
             this.currentDate.getFullYear(),
             this.currentDate.getMonth(),
             day,
           );
+
           const dayName = dateObj.toLocaleDateString("pt-BR", {
             weekday: "long",
           });
+          const capitalizedDayName =
+            dayName.charAt(0).toUpperCase() + dayName.slice(1);
 
-          document.getElementById("modal-title").textContent =
-            `📅 Dia ${day} - ${dayName}`;
+          document.getElementById("modal-title").textContent = `Dia ${day}`;
           document.getElementById("modal-subtitle").textContent =
-            dateObj.toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            });
-          document.getElementById("modal-value").value = currentValue || "";
+            `${capitalizedDayName}, ${dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}`;
+
+          document.getElementById("modal-value").value =
+            currentValue !== undefined ? currentValue : "";
           document.getElementById("day-modal").classList.add("active");
-          document.getElementById("modal-value").focus();
+          setTimeout(() => document.getElementById("modal-value").focus(), 100);
         },
 
         saveDayValue() {
           if (!this.selectedDay) return;
-          const value = parseFloat(
-            document.getElementById("modal-value").value,
-          );
-          if (isNaN(value) || value < 0) {
-            showToast("Informe um valor válido!", "error");
+          const valueInput = document.getElementById("modal-value").value;
+
+          if (valueInput === "") {
+            showToast("Informe um valor.", "error");
             return;
           }
+
+          const value = parseFloat(valueInput);
+          if (isNaN(value) || value < 0) {
+            showToast("Valor inválido.", "error");
+            return;
+          }
+
           const dayKey = this.getDayKey(this.selectedDay);
           this.dailyExpenses[dayKey] = value;
           DataManager.setDailyExpenses(
@@ -994,13 +1376,15 @@
             this.monthKey,
             this.dailyExpenses,
           );
+
           document.getElementById("day-modal").classList.remove("active");
           this.renderCalendar();
           this.updateResume();
           this.updateSelectedDayInfo(this.selectedDay);
+
           showToast(
             value === 0
-              ? "Dia zerado! ✅"
+              ? "Dia zerado com sucesso!"
               : `Gasto de ${formatBRL(value)} registrado!`,
           );
         },
@@ -1014,51 +1398,94 @@
             this.monthKey,
             this.dailyExpenses,
           );
+
           document.getElementById("day-modal").classList.remove("active");
           this.renderCalendar();
           this.updateResume();
           this.updateSelectedDayInfo(this.selectedDay);
-          showToast("Valor do dia removido!");
+          showToast("Registro removido.");
         },
 
         updateSelectedDayInfo(day) {
           const dayKey = this.getDayKey(day);
           const value = this.dailyExpenses[dayKey];
           const container = document.getElementById("selected-day-info");
+          const dateObj = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth(),
+            day,
+          );
+
+          const formattedDate = dateObj.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "long",
+          });
           const today = new Date();
-          const isFuture =
-            new Date(
-              this.currentDate.getFullYear(),
-              this.currentDate.getMonth(),
-              day,
-            ) > today;
+          today.setHours(0, 0, 0, 0);
+
+          const isFuture = dateObj > today;
 
           if (isFuture) {
-            container.innerHTML = `<span style="color:var(--text-muted);">Dia futuro</span>`;
+            container.innerHTML = `
+              <div style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;">⏳</div>
+              <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${formattedDate}</div>
+              <div style="color: var(--text-muted);">Ainda não chegou</div>
+            `;
             return;
           }
 
           if (value === undefined || value === null) {
             container.innerHTML = `
-              <div style="color:var(--text-muted);">Dia ${day} - Sem gasto</div>
-              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">➕ Lançar</button>
+              <div style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;">📝</div>
+              <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${formattedDate}</div>
+              <div style="color: var(--text-muted); margin-bottom: 20px;">Nenhum registro encontrado</div>
+              <button class="btn btn-primary" onclick="Calendar.openDayModal(${day}, false)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Lançar Gasto
+              </button>
             `;
           } else if (value === 0) {
             container.innerHTML = `
-              <div style="color:var(--accent-green);font-weight:600;">🟢 Dia ${day} - Zerado!</div>
-              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">✏️ Editar</button>
+              <div style="font-size: 40px; margin-bottom: 12px;">🎉</div>
+              <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${formattedDate}</div>
+              <div style="color: var(--accent-green); font-weight: 700; font-size: 24px; margin: 12px 0;">Nenhum gasto!</div>
+              <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="Calendar.openDayModal(${day}, false)">
+                Editar Registro
+              </button>
             `;
           } else {
             const dailyIdeal = this.getDailyIdeal();
             const isOver = dailyIdeal > 0 && value > dailyIdeal;
+            const diff = Math.abs(value - dailyIdeal);
+
             container.innerHTML = `
-              <div style="font-weight:600;${isOver ? "color:var(--accent-red);" : "color:var(--accent-green);"}">
-                ${isOver ? "⚠️" : "✅"} ${formatBRL(value)}
+              <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">${formattedDate}</div>
+              
+              <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid ${isOver ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)"}">
+                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px;">Total Gasto</div>
+                <div style="font-size: 32px; font-weight: 800; color: ${isOver ? "var(--accent-red)" : "var(--accent-green)"}; letter-spacing: -1px;">
+                  ${formatBRL(value)}
+                </div>
               </div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
-                ${isOver ? `${formatBRL(value - dailyIdeal)} acima` : "Dentro do ideal"}
-              </div>
-              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">✏️ Editar</button>
+
+              ${
+                dailyIdeal > 0
+                  ? `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; font-size: 14px;">
+                  <span style="color: ${isOver ? "var(--accent-red)" : "var(--accent-green)"}">
+                    ${isOver ? "⚠️" : "✅"}
+                  </span>
+                  <span style="color: var(--text-secondary)">
+                    ${isOver ? `Passou ${formatBRL(diff)} da meta` : `Economizou ${formatBRL(dailyIdeal - value)}`}
+                  </span>
+                </div>
+              `
+                  : ""
+              }
+
+              <button class="btn btn-outline" style="width: 100%;" onclick="Calendar.openDayModal(${day}, false)">
+                Editar Valor
+              </button>
             `;
           }
         },
@@ -1077,6 +1504,7 @@
           const lastDay = new Date(year, month + 1, 0).getDate();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth();
+
           if (year === currentYear && month === currentMonth)
             return Math.max(0, lastDay - today.getDate() + 1);
           if (
@@ -1090,7 +1518,7 @@
         getDailyIdeal() {
           const remaining = this.budget - this.getTotalSpent();
           const daysRemaining = this.getDaysRemaining();
-          return daysRemaining > 0 ? remaining / daysRemaining : 0;
+          return daysRemaining > 0 ? Math.max(0, remaining / daysRemaining) : 0;
         },
 
         updateResume() {
@@ -1098,8 +1526,7 @@
           const remaining = this.budget - totalSpent;
           const daysRemaining = this.getDaysRemaining();
           const dailyIdeal = this.getDailyIdeal();
-          const percent =
-            this.budget > 0 ? (totalSpent / this.budget) * 100 : 0;
+          let percent = this.budget > 0 ? (totalSpent / this.budget) * 100 : 0;
 
           document.getElementById("resume-budget").textContent = formatBRL(
             this.budget,
@@ -1112,13 +1539,15 @@
           document.getElementById("resume-daily").textContent =
             formatBRL(dailyIdeal);
           document.getElementById("resume-percent").textContent =
-            `${percent.toFixed(1)}% utilizado`;
+            `${percent.toFixed(1)}% do orçamento`;
 
           const progressFill = document.getElementById("resume-progress");
+          // Cap visual progress at 100% but keep the color logic
           progressFill.style.width = Math.min(percent, 100) + "%";
+
           progressFill.className = "progress-mini-fill";
-          if (percent > 90) progressFill.classList.add("danger");
-          else if (percent > 70) progressFill.classList.add("warning");
+          if (percent >= 100) progressFill.classList.add("danger");
+          else if (percent > 80) progressFill.classList.add("warning");
 
           const remainingEl = document.getElementById("resume-remaining");
           remainingEl.style.color =
@@ -1131,6 +1560,7 @@
           const firstDay = new Date(year, month, 1).getDay();
           const lastDate = new Date(year, month + 1, 0).getDate();
           const today = new Date();
+          today.setHours(0, 0, 0, 0);
           const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
           const dailyIdeal = this.getDailyIdeal();
 
@@ -1148,6 +1578,7 @@
             "Novembro",
             "Dezembro",
           ];
+
           document.getElementById("calendar-title").textContent =
             `${monthNames[month]} ${year}`;
 
@@ -1163,20 +1594,22 @@
           for (let day = 1; day <= lastDate; day++) {
             const dayKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             const isToday = dayKey === todayStr;
-            const isFuture = new Date(year, month, day) > today;
+            const currentCellDate = new Date(year, month, day);
+            const isFuture = currentCellDate > today;
+
             const dayValue = this.dailyExpenses[dayKey];
             let valueClass = "neutral";
             let displayValue = "";
 
             if (dayValue !== undefined && dayValue !== null) {
               if (dayValue === 0) {
-                displayValue = "R$0";
+                displayValue = "R$ 0";
                 valueClass = "positive";
               } else if (dailyIdeal > 0 && dayValue > dailyIdeal) {
-                displayValue = formatBRL(dayValue).replace("R$", "");
+                displayValue = formatBRL(dayValue).replace("R$", "").trim();
                 valueClass = "negative";
               } else {
-                displayValue = formatBRL(dayValue).replace("R$", "");
+                displayValue = formatBRL(dayValue).replace("R$", "").trim();
                 valueClass = "positive";
               }
             }
@@ -1191,7 +1624,7 @@
             `;
           }
 
-          // Preenche o resto da última linha para evitar bug de layout
+          // Preenche o resto da última linha
           const totalCells = firstDay + lastDate;
           const remainingCells =
             totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
@@ -1203,6 +1636,12 @@
 
           if (this.selectedDay && this.selectedDay <= lastDate) {
             this.updateSelectedDayInfo(this.selectedDay);
+          } else {
+            // Select today automatically if looking at current month
+            if (year === today.getFullYear() && month === today.getMonth()) {
+              this.selectedDay = today.getDate();
+              this.updateSelectedDayInfo(this.selectedDay);
+            }
           }
         },
       };
