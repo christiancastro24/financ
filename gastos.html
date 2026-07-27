@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinControl - Gastos</title>
     <style>
-      /* ============================================
-                   CSS VARIÁVEIS - TEMA DARK REFINADO
-                   ============================================ */
       :root {
-        --bg-primary: #0a0a14;
-        --bg-secondary: #12121f;
-        --bg-card: rgba(18, 18, 31, 0.7);
-        --bg-card-hover: rgba(28, 28, 48, 0.85);
-        --bg-input: #0d0d1a;
-        --border-color: rgba(255, 255, 255, 0.05);
+        --bg-primary: #0f0f1a;
+        --bg-secondary: #1a1a2e;
+        --bg-card: rgba(26, 26, 46, 0.8);
+        --bg-card-hover: rgba(40, 40, 70, 0.9);
+        --bg-input: #16162b;
+        --border-color: rgba(255, 255, 255, 0.06);
         --border-light: rgba(255, 255, 255, 0.1);
-        --text-primary: #f0f0ff;
-        --text-secondary: rgba(240, 240, 255, 0.65);
-        --text-muted: rgba(240, 240, 255, 0.35);
-
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.4);
         --accent-blue: #6c63ff;
         --accent-purple: #a855f7;
         --accent-green: #34d399;
@@ -29,21 +25,18 @@
         --accent-cyan: #22d3ee;
         --accent-orange: #fb923c;
         --accent-rose: #f43f5e;
-
         --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
         --gradient-card: linear-gradient(
           145deg,
-          rgba(18, 18, 31, 0.8),
-          rgba(10, 10, 20, 0.9)
+          rgba(26, 26, 46, 0.9),
+          rgba(15, 15, 26, 0.9)
         );
         --gradient-success: linear-gradient(135deg, #34d399, #059669);
-
-        --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.6);
-        --shadow-hover: 0 15px 55px rgba(0, 0, 0, 0.8);
-
-        --radius: 22px;
-        --radius-sm: 14px;
-        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+        --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.7);
+        --radius: 20px;
+        --radius-sm: 12px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       * {
@@ -51,7 +44,6 @@
         padding: 0;
         box-sizing: border-box;
       }
-
       body {
         font-family:
           "Inter",
@@ -65,15 +57,13 @@
         display: flex;
         min-height: 100vh;
         overflow-x: hidden;
-        letter-spacing: -0.01em;
       }
-
       ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent;
+        background: var(--bg-secondary);
       }
       ::-webkit-scrollbar-thumb {
         background: var(--accent-blue);
@@ -83,9 +73,7 @@
         background: var(--accent-purple);
       }
 
-      /* ============================================
-                   MENU LATERAL (ASIDE)
-                   ============================================ */
+      /* MENU LATERAL PADRONIZADO */
       aside {
         width: 220px;
         background: rgba(10, 10, 20, 0.95);
@@ -101,7 +89,6 @@
         z-index: 100;
         transition: var(--transition);
       }
-
       .menu-header {
         padding: 6px 8px 20px;
         border-bottom: 1px solid var(--border-color);
@@ -115,7 +102,6 @@
         -webkit-text-fill-color: transparent;
         margin-bottom: 14px;
       }
-
       .menu-profile {
         display: flex;
         align-items: center;
@@ -153,7 +139,6 @@
         background: var(--accent-green);
         color: white;
       }
-
       .menu-profile select {
         background: transparent;
         border: none;
@@ -168,7 +153,6 @@
         background: var(--bg-secondary);
         color: var(--text-primary);
       }
-
       .menu-nav {
         display: flex;
         flex-direction: column;
@@ -202,7 +186,6 @@
         background: var(--accent-blue);
         box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
       }
-
       .menu-footer {
         border-top: 1px solid var(--border-color);
         padding-top: 12px;
@@ -211,9 +194,7 @@
         text-align: center;
       }
 
-      /* ============================================
-                   MAIN & CABEÇALHO DA PÁGINA
-                   ============================================ */
+      /* CONTEÚDO PRINCIPAL E HEADER INTERNO */
       main {
         margin-left: 220px;
         flex: 1;
@@ -221,12 +202,11 @@
         min-height: 100vh;
         transition: var(--transition);
       }
-
       .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
       .page-header h2 {
         font-size: 24px;
@@ -241,7 +221,6 @@
         gap: 16px;
         flex-wrap: wrap;
       }
-
       .date-display {
         font-size: 14px;
         color: var(--text-secondary);
@@ -258,8 +237,8 @@
         font-size: 13px;
         font-weight: 600;
         border: 1px solid rgba(52, 211, 153, 0.2);
+        cursor: pointer;
       }
-
       .theme-toggle {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -280,9 +259,7 @@
         transform: rotate(30deg);
       }
 
-      /* ============================================
-                   COMPONENTES DE GASTOS
-                   ============================================ */
+      /* CARDS RESUMO */
       .card-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -320,7 +297,6 @@
         border-color: var(--border-light);
         box-shadow: var(--shadow-hover);
       }
-
       .card .card-header {
         display: flex;
         align-items: center;
@@ -358,24 +334,16 @@
         z-index: 1;
         letter-spacing: -0.5px;
       }
-
-      .card.accent-cyan .card-icon {
-        background: rgba(34, 211, 238, 0.1);
-        color: var(--accent-cyan);
-      }
       .card.accent-green .card-icon {
         background: rgba(52, 211, 153, 0.1);
         color: var(--accent-green);
-      }
-      .card.accent-amber .card-icon {
-        background: rgba(251, 191, 36, 0.1);
-        color: var(--accent-amber);
       }
       .card.accent-rose .card-icon {
         background: rgba(244, 63, 94, 0.1);
         color: var(--accent-rose);
       }
 
+      /* NAVEGAÇÃO DE MESES E FORMULÁRIOS */
       .month-nav {
         display: flex;
         align-items: center;
@@ -417,9 +385,7 @@
         color: var(--text-primary);
         min-width: 190px;
         text-align: center;
-        letter-spacing: -0.2px;
       }
-
       .copy-container {
         display: flex;
         align-items: center;
@@ -460,11 +426,11 @@
         align-items: center;
         gap: 10px;
       }
-
       .form-group {
         display: flex;
         gap: 14px;
         flex-wrap: wrap;
+        margin-bottom: 12px;
       }
       .form-group input,
       .form-group select {
@@ -476,7 +442,6 @@
         border-radius: var(--radius-sm);
         color: var(--text-primary);
         font-size: 14px;
-        transition: var(--transition);
         outline: none;
         font-weight: 500;
       }
@@ -484,9 +449,6 @@
       .form-group select:focus {
         border-color: var(--accent-blue);
         box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
-      }
-      .form-group input::placeholder {
-        color: var(--text-muted);
       }
       .form-group select option {
         background: var(--bg-secondary);
@@ -504,7 +466,6 @@
         align-items: center;
         gap: 8px;
         white-space: nowrap;
-        letter-spacing: -0.2px;
       }
       .btn-primary {
         background: var(--gradient-primary);
@@ -545,7 +506,6 @@
       }
       .btn-copy:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(168, 85, 247, 0.45);
       }
       .btn-edit {
         background: rgba(251, 191, 36, 0.12);
@@ -557,6 +517,7 @@
         transform: translateY(-2px);
       }
 
+      /* TABELAS */
       .table-wrapper {
         background: var(--gradient-card);
         backdrop-filter: blur(12px);
@@ -585,14 +546,6 @@
         outline: none;
         transition: var(--transition);
       }
-      .table-toolbar input:focus,
-      .table-toolbar select:focus {
-        border-color: var(--accent-blue);
-      }
-      .table-toolbar input::placeholder {
-        color: var(--text-muted);
-      }
-
       table {
         width: 100%;
         border-collapse: collapse;
@@ -605,7 +558,6 @@
         padding: 15px 24px;
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
         color: var(--text-muted);
         font-weight: 700;
         border-bottom: 1px solid var(--border-color);
@@ -615,13 +567,10 @@
         font-size: 14px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.02);
         color: var(--text-primary);
-        vertical-align: middle;
-        font-weight: 500;
       }
       tr:hover td {
         background: rgba(255, 255, 255, 0.02);
       }
-
       .badge-status {
         padding: 5px 14px;
         border-radius: 30px;
@@ -653,9 +602,7 @@
         color: var(--accent-red);
       }
 
-      /* ============================================
-                   MODAIS E TOASTS
-                   ============================================ */
+      /* MODAIS E TOASTS */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -681,7 +628,6 @@
           opacity: 1;
         }
       }
-
       .modal {
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
@@ -709,14 +655,9 @@
         background: var(--gradient-primary);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        letter-spacing: -0.3px;
       }
       .modal .form-group {
         margin-bottom: 18px;
-      }
-      .modal .form-group input,
-      .modal .form-group select {
-        width: 100%;
       }
       .modal-actions {
         display: flex;
@@ -757,13 +698,9 @@
         color: var(--text-primary);
         font-size: 13px;
         outline: none;
-        transition: var(--transition);
       }
       .profile-edit-item .profile-fields input:focus {
         border-color: var(--accent-blue);
-      }
-      .profile-edit-item .profile-fields input[type="number"] {
-        max-width: 130px;
       }
 
       .toast-container {
@@ -811,9 +748,7 @@
         }
       }
 
-      /* ============================================
-                   RESPONSIVIDADE
-                   ============================================ */
+      /* RESPONSIVIDADE */
       @media (max-width: 992px) {
         .page-header {
           flex-direction: column;
@@ -821,7 +756,6 @@
           gap: 16px;
         }
       }
-
       @media (max-width: 768px) {
         aside {
           width: 180px;
@@ -837,24 +771,12 @@
         .form-group {
           flex-direction: column;
         }
-        .form-group input,
-        .form-group select {
-          min-width: 100%;
-        }
         .table-toolbar {
           flex-direction: column;
         }
         .table-toolbar input,
         .table-toolbar select {
           width: 100%;
-        }
-        th,
-        td {
-          padding: 12px 16px;
-        }
-        .toast {
-          min-width: auto;
-          width: calc(100vw - 48px);
         }
         .month-nav {
           flex-direction: column;
@@ -867,10 +789,6 @@
           order: -1;
           width: 100%;
         }
-        .copy-container {
-          justify-content: center;
-          flex-wrap: wrap;
-        }
         .modal {
           padding: 24px;
           width: 96%;
@@ -882,28 +800,16 @@
         .profile-edit-item .profile-fields {
           flex-direction: column;
         }
-        .profile-edit-item .profile-fields input {
-          width: 100%;
-        }
-        .profile-edit-item .profile-fields input[type="number"] {
-          max-width: 100%;
-        }
       }
-
       @media (max-width: 480px) {
         .card-grid {
           grid-template-columns: 1fr;
-        }
-        .card .card-value {
-          font-size: 26px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- ============================================
-    MENU LATERAL (ASIDE) PADRONIZADO
-    ============================================ -->
+    <!-- MENU LATERAL -->
     <aside>
       <div class="menu-header">
         <div class="menu-logo">💰 FinControl</div>
@@ -918,7 +824,6 @@
           </select>
         </div>
       </div>
-
       <nav class="menu-nav">
         <a href="index.html">
           <svg
@@ -972,13 +877,10 @@
           Gastos Mensais
         </a>
       </nav>
-
       <div class="menu-footer">FinControl v1.0</div>
     </aside>
 
-    <!-- ============================================
-    MODAIS
-    ============================================ -->
+    <!-- MODAIS -->
     <div class="modal-overlay" id="edit-modal">
       <div class="modal">
         <h2>✏️ Editar Registro</h2>
@@ -989,17 +891,18 @@
               id="edit-name"
               placeholder="Descrição"
               required
+              style="width: 100%"
             />
           </div>
           <div class="form-group">
-            <select id="edit-type" required>
+            <select id="edit-type" required style="width: 100%">
               <option value="">Tipo</option>
               <option value="entrada">📥 Entrada</option>
               <option value="saida">📤 Saída</option>
             </select>
           </div>
           <div class="form-group">
-            <select id="edit-category" required>
+            <select id="edit-category" required style="width: 100%">
               <option value="">Categoria</option>
               <option value="Moradia">Moradia</option>
               <option value="Alimentação">Alimentação</option>
@@ -1019,10 +922,11 @@
               placeholder="Valor (R$)"
               step="0.01"
               required
+              style="width: 100%"
             />
           </div>
           <div class="form-group">
-            <input type="date" id="edit-date" required />
+            <input type="date" id="edit-date" required style="width: 100%" />
           </div>
           <div class="modal-actions">
             <button type="button" class="btn btn-outline" id="cancel-edit">
@@ -1044,11 +948,14 @@
             margin-bottom: 24px;
           "
         >
-          Configure os perfis (salário é apenas uma referência inicial, você
-          controla tudo manualmente)
+          Configure os perfis (salário é apenas uma referência inicial)
         </p>
         <form id="profile-form">
-          <div class="form-group" id="profiles-list"></div>
+          <div
+            class="form-group"
+            id="profiles-list"
+            style="display: block"
+          ></div>
           <div class="modal-actions">
             <button type="button" class="btn btn-outline" id="cancel-profile">
               Fechar
@@ -1059,14 +966,15 @@
       </div>
     </div>
 
-    <!-- ============================================
-    MAIN - CONTEÚDO
-    ============================================ -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main>
       <div class="page-header">
         <h2>💳 Gestão de Gastos</h2>
         <div class="page-header-actions">
-          <span class="profile-salary-badge" id="profile-salary-display"
+          <span
+            class="profile-salary-badge"
+            id="profile-salary-display"
+            onclick="document.getElementById('profile-avatar').click()"
             >R$ 0,00</span
           >
           <span class="date-display" id="current-date-display"></span>
@@ -1206,7 +1114,6 @@
           currency: "BRL",
         }).format(value);
       }
-
       function getMonthName(monthIndex) {
         const months = [
           "Janeiro",
@@ -1224,17 +1131,14 @@
         ];
         return months[monthIndex];
       }
-
       function updateDateDisplay() {
-        const now = new Date();
-        const options = {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
         document.getElementById("current-date-display").textContent =
-          now.toLocaleDateString("pt-BR", options);
+          new Date().toLocaleDateString("pt-BR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
       }
 
       const DataManager = {
@@ -1276,8 +1180,7 @@
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        const icons = { success: "✅", error: "❌", warning: "⚠️" };
-        toast.innerHTML = `<span>${icons[type] || "📌"}</span> ${message}`;
+        toast.innerHTML = `<span>${{ success: "✅", error: "❌", warning: "⚠️" }[type] || "📌"}</span> ${message}`;
         container.appendChild(toast);
         setTimeout(() => {
           toast.style.opacity = "0";
@@ -1293,7 +1196,6 @@
         editingId: null,
         activeProfile: "personal",
         profiles: {},
-
         init() {
           this.migrateOldData();
           this.profiles = DataManager.getProfiles();
@@ -1304,48 +1206,23 @@
           this.populateCopyMonths();
           this.updateProfileUI();
         },
-
         migrateOldData() {
           try {
             const oldData = localStorage.getItem("expenses");
-            const personalData = localStorage.getItem("expenses_personal");
-            if (oldData) {
-              const parsedOld = JSON.parse(oldData);
-              if (parsedOld && parsedOld.length > 0) {
-                let hasPersonalData = false;
-                if (personalData) {
-                  const parsedPersonal = JSON.parse(personalData);
-                  if (parsedPersonal && parsedPersonal.length > 0)
-                    hasPersonalData = true;
-                }
-                if (!hasPersonalData) {
-                  const migrated = parsedOld.map((exp) => ({
-                    ...exp,
-                    type: exp.type || "saida",
-                  }));
-                  localStorage.setItem(
-                    "expenses_personal",
-                    JSON.stringify(migrated),
-                  );
-                  setTimeout(
-                    () =>
-                      showToast(
-                        `📦 ${migrated.length} gastos migrados para seu perfil!`,
-                        "success",
-                      ),
-                    500,
-                  );
-                }
-              }
+            if (oldData && !localStorage.getItem("expenses_personal")) {
+              const migrated = JSON.parse(oldData).map((exp) => ({
+                ...exp,
+                type: exp.type || "saida",
+              }));
+              localStorage.setItem(
+                "expenses_personal",
+                JSON.stringify(migrated),
+              );
             }
-            ["expenses_aunt", "expenses_guest"].forEach((key) => {
-              if (!localStorage.getItem(key)) localStorage.setItem(key, "[]");
-            });
           } catch (e) {
-            console.error("❌ Erro na migração:", e);
+            console.error("Erro na migração:", e);
           }
         },
-
         setupEvents() {
           document
             .getElementById("expense-form")
@@ -1362,7 +1239,6 @@
           document
             .getElementById("expense-filter-type")
             .addEventListener("change", () => this.render());
-
           document
             .getElementById("prev-month")
             .addEventListener("click", () => {
@@ -1394,14 +1270,12 @@
               this.render();
               this.populateCopyMonths();
             });
-
           document
             .getElementById("export-expenses")
             .addEventListener("click", () => this.exportCSV());
           document
             .getElementById("copy-expenses")
             .addEventListener("click", () => this.copyFromMonth());
-
           document
             .getElementById("cancel-edit")
             .addEventListener("click", () => this.closeModal());
@@ -1416,17 +1290,14 @@
               e.preventDefault();
               this.saveEdit();
             });
-
           document
             .getElementById("profile-select")
-            .addEventListener("change", (e) => {
-              this.switchProfile(e.target.value);
-            });
+            .addEventListener("change", (e) =>
+              this.switchProfile(e.target.value),
+            );
           document
             .getElementById("profile-avatar")
-            .addEventListener("click", () => {
-              this.openProfileModal();
-            });
+            .addEventListener("click", () => this.openProfileModal());
           document
             .getElementById("cancel-profile")
             .addEventListener("click", () => this.closeProfileModal());
@@ -1442,7 +1313,6 @@
               this.saveProfiles();
             });
         },
-
         switchProfile(profileId) {
           DataManager.setExpenses(this.activeProfile, this.data);
           this.activeProfile = profileId;
@@ -1451,13 +1321,11 @@
           this.updateProfileUI();
           this.render();
           this.populateCopyMonths();
-          const profile = this.profiles[profileId];
           showToast(
-            `👤 Mudou para perfil: ${profile ? profile.name : profileId}`,
+            `👤 Mudou para perfil: ${this.profiles[profileId]?.name || profileId}`,
             "success",
           );
         },
-
         updateProfileUI() {
           const profile = this.profiles[this.activeProfile];
           if (!profile) return;
@@ -1468,18 +1336,15 @@
           document.getElementById("profile-salary-display").textContent =
             formatBRL(profile.salary || 0);
         },
-
         openProfileModal() {
           this.renderProfileModal();
           document.getElementById("profile-modal").classList.add("active");
           document.body.style.overflow = "hidden";
         },
-
         closeProfileModal() {
           document.getElementById("profile-modal").classList.remove("active");
           document.body.style.overflow = "";
         },
-
         renderProfileModal() {
           const container = document.getElementById("profiles-list");
           let html = "";
@@ -1489,24 +1354,22 @@
                 <span class="profile-emoji">${profile.emoji || "👤"}</span>
                 <div class="profile-fields">
                   <input type="text" value="${profile.name}" data-profile="${id}" data-field="name" placeholder="Nome" />
-                  <input type="number" value="${profile.salary || 0}" data-profile="${id}" data-field="salary" placeholder="Salário base" step="0.01" />
+                  <input type="number" value="${profile.salary || 0}" data-profile="${id}" data-field="salary" placeholder="Salário" step="0.01" />
                   <input type="text" value="${profile.emoji || "👤"}" data-profile="${id}" data-field="emoji" placeholder="Emoji" maxlength="2" style="max-width:50px;text-align:center;" />
                 </div>
                 <span style="font-size:16px;opacity:0.3;">${id === this.activeProfile ? "⭐" : ""}</span>
-              </div>
-            `;
+              </div>`;
           });
           container.innerHTML = html;
         },
-
         saveProfiles() {
           const inputs = document.querySelectorAll(
-            "#profiles-list input[data-profile]",
-          );
-          const updatedProfiles = { ...this.profiles };
+              "#profiles-list input[data-profile]",
+            ),
+            updatedProfiles = { ...this.profiles };
           inputs.forEach((input) => {
-            const id = input.dataset.profile;
-            const field = input.dataset.field;
+            const id = input.dataset.profile,
+              field = input.dataset.field;
             if (id && field) {
               if (!updatedProfiles[id])
                 updatedProfiles[id] = {
@@ -1525,12 +1388,11 @@
           this.closeProfileModal();
           this.updateProfileUI();
           this.render();
-          showToast("✅ Perfis atualizados!", "success");
+          showToast("✅ Perfis atualizados!");
         },
-
         populateCopyMonths() {
-          const select = document.getElementById("copy-from-month");
-          const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
+          const select = document.getElementById("copy-from-month"),
+            currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
           const months = new Set();
           this.data.forEach((exp) => {
             const month = exp.date.slice(0, 7);
@@ -1548,25 +1410,13 @@
             select.innerHTML += `<option value="${month}">${getMonthName(parseInt(m) - 1)} ${year}</option>`;
           });
         },
-
         copyFromMonth() {
-          const select = document.getElementById("copy-from-month");
-          const sourceMonth = select.value;
-          if (!sourceMonth) {
-            showToast("Selecione um mês para copiar!", "warning");
-            return;
-          }
+          const sourceMonth = document.getElementById("copy-from-month").value;
+          if (!sourceMonth)
+            return showToast("Selecione um mês para copiar!", "warning");
           const targetMonth = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
-          const hasTargetData = this.data.some((e) =>
-            e.date.startsWith(targetMonth),
-          );
-          if (hasTargetData) {
-            if (
-              !confirm(
-                `O mês ${getMonthName(this.currentMonth)} ${this.currentYear} já tem registros. Deseja substituir?`,
-              )
-            )
-              return;
+          if (this.data.some((e) => e.date.startsWith(targetMonth))) {
+            if (!confirm(`O mês já tem registros. Deseja substituir?`)) return;
             this.data = this.data.filter(
               (e) => !e.date.startsWith(targetMonth),
             );
@@ -1574,13 +1424,8 @@
           const sourceExpenses = this.data.filter((e) =>
             e.date.startsWith(sourceMonth),
           );
-          if (sourceExpenses.length === 0) {
-            showToast(
-              "Nenhum registro encontrado no mês selecionado!",
-              "warning",
-            );
-            return;
-          }
+          if (sourceExpenses.length === 0)
+            return showToast("Nenhum registro encontrado!", "warning");
           const newExpenses = sourceExpenses.map((exp) => ({
             id: Date.now() + Math.random() * 1000,
             name: exp.name,
@@ -1594,22 +1439,18 @@
           DataManager.setExpenses(this.activeProfile, this.data);
           this.populateCopyMonths();
           this.render();
-          showToast(`${newExpenses.length} registros copiados!`, "success");
+          showToast(`${newExpenses.length} registros copiados!`);
         },
-
         add() {
-          const name = document.getElementById("expense-name").value.trim();
-          const type = document.getElementById("expense-type").value;
-          const category = document.getElementById("expense-category").value;
+          const name = document.getElementById("expense-name").value.trim(),
+            type = document.getElementById("expense-type").value,
+            category = document.getElementById("expense-category").value;
           const value = parseFloat(
-            document.getElementById("expense-value").value,
-          );
-          const date = document.getElementById("expense-date").value;
-          if (!name || !type || !category || !value || !date) {
-            showToast("Preencha todos os campos!", "warning");
-            return;
-          }
-
+              document.getElementById("expense-value").value,
+            ),
+            date = document.getElementById("expense-date").value;
+          if (!name || !type || !category || !value || !date)
+            return showToast("Preencha todos os campos!", "warning");
           this.data.push({
             id: Date.now(),
             name,
@@ -1623,9 +1464,8 @@
           this.populateCopyMonths();
           this.render();
           document.getElementById("expense-form").reset();
-          showToast(`Registro "${name}" adicionado!`);
+          showToast(`Registro adicionado!`);
         },
-
         togglePaid(id) {
           const expense = this.data.find((e) => e.id === id);
           if (expense) {
@@ -1634,7 +1474,6 @@
             this.render();
           }
         },
-
         delete(id) {
           if (!confirm("Excluir este registro?")) return;
           this.data = this.data.filter((e) => e.id !== id);
@@ -1643,7 +1482,6 @@
           this.render();
           showToast("Registro removido!", "warning");
         },
-
         openModal(id) {
           const expense = this.data.find((e) => e.id === id);
           if (!expense) return;
@@ -1655,22 +1493,18 @@
           document.getElementById("edit-date").value = expense.date;
           document.getElementById("edit-modal").classList.add("active");
         },
-
         closeModal() {
           document.getElementById("edit-modal").classList.remove("active");
           this.editingId = null;
         },
-
         saveEdit() {
-          const name = document.getElementById("edit-name").value.trim();
-          const type = document.getElementById("edit-type").value;
-          const category = document.getElementById("edit-category").value;
-          const value = parseFloat(document.getElementById("edit-value").value);
-          const date = document.getElementById("edit-date").value;
-          if (!name || !type || !category || !value || !date) {
-            showToast("Preencha todos os campos!", "warning");
-            return;
-          }
+          const name = document.getElementById("edit-name").value.trim(),
+            type = document.getElementById("edit-type").value,
+            category = document.getElementById("edit-category").value;
+          const value = parseFloat(document.getElementById("edit-value").value),
+            date = document.getElementById("edit-date").value;
+          if (!name || !type || !category || !value || !date)
+            return showToast("Preencha todos os campos!", "warning");
           const expense = this.data.find((e) => e.id === this.editingId);
           if (expense) {
             expense.name = name;
@@ -1685,49 +1519,36 @@
             showToast("Registro atualizado!");
           }
         },
-
         render() {
-          const monthStr = String(this.currentMonth + 1).padStart(2, "0");
-          const yearStr = String(this.currentYear);
-          const currentMonthStr = `${yearStr}-${monthStr}`;
+          const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`;
           document.getElementById("current-month-label").textContent =
             `${getMonthName(this.currentMonth)} ${this.currentYear}`;
-
           const search = document
-            .getElementById("expense-search")
-            .value.toLowerCase();
-          const categoryFilter = document.getElementById(
-            "expense-filter-category",
-          ).value;
-          const typeFilter = document.getElementById(
-            "expense-filter-type",
-          ).value;
-
+              .getElementById("expense-search")
+              .value.toLowerCase(),
+            categoryFilter = document.getElementById(
+              "expense-filter-category",
+            ).value,
+            typeFilter = document.getElementById("expense-filter-type").value;
           let monthExpenses = this.data.filter((e) =>
             e.date.startsWith(currentMonthStr),
           );
-
           let filtered = monthExpenses.filter((exp) => {
-            const matchSearch = exp.name.toLowerCase().includes(search);
-            const matchCategory =
-              categoryFilter === "all" || exp.category === categoryFilter;
-            const matchType =
-              typeFilter === "all" ||
-              exp.type === typeFilter ||
-              (!exp.type && typeFilter === "saida");
+            const matchSearch = exp.name.toLowerCase().includes(search),
+              matchCategory =
+                categoryFilter === "all" || exp.category === categoryFilter,
+              matchType =
+                typeFilter === "all" ||
+                exp.type === typeFilter ||
+                (!exp.type && typeFilter === "saida");
             return matchSearch && matchCategory && matchType;
           });
-
           filtered.sort((a, b) => {
-            const typeA = a.type || "saida";
-            const typeB = b.type || "saida";
-            if (typeA === "entrada" && typeB === "saida") return -1;
-            if (typeA === "saida" && typeB === "entrada") return 1;
-            if (typeA === "saida" && typeB === "saida")
-              return b.value - a.value;
-            if (typeA === "entrada" && typeB === "entrada")
-              return b.value - a.value;
-            return 0;
+            const tA = a.type || "saida",
+              tB = b.type || "saida";
+            if (tA === "entrada" && tB === "saida") return -1;
+            if (tA === "saida" && tB === "entrada") return 1;
+            return b.value - a.value;
           });
 
           const entradas = monthExpenses
@@ -1742,21 +1563,20 @@
             formatBRL(entradas);
           document.getElementById("total-saidas").textContent =
             formatBRL(saidas);
-          document.getElementById("expense-remaining").textContent =
-            formatBRL(saldo);
           const saldoEl = document.getElementById("expense-remaining");
+          saldoEl.textContent = formatBRL(saldo);
           saldoEl.style.color =
             saldo < 0 ? "var(--accent-red)" : "var(--text-primary)";
 
           const tbody = document.getElementById("expense-list");
-          if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum registro encontrado para este mês</td></tr>`;
-          } else {
+          if (filtered.length === 0)
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum registro encontrado</td></tr>`;
+          else {
             tbody.innerHTML = filtered
               .map((exp) => {
                 const tipoDisplay =
-                  exp.type === "entrada" ? "📥 Entrada" : "📤 Saída";
-                const tipoClass = exp.type === "entrada" ? "entrada" : "saida";
+                    exp.type === "entrada" ? "📥 Entrada" : "📤 Saída",
+                  tipoClass = exp.type === "entrada" ? "entrada" : "saida";
                 return `
               <tr>
                 <td><strong>${exp.name}</strong></td>
@@ -1764,41 +1584,20 @@
                 <td><span class="badge-status" style="background:rgba(168,85,247,0.12);color:var(--accent-purple);">${exp.category}</span></td>
                 <td>${formatBRL(exp.value)}</td>
                 <td>${new Date(exp.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
-                <td>
-                  <span class="badge-status ${exp.paid ? "pago" : "pendente"}" style="cursor:pointer;" onclick="Expenses.togglePaid(${exp.id})">
-                    ${exp.paid ? "✅ Pago" : "⏳ Pendente"}
-                  </span>
-                </td>
-                <td>
-                  <button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})" title="Editar">✏️</button>
-                  <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})" title="Excluir">🗑️</button>
-                </td>
+                <td><span class="badge-status ${exp.paid ? "pago" : "pendente"}" style="cursor:pointer;" onclick="Expenses.togglePaid(${exp.id})">${exp.paid ? "✅ Pago" : "⏳ Pendente"}</span></td>
+                <td><button class="btn btn-edit btn-sm" onclick="Expenses.openModal(${exp.id})">✏️</button> <button class="btn btn-danger btn-sm" onclick="Expenses.delete(${exp.id})">🗑️</button></td>
               </tr>`;
               })
               .join("");
           }
         },
-
         exportCSV() {
-          const monthStr = String(this.currentMonth + 1).padStart(2, "0");
-          const yearStr = String(this.currentYear);
-          const currentMonthStr = `${yearStr}-${monthStr}`;
-          const monthExpenses = this.data.filter((e) =>
-            e.date.startsWith(currentMonthStr),
-          );
-          if (monthExpenses.length === 0) {
-            showToast("Nenhum dado para exportar", "warning");
-            return;
-          }
-
-          const headers = [
-            "Descrição",
-            "Tipo",
-            "Categoria",
-            "Valor",
-            "Data",
-            "Status",
-          ];
+          const currentMonthStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, "0")}`,
+            monthExpenses = this.data.filter((e) =>
+              e.date.startsWith(currentMonthStr),
+            );
+          if (monthExpenses.length === 0)
+            return showToast("Nenhum dado para exportar", "warning");
           const rows = monthExpenses.map((exp) => [
             exp.name,
             exp.type || "saida",
@@ -1807,17 +1606,16 @@
             exp.date,
             exp.paid ? "Pago" : "Pendente",
           ]);
-          const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join(
-            "\n",
-          );
-
-          const blob = new Blob([csv], { type: "text/csv" });
-          const url = URL.createObjectURL(blob);
+          const csv = [
+            ["Descrição", "Tipo", "Categoria", "Valor", "Data", "Status"].join(
+              ",",
+            ),
+            ...rows.map((r) => r.join(",")),
+          ].join("\n");
           const a = document.createElement("a");
-          a.href = url;
+          a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
           a.download = `gastos_${this.activeProfile}_${currentMonthStr}.csv`;
           a.click();
-          URL.revokeObjectURL(url);
           showToast("CSV exportado!");
         },
       };
@@ -1829,25 +1627,22 @@
           darkTheme = !darkTheme;
           const root = document.documentElement;
           if (darkTheme) {
-            root.style.setProperty("--bg-primary", "#0a0a14");
-            root.style.setProperty("--bg-secondary", "#12121f");
-            root.style.setProperty("--bg-card", "rgba(18,18,31,0.7)");
-            root.style.setProperty("--bg-input", "#0d0d1a");
-            root.style.setProperty("--text-primary", "#f0f0ff");
-            root.style.setProperty(
-              "--text-secondary",
-              "rgba(240,240,255,0.65)",
-            );
-            root.style.setProperty("--text-muted", "rgba(240,240,255,0.35)");
-            root.style.setProperty("--border-color", "rgba(255,255,255,0.05)");
+            root.style.setProperty("--bg-primary", "#0f0f1a");
+            root.style.setProperty("--bg-secondary", "#1a1a2e");
+            root.style.setProperty("--bg-card", "rgba(26,26,46,0.8)");
+            root.style.setProperty("--bg-input", "#16162b");
+            root.style.setProperty("--text-primary", "#ffffff");
+            root.style.setProperty("--text-secondary", "rgba(255,255,255,0.7)");
+            root.style.setProperty("--text-muted", "rgba(255,255,255,0.4)");
+            root.style.setProperty("--border-color", "rgba(255,255,255,0.06)");
             this.textContent = "🌓";
           } else {
-            root.style.setProperty("--bg-primary", "#f4f5f9");
+            root.style.setProperty("--bg-primary", "#f0f2f8");
             root.style.setProperty("--bg-secondary", "#ffffff");
             root.style.setProperty("--bg-card", "rgba(255,255,255,0.9)");
-            root.style.setProperty("--bg-input", "#f4f5f9");
+            root.style.setProperty("--bg-input", "#f0f2f8");
             root.style.setProperty("--text-primary", "#1a1a2e");
-            root.style.setProperty("--text-secondary", "rgba(0,0,0,0.65)");
+            root.style.setProperty("--text-secondary", "rgba(0,0,0,0.7)");
             root.style.setProperty("--text-muted", "rgba(0,0,0,0.4)");
             root.style.setProperty("--border-color", "rgba(0,0,0,0.06)");
             this.textContent = "🌞";
@@ -1856,9 +1651,6 @@
 
       updateDateDisplay();
       Expenses.init();
-      console.log(
-        "💳 FinControl - Gastos carregado com suporte a Entradas e Saídas!",
-      );
     </script>
   </body>
 </html>

@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinControl - To-Do List</title>
     <style>
-      /* ============================================
-                   CSS VARIÁVEIS - TEMA MODERNO
-                   ============================================ */
       :root {
         --bg-primary: #0f0f1a;
         --bg-secondary: #1a1a2e;
@@ -16,11 +13,9 @@
         --bg-input: #16162b;
         --border-color: rgba(255, 255, 255, 0.06);
         --border-light: rgba(255, 255, 255, 0.1);
-
         --text-primary: #ffffff;
         --text-secondary: rgba(255, 255, 255, 0.7);
         --text-muted: rgba(255, 255, 255, 0.4);
-
         --accent-blue: #6c63ff;
         --accent-purple: #a855f7;
         --accent-green: #34d399;
@@ -29,7 +24,6 @@
         --accent-pink: #ec4899;
         --accent-cyan: #22d3ee;
         --accent-orange: #fb923c;
-
         --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
         --gradient-card: linear-gradient(
           145deg,
@@ -37,24 +31,18 @@
           rgba(15, 15, 26, 0.9)
         );
         --gradient-success: linear-gradient(135deg, #34d399, #059669);
-
         --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
         --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.7);
-
-        --radius: 16px;
-        --radius-sm: 10px;
+        --radius: 20px;
+        --radius-sm: 12px;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      /* ============================================
-                   RESET E BASE
-                   ============================================ */
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
       body {
         font-family:
           "Inter",
@@ -69,7 +57,6 @@
         min-height: 100vh;
         overflow-x: hidden;
       }
-
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -85,9 +72,7 @@
         background: var(--accent-purple);
       }
 
-      /* ============================================
-                   MENU LATERAL (ASIDE)
-                   ============================================ */
+      /* MENU LATERAL PADRONIZADO */
       aside {
         width: 220px;
         background: rgba(10, 10, 20, 0.95);
@@ -101,14 +86,13 @@
         left: 0;
         height: 100vh;
         z-index: 100;
+        transition: var(--transition);
       }
-
       .menu-header {
         padding: 6px 8px 20px;
         border-bottom: 1px solid var(--border-color);
         margin-bottom: 14px;
       }
-
       .menu-logo {
         font-size: 20px;
         font-weight: 700;
@@ -117,7 +101,6 @@
         -webkit-text-fill-color: transparent;
         margin-bottom: 14px;
       }
-
       .menu-profile {
         display: flex;
         align-items: center;
@@ -126,8 +109,12 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         padding: 6px 10px;
+        cursor: pointer;
+        transition: var(--transition);
       }
-
+      .menu-profile:hover {
+        border-color: var(--border-light);
+      }
       .menu-profile .avatar {
         width: 30px;
         height: 30px;
@@ -147,7 +134,10 @@
         background: var(--accent-pink);
         color: white;
       }
-
+      .avatar.guest {
+        background: var(--accent-green);
+        color: white;
+      }
       .menu-profile select {
         background: transparent;
         border: none;
@@ -162,14 +152,12 @@
         background: var(--bg-secondary);
         color: var(--text-primary);
       }
-
       .menu-nav {
         display: flex;
         flex-direction: column;
         gap: 2px;
         flex: 1;
       }
-
       .menu-nav a {
         display: flex;
         align-items: center;
@@ -182,25 +170,21 @@
         font-size: 13px;
         font-weight: 500;
       }
-
       .menu-nav a svg {
         width: 18px;
         height: 18px;
         stroke: currentColor;
         flex-shrink: 0;
       }
-
       .menu-nav a:hover {
         color: var(--text-secondary);
         background: rgba(255, 255, 255, 0.04);
       }
-
       .menu-nav a.active {
         color: white;
         background: var(--accent-blue);
         box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
       }
-
       .menu-footer {
         border-top: 1px solid var(--border-color);
         padding-top: 12px;
@@ -209,41 +193,41 @@
         text-align: center;
       }
 
-      /* ============================================
-                   MAIN - CONTEÚDO PRINCIPAL
-                   ============================================ */
+      /* CONTEÚDO PRINCIPAL E HEADER INTERNO */
       main {
         margin-left: 220px;
         flex: 1;
-        padding: 24px;
+        padding: 24px 44px;
         min-height: 100vh;
         transition: var(--transition);
       }
-
       .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 24px;
       }
-
       .page-header h2 {
         font-size: 24px;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
-
       .page-header-actions {
         display: flex;
         align-items: center;
         gap: 16px;
+        flex-wrap: wrap;
       }
-
       .date-display {
         font-size: 14px;
         color: var(--text-secondary);
         font-weight: 500;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 6px 14px;
+        border-radius: 30px;
       }
-
       .theme-toggle {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -264,9 +248,7 @@
         transform: rotate(30deg);
       }
 
-      /* ============================================
-                   TODO - TOOLBAR E ESTILOS
-                   ============================================ */
+      /* TODO COMPONENTES */
       .form-card {
         background: var(--gradient-card);
         backdrop-filter: blur(10px);
@@ -276,7 +258,6 @@
         margin-bottom: 24px;
         box-shadow: var(--shadow-card);
       }
-
       .form-card .form-title {
         font-size: 16px;
         font-weight: 600;
@@ -286,13 +267,11 @@
         align-items: center;
         gap: 8px;
       }
-
       .form-group {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
       }
-
       .form-group input,
       .form-group select {
         flex: 1;
@@ -306,17 +285,14 @@
         transition: var(--transition);
         outline: none;
       }
-
       .form-group input:focus,
       .form-group select:focus {
         border-color: var(--accent-blue);
         box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
       }
-
       .form-group input::placeholder {
         color: var(--text-muted);
       }
-
       .form-group select option {
         background: var(--bg-secondary);
       }
@@ -333,7 +309,6 @@
         align-items: center;
         gap: 8px;
       }
-
       .btn-primary {
         background: var(--gradient-primary);
         color: white;
@@ -353,10 +328,6 @@
       .btn-danger {
         background: var(--accent-red);
         color: white;
-      }
-      .btn-danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(248, 113, 113, 0.3);
       }
       .btn-outline {
         background: transparent;
@@ -388,7 +359,6 @@
         margin-bottom: 20px;
         box-shadow: var(--shadow-card);
       }
-
       .todo-toolbar .toolbar-left,
       .todo-toolbar .toolbar-right {
         display: flex;
@@ -396,7 +366,6 @@
         gap: 10px;
         flex-wrap: wrap;
       }
-
       .todo-toolbar .toolbar-label {
         font-size: 13px;
         color: var(--text-secondary);
@@ -426,16 +395,12 @@
         border: 1px solid rgba(108, 99, 255, 0.1);
       }
 
-      /* ============================================
-                   KANBAN
-                   ============================================ */
       .kanban-container {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 12px;
         margin-top: 20px;
       }
-
       .kanban-column {
         background: var(--gradient-card);
         backdrop-filter: blur(10px);
@@ -446,7 +411,6 @@
         box-shadow: var(--shadow-card);
         transition: var(--transition);
       }
-
       .kanban-column:hover {
         border-color: var(--border-light);
       }
@@ -460,8 +424,6 @@
       }
       .kanban-column .column-header h3 {
         margin: 0;
-        padding: 0;
-        border: none;
         font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
@@ -481,7 +443,6 @@
         background: rgba(52, 211, 153, 0.1);
         color: var(--accent-green);
       }
-
       .kanban-column.weekend {
         border-color: rgba(108, 99, 255, 0.15);
         background: linear-gradient(
@@ -501,7 +462,6 @@
         padding: 12px 14px;
         margin-bottom: 8px;
         transition: var(--transition);
-        position: relative;
       }
       .kanban-card:hover {
         border-color: var(--border-light);
@@ -534,7 +494,6 @@
         color: var(--accent-purple);
         text-decoration: underline;
       }
-
       .kanban-card .card-tag {
         display: inline-block;
         font-size: 10px;
@@ -546,6 +505,7 @@
         margin-top: 4px;
         flex-shrink: 0;
       }
+
       .kanban-card .card-tag.tag-estudos {
         background: rgba(108, 99, 255, 0.2);
         color: var(--accent-blue);
@@ -609,14 +569,12 @@
       .kanban-card .card-actions button.edit-btn:hover {
         color: var(--accent-blue);
       }
-
       .empty-day {
         text-align: center;
         color: var(--text-muted);
         font-size: 12px;
         padding: 20px 0;
       }
-
       .kanban-column .column-actions {
         display: flex;
         gap: 4px;
@@ -661,9 +619,7 @@
         animation: copy-flash 0.8s ease;
       }
 
-      /* ============================================
-                   MODAIS
-                   ============================================ */
+      /* MODAIS E TOASTS */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -671,7 +627,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(12px);
         z-index: 2000;
         align-items: center;
@@ -689,7 +645,6 @@
           opacity: 1;
         }
       }
-
       .modal {
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
@@ -710,7 +665,6 @@
           opacity: 1;
         }
       }
-
       .modal h2 {
         margin-bottom: 8px;
         font-size: 22px;
@@ -776,9 +730,6 @@
         margin-top: 24px;
       }
 
-      /* ============================================
-                   TOAST
-                   ============================================ */
       .toast-container {
         position: fixed;
         bottom: 24px;
@@ -823,9 +774,7 @@
         }
       }
 
-      /* ============================================
-                   RESPONSIVIDADE
-                   ============================================ */
+      /* RESPONSIVIDADE */
       @media (max-width: 1200px) {
         .kanban-container {
           grid-template-columns: repeat(4, 1fr);
@@ -843,7 +792,7 @@
         }
         main {
           margin-left: 180px;
-          padding: 16px;
+          padding: 20px;
         }
         .form-group {
           flex-direction: column;
@@ -886,20 +835,22 @@
   </head>
   <body>
     <!-- ============================================
-    MENU LATERAL (BASEADO NO GASTOS MENSAIS)
+    MENU LATERAL (ASIDE) PADRONIZADO
     ============================================ -->
     <aside>
       <div class="menu-header">
         <div class="menu-logo">💰 FinControl</div>
-        <div class="menu-profile">
+        <div
+          class="menu-profile"
+          onclick="document.getElementById('profile-avatar').click()"
+        >
           <div class="avatar personal" id="profile-avatar">👤</div>
-          <select id="profile-select">
+          <select id="profile-select" onclick="(e) => e.stopPropagation()">
             <option value="personal">👤 Eu</option>
             <option value="aunt">👩 Tia</option>
           </select>
         </div>
       </div>
-
       <nav class="menu-nav">
         <a href="index.html" class="active">
           <svg
@@ -953,18 +904,16 @@
           Gastos Mensais
         </a>
       </nav>
-
       <div class="menu-footer">FinControl v1.0</div>
     </aside>
 
     <!-- ============================================
-    MODAL DE CÓPIA
+    MODAIS
     ============================================ -->
     <div class="modal-overlay" id="copy-modal">
       <div class="modal">
         <h2>📋 Copiar Tarefas</h2>
         <p class="modal-subtitle">Escolha de qual dia copiar e para qual dia</p>
-
         <div class="form-group">
           <label for="copy-source-day">📤 Copiar de:</label>
           <select id="copy-source-day">
@@ -977,7 +926,6 @@
             <option value="0">Domingo</option>
           </select>
         </div>
-
         <div class="form-group">
           <label for="copy-target-day">📥 Copiar para:</label>
           <select id="copy-target-day">
@@ -990,14 +938,12 @@
             <option value="0">Domingo</option>
           </select>
         </div>
-
         <div class="modal-info" id="copy-info">
           <span
             >ℹ️ Serão copiadas apenas as tarefas <strong>pendentes</strong> do
             dia selecionado.</span
           >
         </div>
-
         <div class="modal-actions">
           <button class="btn btn-outline" id="cancel-copy">Cancelar</button>
           <button class="btn btn-primary" id="confirm-copy">
@@ -1007,9 +953,6 @@
       </div>
     </div>
 
-    <!-- ============================================
-    MODAL DE EDIÇÃO DE TAREFA
-    ============================================ -->
     <div class="modal-overlay" id="edit-todo-modal">
       <div class="modal">
         <h2>✏️ Editar Tarefa</h2>
@@ -1062,7 +1005,6 @@
     MAIN - CONTEÚDO PRINCIPAL
     ============================================ -->
     <main>
-      <!-- Cabeçalho Interno da Página -->
       <div class="page-header">
         <h2>📋 To-Do List</h2>
         <div class="page-header-actions">
@@ -1073,7 +1015,6 @@
         </div>
       </div>
 
-      <!-- FORMULÁRIO DE TAREFA -->
       <div class="form-card">
         <div class="form-title">➕ Nova Tarefa</div>
         <form id="todo-form" class="form-group">
@@ -1107,7 +1048,6 @@
         </form>
       </div>
 
-      <!-- BARRA DE FERRAMENTAS DO KANBAN -->
       <div class="todo-toolbar">
         <div class="toolbar-left">
           <span class="toolbar-label">📋 Gerenciar:</span>
@@ -1144,22 +1084,12 @@
         </div>
       </div>
 
-      <!-- KANBAN -->
       <div class="kanban-container" id="kanban-container"></div>
     </main>
 
-    <!-- ============================================
-    TOAST CONTAINER
-    ============================================ -->
     <div class="toast-container" id="toast-container"></div>
 
-    <!-- ============================================
-    JAVASCRIPT
-    ============================================ -->
     <script>
-      // ============================================
-      // UTILITY FUNCTIONS
-      // ============================================
       function getDayName(dayIndex) {
         const days = [
           "Domingo",
@@ -1172,53 +1102,30 @@
         ];
         return days[dayIndex];
       }
-
-      function getShortDayName(dayIndex) {
-        const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-        return days[dayIndex];
-      }
-
       function getDayOrder(dayIndex) {
-        // Retorna a ordem de exibição: Seg=0, Ter=1, Qua=2, Qui=3, Sex=4, Sab=5, Dom=6
         const order = [6, 0, 1, 2, 3, 4, 5];
         return order[dayIndex];
       }
-
-      function getDaysInOrder() {
-        return [1, 2, 3, 4, 5, 6, 0];
-      }
-
       function updateDateDisplay() {
-        const now = new Date();
-        const options = {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
         document.getElementById("current-date-display").textContent =
-          now.toLocaleDateString("pt-BR", options);
+          new Date().toLocaleDateString("pt-BR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
       }
 
       function detectUrls(text) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const urls = text.match(urlRegex);
-        return urls || [];
+        return text.match(/(https?:\/\/[^\s]+)/g) || [];
       }
-
       function formatTextWithLinks(text) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, function (url) {
-          let displayUrl = url.replace(/^https?:\/\//, "");
-          if (displayUrl.length > 40)
-            displayUrl = displayUrl.substring(0, 40) + "...";
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">🔗 ${displayUrl}</a>`;
-        });
+        return text.replace(
+          /(https?:\/\/[^\s]+)/g,
+          (url) =>
+            `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">🔗 ${url.replace(/^https?:\/\//, "").substring(0, 40)}...</a>`,
+        );
       }
-
-      // ============================================
-      // TAG COLORS
-      // ============================================
       function getTagClass(tag) {
         const map = {
           estudos: "tag-estudos",
@@ -1232,7 +1139,6 @@
         };
         return map[tag] || "tag-outros";
       }
-
       function getTagIcon(tag) {
         const map = {
           estudos: "📚",
@@ -1246,7 +1152,6 @@
         };
         return map[tag] || "📌";
       }
-
       function getTagName(tag) {
         const map = {
           estudos: "Estudos",
@@ -1261,9 +1166,6 @@
         return map[tag] || "Outros";
       }
 
-      // ============================================
-      // DATA MANAGER INTEGRADO COM PERFIS
-      // ============================================
       const DataManager = {
         get(key, defaultValue) {
           try {
@@ -1276,8 +1178,6 @@
         set(key, data) {
           localStorage.setItem(key, JSON.stringify(data));
         },
-
-        // Profiles
         getActiveProfile() {
           return this.get("activeProfile", "personal");
         },
@@ -1287,8 +1187,6 @@
             aunt: { name: "Tia", emoji: "👩", color: "aunt" },
           });
         },
-
-        // Todos
         getTodos(profile = this.getActiveProfile()) {
           return this.get(`todos_${profile}`, []);
         },
@@ -1297,15 +1195,11 @@
         },
       };
 
-      // ============================================
-      // TOAST SYSTEM
-      // ============================================
       function showToast(message, type = "success") {
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        const icons = { success: "✅", error: "❌", warning: "⚠️" };
-        toast.innerHTML = `<span>${icons[type] || "📌"}</span> ${message}`;
+        toast.innerHTML = `<span>${{ success: "✅", error: "❌", warning: "⚠️" }[type] || "📌"}</span> ${message}`;
         container.appendChild(toast);
         setTimeout(() => {
           toast.style.opacity = "0";
@@ -1314,14 +1208,10 @@
         }, 3000);
       }
 
-      // ============================================
-      // TODO MODULE
-      // ============================================
       const Todos = {
         data: [],
         editingId: null,
         activeProfile: "personal",
-
         init() {
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getTodos(this.activeProfile);
@@ -1329,9 +1219,7 @@
           this.render();
           this.setupEvents();
         },
-
         setupEvents() {
-          // Formulário
           document
             .getElementById("todo-form")
             .addEventListener("submit", (e) => {
@@ -1347,8 +1235,6 @@
           document
             .getElementById("filter-tag")
             .addEventListener("change", () => this.render());
-
-          // Modais (Copy e Edit)
           document
             .getElementById("cancel-copy")
             .addEventListener("click", () => this.closeCopyModal());
@@ -1374,22 +1260,18 @@
               e.preventDefault();
               this.saveEdit();
             });
-
           document
             .getElementById("copy-source-day")
             .addEventListener("change", () => this.updateCopyInfo());
           document
             .getElementById("copy-target-day")
             .addEventListener("change", () => this.updateCopyInfo());
-
-          // Evento de troca de perfil no menu lateral
           document
             .getElementById("profile-select")
             .addEventListener("change", (e) =>
               this.switchProfile(e.target.value),
             );
         },
-
         switchProfile(profileId) {
           DataManager.set("activeProfile", profileId);
           this.activeProfile = profileId;
@@ -1397,31 +1279,22 @@
           this.data = DataManager.getTodos(this.activeProfile);
           this.render();
         },
-
         updateProfileUI() {
-          const profiles = DataManager.getProfiles();
-          const profile = profiles[this.activeProfile];
+          const profile = DataManager.getProfiles()[this.activeProfile];
           if (!profile) return;
           document.getElementById("profile-select").value = this.activeProfile;
           const avatar = document.getElementById("profile-avatar");
           avatar.textContent = profile.emoji || "👤";
           avatar.className = `avatar ${profile.color || "personal"}`;
         },
-
         add() {
-          const input = document.getElementById("todo-input");
-          const text = input.value.trim();
-          const day = parseInt(document.getElementById("todo-day").value);
-          const tag = document.getElementById("todo-tag").value;
-
-          if (!text) {
-            showToast("Digite uma tarefa!", "warning");
-            return;
-          }
-
-          const urls = detectUrls(text);
-          const hasLink = urls.length > 0;
-
+          const input = document.getElementById("todo-input"),
+            text = input.value.trim();
+          const day = parseInt(document.getElementById("todo-day").value),
+            tag = document.getElementById("todo-tag").value;
+          if (!text) return showToast("Digite uma tarefa!", "warning");
+          const urls = detectUrls(text),
+            hasLink = urls.length > 0;
           this.data.push({
             id: Date.now(),
             text,
@@ -1434,15 +1307,8 @@
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           input.value = "";
-
-          const tagName = getTagName(tag);
-          if (hasLink)
-            showToast(
-              `✅ Tarefa com link adicionada em ${tagName}! (${urls.length} URL${urls.length > 1 ? "s" : ""})`,
-            );
-          else showToast(`✅ Tarefa "${text}" adicionada em ${tagName}!`);
+          showToast(`✅ Tarefa "${text}" adicionada em ${getTagName(tag)}!`);
         },
-
         toggle(id) {
           const todo = this.data.find((t) => t.id === id);
           if (todo) {
@@ -1451,7 +1317,6 @@
             this.render();
           }
         },
-
         delete(id) {
           if (!confirm("Remover esta tarefa?")) return;
           this.data = this.data.filter((t) => t.id !== id);
@@ -1459,7 +1324,6 @@
           this.render();
           showToast("🗑️ Tarefa removida!", "warning");
         },
-
         openEditModal(id) {
           const todo = this.data.find((t) => t.id === id);
           if (!todo) return;
@@ -1470,22 +1334,16 @@
           document.getElementById("edit-todo-modal").classList.add("active");
           document.body.style.overflow = "hidden";
         },
-
         closeEditModal() {
           document.getElementById("edit-todo-modal").classList.remove("active");
           document.body.style.overflow = "";
           this.editingId = null;
         },
-
         saveEdit() {
-          const text = document.getElementById("edit-todo-text").value.trim();
-          const day = parseInt(document.getElementById("edit-todo-day").value);
-          const tag = document.getElementById("edit-todo-tag").value;
-
-          if (!text) {
-            showToast("Digite uma descrição!", "warning");
-            return;
-          }
+          const text = document.getElementById("edit-todo-text").value.trim(),
+            day = parseInt(document.getElementById("edit-todo-day").value),
+            tag = document.getElementById("edit-todo-tag").value;
+          if (!text) return showToast("Digite uma descrição!", "warning");
           const todo = this.data.find((t) => t.id === this.editingId);
           if (todo) {
             const urls = detectUrls(text);
@@ -1497,10 +1355,9 @@
             DataManager.setTodos(this.data, this.activeProfile);
             this.closeEditModal();
             this.render();
-            showToast(`✏️ Tarefa atualizada em ${getTagName(tag)}!`);
+            showToast(`✏️ Tarefa atualizada!`);
           }
         },
-
         openCopyModal(targetDay) {
           document.getElementById("copy-target-day").value = targetDay;
           let sourceDay = targetDay > 1 ? targetDay - 1 : 6;
@@ -1510,261 +1367,161 @@
           document.getElementById("copy-modal").classList.add("active");
           document.body.style.overflow = "hidden";
         },
-
         closeCopyModal() {
           document.getElementById("copy-modal").classList.remove("active");
           document.body.style.overflow = "";
         },
-
         updateCopyInfo() {
           const sourceDay = parseInt(
-            document.getElementById("copy-source-day").value,
-          );
-          const targetDay = parseInt(
-            document.getElementById("copy-target-day").value,
-          );
-          const sourceName = getDayName(sourceDay);
-          const targetName = getDayName(targetDay);
-          const sourceTasks = this.data.filter(
-            (t) => t.day === sourceDay && !t.done,
-          );
-          const info = document.getElementById("copy-info");
-
+              document.getElementById("copy-source-day").value,
+            ),
+            targetDay = parseInt(
+              document.getElementById("copy-target-day").value,
+            );
+          const info = document.getElementById("copy-info"),
+            sourceTasks = this.data.filter(
+              (t) => t.day === sourceDay && !t.done,
+            );
           if (sourceDay === targetDay) {
             info.innerHTML =
-              "⚠️ <strong>ATENÇÃO:</strong> Você está copiando do mesmo dia! Selecione dias diferentes.";
+              "⚠️ <strong>ATENÇÃO:</strong> Copiando do mesmo dia!";
             info.style.borderColor = "var(--accent-red)";
             info.style.background = "rgba(248,113,113,0.06)";
           } else if (sourceTasks.length === 0) {
-            info.innerHTML = `📭 <strong>${sourceName}:</strong> Não há tarefas pendentes para copiar.`;
+            info.innerHTML = `📭 Não há tarefas pendentes.`;
             info.style.borderColor = "var(--border-color)";
             info.style.background = "rgba(108,99,255,0.06)";
           } else {
-            info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefa${sourceTasks.length > 1 ? "s" : ""} pendente${sourceTasks.length > 1 ? "s" : ""} de <strong>${sourceName}</strong> para <strong>${targetName}</strong>`;
+            info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefas de <strong>${getDayName(sourceDay)}</strong> para <strong>${getDayName(targetDay)}</strong>`;
             info.style.borderColor = "rgba(108,99,255,0.1)";
             info.style.background = "rgba(108,99,255,0.06)";
           }
         },
-
         executeCopy() {
           const sourceDay = parseInt(
-            document.getElementById("copy-source-day").value,
-          );
-          const targetDay = parseInt(
-            document.getElementById("copy-target-day").value,
-          );
-          const sourceName = getDayName(sourceDay);
-          const targetName = getDayName(targetDay);
-
-          if (sourceDay === targetDay) {
-            showToast("⚠️ Selecione dias diferentes para copiar!", "warning");
-            return;
-          }
-
+              document.getElementById("copy-source-day").value,
+            ),
+            targetDay = parseInt(
+              document.getElementById("copy-target-day").value,
+            );
+          if (sourceDay === targetDay)
+            return showToast("⚠️ Selecione dias diferentes!", "warning");
           const sourceTasks = this.data.filter(
             (t) => t.day === sourceDay && !t.done,
           );
-          if (sourceTasks.length === 0) {
-            showToast(
-              `📭 Nenhuma tarefa pendente em ${sourceName}!`,
-              "warning",
-            );
-            return;
-          }
-
-          const targetTasks = this.data.filter(
-            (t) => t.day === targetDay && !t.done,
-          );
-          if (targetTasks.length > 0) {
-            if (
-              !confirm(
-                `Já existem ${targetTasks.length} tarefas pendentes em ${targetName}. Deseja adicionar as novas tarefas mesmo assim?`,
-              )
-            )
-              return;
-          }
-
+          if (sourceTasks.length === 0)
+            return showToast(`📭 Nenhuma tarefa pendente!`, "warning");
           const newTasks = sourceTasks.map((task) => ({
             id: Date.now() + Math.random() * 1000,
             text: task.text,
             day: targetDay,
             tag: task.tag || "outros",
             done: false,
-            hasLink: task.hasLink || false,
-            urls: task.urls || [],
+            hasLink: task.hasLink,
+            urls: task.urls,
           }));
-
           this.data.push(...newTasks);
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           this.closeCopyModal();
-
-          const columns = document.querySelectorAll(".kanban-column");
-          const targetColumn = columns[getDayOrder(targetDay)];
-          if (targetColumn) {
-            targetColumn.classList.remove("copy-flash");
-            void targetColumn.offsetWidth;
-            targetColumn.classList.add("copy-flash");
-          }
-          showToast(
-            `📋 ${newTasks.length} tarefas copiadas de ${sourceName} para ${targetName}!`,
-            "success",
-          );
+          showToast(`📋 ${newTasks.length} tarefas copiadas!`, "success");
         },
-
         clearDay() {
-          const day = parseInt(document.getElementById("todo-clear-day").value);
-          const dayName = getDayName(day);
-          const tasks = this.data.filter((t) => t.day === day);
-
-          if (tasks.length === 0) {
-            showToast(`📭 Nenhuma tarefa para ${dayName}!`, "warning");
-            return;
-          }
-          if (
-            !confirm(
-              `Tem certeza que deseja remover TODAS as ${tasks.length} tarefas de ${dayName}?`,
-            )
-          )
-            return;
-
+          const day = parseInt(document.getElementById("todo-clear-day").value),
+            tasks = this.data.filter((t) => t.day === day);
+          if (tasks.length === 0)
+            return showToast(`📭 Nenhuma tarefa!`, "warning");
+          if (!confirm(`Remover TODAS as ${tasks.length} tarefas?`)) return;
           this.data = this.data.filter((t) => t.day !== day);
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
-          showToast(
-            `🗑️ ${tasks.length} tarefas removidas de ${dayName}!`,
-            "warning",
-          );
+          showToast(`🗑️ Tarefas removidas!`, "warning");
         },
-
         clearSpecificDay(day) {
           document.getElementById("todo-clear-day").value = day;
           this.clearDay();
         },
-
         toggleAllToday() {
-          const today = new Date().getDay();
-          const todayTasks = this.data.filter((t) => t.day === today);
-
-          if (todayTasks.length === 0) {
-            showToast("📭 Nenhuma tarefa para hoje!", "warning");
-            return;
-          }
-          const allDone = todayTasks.every((t) => t.done);
-          const newStatus = !allDone;
-
+          const today = new Date().getDay(),
+            todayTasks = this.data.filter((t) => t.day === today);
+          if (todayTasks.length === 0)
+            return showToast("📭 Nenhuma tarefa para hoje!", "warning");
+          const newStatus = !todayTasks.every((t) => t.done);
           todayTasks.forEach((t) => (t.done = newStatus));
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           showToast(
-            `${newStatus ? "✅" : "↩️"} ${todayTasks.length} tarefas ${newStatus ? "marcadas" : "desmarcadas"}!`,
+            `${newStatus ? "✅" : "↩️"} Tarefas atualizadas!`,
             "success",
           );
         },
-
         render() {
-          const container = document.getElementById("kanban-container");
-          const today = new Date().getDay();
-          const filterTag = document.getElementById("filter-tag").value;
-
-          let filteredData = this.data;
-          if (filterTag !== "all")
-            filteredData = this.data.filter((t) => t.tag === filterTag);
-
-          const totalPending = filteredData.filter((t) => !t.done).length;
+          const container = document.getElementById("kanban-container"),
+            filterTag = document.getElementById("filter-tag").value;
+          let filteredData =
+            filterTag !== "all"
+              ? this.data.filter((t) => t.tag === filterTag)
+              : this.data;
           document.getElementById("todo-stats").textContent =
-            `📊 ${totalPending} tarefas pendentes`;
-
-          const dayOrder = [1, 2, 3, 4, 5, 6, 0];
-          const dayNames = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-
+            `📊 ${filteredData.filter((t) => !t.done).length} pendentes`;
           let html = "";
-          dayOrder.forEach((day, index) => {
-            const shortName = dayNames[index];
-            const isToday = day === today;
-            const isWeekend = day === 0 || day === 6;
-            const dayTodos = filteredData.filter((t) => t.day === day);
-            const pendingTodos = dayTodos.filter((t) => !t.done);
-
-            const groupedByTag = {};
+          [1, 2, 3, 4, 5, 6, 0].forEach((day, index) => {
+            const shortName = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"][
+                index
+              ],
+              isToday = day === new Date().getDay(),
+              isWeekend = day === 0 || day === 6;
+            const dayTodos = filteredData.filter((t) => t.day === day),
+              groupedByTag = {};
             dayTodos.forEach((todo) => {
               const tag = todo.tag || "outros";
               if (!groupedByTag[tag]) groupedByTag[tag] = [];
               groupedByTag[tag].push(todo);
             });
-
-            const tagOrder = [
-              "estudos",
-              "exercicios",
-              "saude",
-              "trabalho",
-              "pessoal",
-              "casa",
-              "financas",
-              "outros",
-            ];
             let todosHtml = "";
-            if (dayTodos.length === 0) {
+            if (dayTodos.length === 0)
               todosHtml = `<div class="empty-day">📭 Nenhuma tarefa</div>`;
-            } else {
-              tagOrder.forEach((tag) => {
-                const tagTodos = groupedByTag[tag] || [];
-                if (tagTodos.length > 0) {
-                  const tagName = getTagName(tag);
-                  const tagIcon = getTagIcon(tag);
-                  todosHtml += `
-                    <div style="margin: 8px 0 4px 0;">
-                      <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
-                        ${tagIcon} ${tagName} <span style="font-weight: 400; opacity: 0.5; font-size: 9px;">(${tagTodos.length})</span>
-                      </span>
-                    </div>
-                  `;
-                  tagTodos.forEach((todo) => {
-                    const tagClass = getTagClass(todo.tag || "outros");
+            else {
+              [
+                "estudos",
+                "exercicios",
+                "saude",
+                "trabalho",
+                "pessoal",
+                "casa",
+                "financas",
+                "outros",
+              ].forEach((tag) => {
+                if (groupedByTag[tag]) {
+                  todosHtml += `<div style="margin: 8px 0 4px 0;"><span style="font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">${getTagIcon(tag)} ${getTagName(tag)}</span></div>`;
+                  groupedByTag[tag].forEach((todo) => {
                     todosHtml += `
                       <div class="kanban-card ${todo.done ? "done" : ""}">
-                        <div class="card-top">
-                          <div class="card-text">
-                            ${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}
-                          </div>
-                          <span class="card-tag ${tagClass}">${getTagIcon(todo.tag || "outros")} ${getTagName(todo.tag || "outros")}</span>
-                        </div>
+                        <div class="card-top"><div class="card-text">${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}</div><span class="card-tag ${getTagClass(todo.tag)}">${getTagIcon(todo.tag)}</span></div>
                         <div class="card-actions">
                           <button class="done-btn" onclick="Todos.toggle(${todo.id})">${todo.done ? "↩️" : "✅"}</button>
-                          <button class="edit-btn" onclick="Todos.openEditModal(${todo.id})" title="Editar">✏️</button>
+                          <button class="edit-btn" onclick="Todos.openEditModal(${todo.id})">✏️</button>
                           <button class="delete" onclick="Todos.delete(${todo.id})">🗑️</button>
                         </div>
-                      </div>
-                    `;
+                      </div>`;
                   });
                 }
               });
             }
-
-            const weekendClass = isWeekend ? "weekend" : "";
-            const todayIndicator = isToday ? "⭐ " : "";
-
             html += `
-              <div class="kanban-column ${weekendClass}">
-                <div class="column-header">
-                  <h3 class="${isToday ? "day-today" : ""}">${todayIndicator}${shortName}${isToday ? " (Hoje)" : ""}</h3>
-                  <span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length} (${pendingTodos.length} pendentes)</span>
-                </div>
+              <div class="kanban-column ${isWeekend ? "weekend" : ""}">
+                <div class="column-header"><h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${shortName}</h3><span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length}</span></div>
                 <div>${todosHtml}</div>
                 <div class="column-actions">
-                  <button class="copy-day" onclick="Todos.openCopyModal(${day})" title="Copiar tarefas">📋 Copiar</button>
-                  <button class="clear-day" onclick="Todos.clearSpecificDay(${day})" title="Limpar dia">🗑️ Limpar</button>
+                  <button class="copy-day" onclick="Todos.openCopyModal(${day})">📋 Copiar</button>
+                  <button class="clear-day" onclick="Todos.clearSpecificDay(${day})">🗑️ Limpar</button>
                 </div>
-              </div>
-            `;
+              </div>`;
           });
           container.innerHTML = html;
         },
       };
 
-      // ============================================
-      // THEME TOGGLE
-      // ============================================
       let darkTheme = true;
       document
         .getElementById("themeToggle")
@@ -1794,9 +1551,6 @@
           }
         });
 
-      // ============================================
-      // INIT
-      // ============================================
       updateDateDisplay();
       Todos.init();
     </script>
