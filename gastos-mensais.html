@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinControl - Gastos Mensais</title>
+    <style>
+      :root {
+        --bg-primary: #0a0a14;
+        --bg-secondary: #12121f;
+        --bg-card: rgba(18, 18, 31, 0.7);
+        --bg-input: #0d0d1a;
+        --border-color: rgba(255, 255, 255, 0.05);
+        --text-primary: #f0f0ff;
+        --text-secondary: rgba(240, 240, 255, 0.65);
+        --text-muted: rgba(240, 240, 255, 0.35);
+        --accent-blue: #6c63ff;
+        --accent-purple: #a855f7;
+        --accent-green: #34d399;
+        --accent-amber: #fbbf24;
+        --accent-red: #f87171;
+        --accent-pink: #ec4899;
+        --accent-cyan: #22d3ee;
+        --gradient-primary: linear-gradient(135deg, #6c63ff, #a855f7);
+        --gradient-card: linear-gradient(
+          145deg,
+          rgba(18, 18, 31, 0.8),
+          rgba(10, 10, 20, 0.9)
+        );
+        --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.5);
+        --radius: 16px;
+        --radius-sm: 10px;
+        --transition: all 0.25s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* MENU LATERAL */
+      aside {
+        width: 220px;
+        background: rgba(10, 10, 20, 0.95);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        padding: 20px 14px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 100;
+      }
+
+      .menu-header {
+        padding: 6px 8px 20px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 14px;
+      }
+
+      .menu-logo {
+        font-size: 20px;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 14px;
+      }
+
+      .menu-profile {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 6px 10px;
+      }
+
+      .menu-profile .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .avatar.personal {
+        background: var(--accent-blue);
+        color: white;
+      }
+      .avatar.aunt {
+        background: var(--accent-pink);
+        color: white;
+      }
+
+      .menu-profile select {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 13px;
+        outline: none;
+        cursor: pointer;
+        font-weight: 500;
+        width: 100%;
+      }
+      .menu-profile select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .menu-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+      }
+
+      .menu-nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .menu-nav a svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        flex-shrink: 0;
+      }
+
+      .menu-nav a:hover {
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .menu-nav a.active {
+        color: white;
+        background: var(--accent-blue);
+        box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+      }
+
+      .menu-footer {
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
+        font-size: 10px;
+        color: var(--text-muted);
+        text-align: center;
+      }
+
+      /* CONTEÚDO */
+      main {
+        margin-left: 220px;
+        flex: 1;
+        padding: 24px;
+        min-height: 100vh;
+      }
+
+      .page-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 20px;
+        height: calc(100vh - 48px);
+      }
+
+      /* CALENDÁRIO */
+      .calendar-section {
+        background: var(--gradient-card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        flex-shrink: 0;
+      }
+      .calendar-header h2 {
+        font-size: 18px;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .calendar-nav {
+        display: flex;
+        gap: 4px;
+      }
+      .calendar-nav button {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: var(--transition);
+      }
+      .calendar-nav button:hover {
+        border-color: var(--accent-blue);
+        color: white;
+      }
+
+      .calendar-grid-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+      }
+
+      .calendar-day-header {
+        text-align: center;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 4px 0;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: rgba(18, 18, 31, 0.9);
+        z-index: 1;
+      }
+
+      .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--bg-input);
+        border: 1px solid transparent;
+        min-height: 44px;
+      }
+      .calendar-day:hover {
+        border-color: var(--accent-blue);
+        background: rgba(108, 99, 255, 0.08);
+      }
+      .calendar-day.empty {
+        background: transparent;
+        cursor: default;
+        pointer-events: none;
+      }
+      .calendar-day.empty:hover {
+        border-color: transparent;
+        background: transparent;
+      }
+      .calendar-day.today {
+        border-color: var(--accent-blue) !important;
+        box-shadow: 0 0 12px rgba(108, 99, 255, 0.2);
+      }
+      .calendar-day .day-number {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .calendar-day .day-value {
+        font-size: 9px;
+        margin-top: 1px;
+        font-weight: 600;
+      }
+      .calendar-day .day-value.positive {
+        color: var(--accent-green);
+      }
+      .calendar-day .day-value.negative {
+        color: var(--accent-red);
+      }
+      .calendar-day .day-value.neutral {
+        color: var(--text-muted);
+      }
+      .calendar-day.future {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* SIDEBAR */
+      .sidebar-section {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow-y: auto;
+      }
+
+      .card {
+        background: var(--gradient-card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 18px;
+        box-shadow: var(--shadow-card);
+        flex-shrink: 0;
+      }
+      .card h3 {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+      .card .big-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+      }
+      .card .sub-text {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .budget-setup {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .budget-setup input {
+        padding: 10px 14px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 14px;
+        outline: none;
+      }
+      .budget-setup input:focus {
+        border-color: var(--accent-blue);
+      }
+
+      .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.45);
+      }
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 11px;
+        border-radius: 6px;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+      }
+      .btn-danger {
+        background: var(--accent-red);
+        color: white;
+      }
+
+      .progress-mini {
+        width: 100%;
+        height: 6px;
+        background: var(--bg-input);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .progress-mini-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 0.5s ease;
+        background: var(--gradient-primary);
+      }
+      .progress-mini-fill.warning {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      }
+      .progress-mini-fill.danger {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+      }
+
+      .day-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        font-size: 12px;
+      }
+      .day-detail-row .label {
+        color: var(--text-secondary);
+      }
+      .day-detail-row .value {
+        font-weight: 600;
+      }
+
+      /* MODAL */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(12px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      .modal {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px;
+        max-width: 380px;
+        width: 90%;
+        box-shadow: var(--shadow-card);
+      }
+      .modal h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .modal input {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 16px;
+        outline: none;
+        margin-bottom: 14px;
+        text-align: center;
+      }
+      .modal input:focus {
+        border-color: var(--accent-blue);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      /* TOAST */
+      .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 1000;
+      }
+      .toast {
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 13px;
+        box-shadow: var(--shadow-card);
+        animation: slideInRight 0.35s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast.success {
+        border-left: 3px solid var(--accent-green);
+      }
+      .toast.error {
+        border-left: 3px solid var(--accent-red);
+      }
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* RESPONSIVO */
+      @media (max-width: 992px) {
+        .page-grid {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        .calendar-section {
+          min-height: 500px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        aside {
+          width: 180px;
+          padding: 14px 10px;
+        }
+        main {
+          margin-left: 180px;
+          padding: 14px;
+        }
+        .calendar-day {
+          min-height: 36px;
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MENU LATERAL -->
+    <aside>
+      <div class="menu-header">
+        <div class="menu-logo">💰 FinControl</div>
+        <div class="menu-profile">
+          <div class="avatar personal" id="profile-avatar">👤</div>
+          <select id="profile-select">
+            <option value="personal">👤 Eu</option>
+            <option value="aunt">👩 Tia</option>
+          </select>
+        </div>
+      </div>
+
+      <nav class="menu-nav">
+        <a href="index.html">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          To-Do
+        </a>
+        <a href="investimentos.html">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+          Investimentos
+        </a>
+        <a href="gastos.html">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+          </svg>
+          Gastos
+        </a>
+        <a href="gastos-mensais.html" class="active">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4" />
+            <path d="M8 2v4" />
+            <path d="M3 10h18" />
+          </svg>
+          Gastos Mensais
+        </a>
+      </nav>
+
+      <div class="menu-footer">FinControl v1.0</div>
+    </aside>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="day-modal">
+      <div class="modal">
+        <h3 id="modal-title">📅 Dia X</h3>
+        <p
+          style="
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 10px;
+          "
+          id="modal-subtitle"
+        ></p>
+        <input
+          type="number"
+          id="modal-value"
+          placeholder="Valor gasto (R$)"
+          step="0.01"
+        />
+        <div class="modal-actions">
+          <button
+            class="btn btn-outline btn-sm"
+            onclick="
+              document.getElementById('day-modal').classList.remove('active')
+            "
+          >
+            Cancelar
+          </button>
+          <button class="btn btn-danger btn-sm" id="modal-clear">
+            🗑️ Limpar
+          </button>
+          <button class="btn btn-primary btn-sm" id="modal-save">
+            💾 Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <main>
+      <div class="page-grid">
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <h2 id="calendar-title">Julho 2026</h2>
+            <div class="calendar-nav">
+              <button id="prev-month-btn">◀</button>
+              <button id="next-month-btn">▶</button>
+              <button class="btn btn-sm btn-outline" id="today-btn">
+                Hoje
+              </button>
+            </div>
+          </div>
+          <div class="calendar-grid-wrapper">
+            <div class="calendar-grid" id="calendar-grid"></div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="card">
+            <h3>⚙️ Orçamento do Mês</h3>
+            <div class="budget-setup">
+              <input
+                type="number"
+                id="budget-input"
+                placeholder="Ex: 1500.00"
+                step="0.01"
+              />
+              <button class="btn btn-primary" id="save-budget-btn">
+                💾 Definir Orçamento
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>📊 Resumo</h3>
+            <div class="big-value" id="resume-budget" style="font-size: 22px">
+              R$ 0,00
+            </div>
+            <div class="sub-text">Orçamento total</div>
+            <div class="day-detail-row">
+              <span class="label">💸 Gasto acumulado</span>
+              <span
+                class="value"
+                id="resume-spent"
+                style="color: var(--accent-red)"
+                >R$ 0,00</span
+              >
+            </div>
+            <div class="day-detail-row">
+              <span class="label">💰 Saldo restante</span>
+              <span
+                class="value"
+                id="resume-remaining"
+                style="color: var(--accent-green)"
+                >R$ 0,00</span
+              >
+            </div>
+            <div class="day-detail-row">
+              <span class="label">📅 Dias restantes</span>
+              <span class="value" id="resume-days">0</span>
+            </div>
+            <div class="day-detail-row">
+              <span class="label">🎯 Ideal por dia</span>
+              <span
+                class="value"
+                id="resume-daily"
+                style="color: var(--accent-cyan)"
+                >R$ 0,00</span
+              >
+            </div>
+            <div class="progress-mini">
+              <div
+                class="progress-mini-fill"
+                id="resume-progress"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="sub-text" style="margin-top: 6px" id="resume-percent">
+              0% utilizado
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>📅 Dia Selecionado</h3>
+            <div
+              id="selected-day-info"
+              style="color: var(--text-muted); font-size: 12px"
+            >
+              Clique em um dia no calendário
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+      function formatBRL(value) {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(value);
+      }
+
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span>${type === "success" ? "✅" : "❌"}</span> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(40px)";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      const DataManager = {
+        get(key, defaultValue) {
+          try {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultValue;
+          } catch {
+            return defaultValue;
+          }
+        },
+        set(key, data) {
+          localStorage.setItem(key, JSON.stringify(data));
+        },
+        getDailyExpenses(profile, monthKey) {
+          const all = this.get(`daily_${profile}`, {});
+          return all[monthKey] || {};
+        },
+        setDailyExpenses(profile, monthKey, data) {
+          const all = this.get(`daily_${profile}`, {});
+          all[monthKey] = data;
+          this.set(`daily_${profile}`, all);
+        },
+        getBudgets(profile) {
+          return this.get(`budgets_${profile}`, {});
+        },
+        setBudgets(profile, data) {
+          this.set(`budgets_${profile}`, data);
+        },
+        getActiveProfile() {
+          return this.get("activeProfile", "personal");
+        },
+        getProfiles() {
+          return this.get("profiles", {
+            personal: { name: "Eu", emoji: "👤", color: "personal" },
+            aunt: { name: "Tia", emoji: "👩", color: "aunt" },
+          });
+        },
+      };
+
+      const Calendar = {
+        activeProfile: "personal",
+        currentDate: new Date(),
+        dailyExpenses: {},
+        budget: 0,
+        selectedDay: null,
+
+        init() {
+          this.activeProfile = DataManager.getActiveProfile();
+          this.loadData();
+          this.setupEvents();
+          this.renderCalendar();
+          this.updateResume();
+          this.updateProfileUI();
+        },
+
+        get monthKey() {
+          return `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, "0")}`;
+        },
+
+        loadData() {
+          const budgets = DataManager.getBudgets(this.activeProfile);
+          this.budget = budgets[this.monthKey]?.amount || 0;
+          document.getElementById("budget-input").value = this.budget || "";
+          this.dailyExpenses = DataManager.getDailyExpenses(
+            this.activeProfile,
+            this.monthKey,
+          );
+        },
+
+        setupEvents() {
+          document
+            .getElementById("save-budget-btn")
+            .addEventListener("click", () => this.saveBudget());
+          document
+            .getElementById("prev-month-btn")
+            .addEventListener("click", () => {
+              this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+              this.loadData();
+              this.renderCalendar();
+              this.updateResume();
+            });
+          document
+            .getElementById("next-month-btn")
+            .addEventListener("click", () => {
+              this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+              this.loadData();
+              this.renderCalendar();
+              this.updateResume();
+            });
+          document.getElementById("today-btn").addEventListener("click", () => {
+            this.currentDate = new Date();
+            this.loadData();
+            this.renderCalendar();
+            this.updateResume();
+          });
+          document
+            .getElementById("modal-save")
+            .addEventListener("click", () => this.saveDayValue());
+          document
+            .getElementById("modal-clear")
+            .addEventListener("click", () => this.clearDayValue());
+          document
+            .getElementById("profile-select")
+            .addEventListener("change", (e) =>
+              this.switchProfile(e.target.value),
+            );
+          document
+            .getElementById("day-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget)
+                document.getElementById("day-modal").classList.remove("active");
+            });
+        },
+
+        switchProfile(profileId) {
+          DataManager.set("activeProfile", profileId);
+          this.activeProfile = profileId;
+          this.loadData();
+          this.renderCalendar();
+          this.updateResume();
+          this.updateProfileUI();
+        },
+
+        updateProfileUI() {
+          const profiles = DataManager.getProfiles();
+          const profile = profiles[this.activeProfile];
+          if (!profile) return;
+          document.getElementById("profile-select").value = this.activeProfile;
+          const avatar = document.getElementById("profile-avatar");
+          avatar.textContent = profile.emoji || "👤";
+          avatar.className = `avatar ${profile.color || "personal"}`;
+        },
+
+        saveBudget() {
+          const value = parseFloat(
+            document.getElementById("budget-input").value,
+          );
+          if (!value || value <= 0) {
+            showToast("Informe um valor válido!", "error");
+            return;
+          }
+          const budgets = DataManager.getBudgets(this.activeProfile);
+          budgets[this.monthKey] = { amount: value, createdAt: Date.now() };
+          DataManager.setBudgets(this.activeProfile, budgets);
+          this.budget = value;
+          this.updateResume();
+          this.renderCalendar();
+          showToast(`Orçamento de ${formatBRL(value)} definido!`);
+        },
+
+        getDayKey(day) {
+          return `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        },
+
+        openDayModal(day, isFuture) {
+          if (isFuture) {
+            showToast("Não pode lançar gastos em dias futuros!", "error");
+            return;
+          }
+          this.selectedDay = day;
+          const dayKey = this.getDayKey(day);
+          const currentValue = this.dailyExpenses[dayKey] || 0;
+          const dateObj = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth(),
+            day,
+          );
+          const dayName = dateObj.toLocaleDateString("pt-BR", {
+            weekday: "long",
+          });
+
+          document.getElementById("modal-title").textContent =
+            `📅 Dia ${day} - ${dayName}`;
+          document.getElementById("modal-subtitle").textContent =
+            dateObj.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            });
+          document.getElementById("modal-value").value = currentValue || "";
+          document.getElementById("day-modal").classList.add("active");
+          document.getElementById("modal-value").focus();
+        },
+
+        saveDayValue() {
+          if (!this.selectedDay) return;
+          const value = parseFloat(
+            document.getElementById("modal-value").value,
+          );
+          if (isNaN(value) || value < 0) {
+            showToast("Informe um valor válido!", "error");
+            return;
+          }
+          const dayKey = this.getDayKey(this.selectedDay);
+          this.dailyExpenses[dayKey] = value;
+          DataManager.setDailyExpenses(
+            this.activeProfile,
+            this.monthKey,
+            this.dailyExpenses,
+          );
+          document.getElementById("day-modal").classList.remove("active");
+          this.renderCalendar();
+          this.updateResume();
+          this.updateSelectedDayInfo(this.selectedDay);
+          showToast(
+            value === 0
+              ? "Dia zerado! ✅"
+              : `Gasto de ${formatBRL(value)} registrado!`,
+          );
+        },
+
+        clearDayValue() {
+          if (!this.selectedDay) return;
+          const dayKey = this.getDayKey(this.selectedDay);
+          delete this.dailyExpenses[dayKey];
+          DataManager.setDailyExpenses(
+            this.activeProfile,
+            this.monthKey,
+            this.dailyExpenses,
+          );
+          document.getElementById("day-modal").classList.remove("active");
+          this.renderCalendar();
+          this.updateResume();
+          this.updateSelectedDayInfo(this.selectedDay);
+          showToast("Valor do dia removido!");
+        },
+
+        updateSelectedDayInfo(day) {
+          const dayKey = this.getDayKey(day);
+          const value = this.dailyExpenses[dayKey];
+          const container = document.getElementById("selected-day-info");
+          const today = new Date();
+          const isFuture =
+            new Date(
+              this.currentDate.getFullYear(),
+              this.currentDate.getMonth(),
+              day,
+            ) > today;
+
+          if (isFuture) {
+            container.innerHTML = `<span style="color:var(--text-muted);">Dia futuro</span>`;
+            return;
+          }
+
+          if (value === undefined || value === null) {
+            container.innerHTML = `
+              <div style="color:var(--text-muted);">Dia ${day} - Sem gasto</div>
+              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">➕ Lançar</button>
+            `;
+          } else if (value === 0) {
+            container.innerHTML = `
+              <div style="color:var(--accent-green);font-weight:600;">🟢 Dia ${day} - Zerado!</div>
+              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">✏️ Editar</button>
+            `;
+          } else {
+            const dailyIdeal = this.getDailyIdeal();
+            const isOver = dailyIdeal > 0 && value > dailyIdeal;
+            container.innerHTML = `
+              <div style="font-weight:600;${isOver ? "color:var(--accent-red);" : "color:var(--accent-green);"}">
+                ${isOver ? "⚠️" : "✅"} ${formatBRL(value)}
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
+                ${isOver ? `${formatBRL(value - dailyIdeal)} acima` : "Dentro do ideal"}
+              </div>
+              <button class="btn btn-sm btn-outline" style="margin-top:6px;width:100%;" onclick="Calendar.openDayModal(${day}, false)">✏️ Editar</button>
+            `;
+          }
+        },
+
+        getTotalSpent() {
+          return Object.values(this.dailyExpenses).reduce(
+            (sum, v) => sum + (v || 0),
+            0,
+          );
+        },
+
+        getDaysRemaining() {
+          const today = new Date();
+          const year = this.currentDate.getFullYear();
+          const month = this.currentDate.getMonth();
+          const lastDay = new Date(year, month + 1, 0).getDate();
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth();
+          if (year === currentYear && month === currentMonth)
+            return Math.max(0, lastDay - today.getDate() + 1);
+          if (
+            year > currentYear ||
+            (year === currentYear && month > currentMonth)
+          )
+            return lastDay;
+          return 0;
+        },
+
+        getDailyIdeal() {
+          const remaining = this.budget - this.getTotalSpent();
+          const daysRemaining = this.getDaysRemaining();
+          return daysRemaining > 0 ? remaining / daysRemaining : 0;
+        },
+
+        updateResume() {
+          const totalSpent = this.getTotalSpent();
+          const remaining = this.budget - totalSpent;
+          const daysRemaining = this.getDaysRemaining();
+          const dailyIdeal = this.getDailyIdeal();
+          const percent =
+            this.budget > 0 ? (totalSpent / this.budget) * 100 : 0;
+
+          document.getElementById("resume-budget").textContent = formatBRL(
+            this.budget,
+          );
+          document.getElementById("resume-spent").textContent =
+            formatBRL(totalSpent);
+          document.getElementById("resume-remaining").textContent =
+            formatBRL(remaining);
+          document.getElementById("resume-days").textContent = daysRemaining;
+          document.getElementById("resume-daily").textContent =
+            formatBRL(dailyIdeal);
+          document.getElementById("resume-percent").textContent =
+            `${percent.toFixed(1)}% utilizado`;
+
+          const progressFill = document.getElementById("resume-progress");
+          progressFill.style.width = Math.min(percent, 100) + "%";
+          progressFill.className = "progress-mini-fill";
+          if (percent > 90) progressFill.classList.add("danger");
+          else if (percent > 70) progressFill.classList.add("warning");
+
+          const remainingEl = document.getElementById("resume-remaining");
+          remainingEl.style.color =
+            remaining < 0 ? "var(--accent-red)" : "var(--accent-green)";
+        },
+
+        renderCalendar() {
+          const year = this.currentDate.getFullYear();
+          const month = this.currentDate.getMonth();
+          const firstDay = new Date(year, month, 1).getDay();
+          const lastDate = new Date(year, month + 1, 0).getDate();
+          const today = new Date();
+          const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+          const dailyIdeal = this.getDailyIdeal();
+
+          const monthNames = [
+            "Janeiro",
+            "Fevereiro",
+            "Março",
+            "Abril",
+            "Maio",
+            "Junho",
+            "Julho",
+            "Agosto",
+            "Setembro",
+            "Outubro",
+            "Novembro",
+            "Dezembro",
+          ];
+          document.getElementById("calendar-title").textContent =
+            `${monthNames[month]} ${year}`;
+
+          const dayHeaders = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+          let html = dayHeaders
+            .map((d) => `<div class="calendar-day-header">${d}</div>`)
+            .join("");
+
+          for (let i = 0; i < firstDay; i++) {
+            html += `<div class="calendar-day empty"></div>`;
+          }
+
+          for (let day = 1; day <= lastDate; day++) {
+            const dayKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const isToday = dayKey === todayStr;
+            const isFuture = new Date(year, month, day) > today;
+            const dayValue = this.dailyExpenses[dayKey];
+            let valueClass = "neutral";
+            let displayValue = "";
+
+            if (dayValue !== undefined && dayValue !== null) {
+              if (dayValue === 0) {
+                displayValue = "R$0";
+                valueClass = "positive";
+              } else if (dailyIdeal > 0 && dayValue > dailyIdeal) {
+                displayValue = formatBRL(dayValue).replace("R$", "");
+                valueClass = "negative";
+              } else {
+                displayValue = formatBRL(dayValue).replace("R$", "");
+                valueClass = "positive";
+              }
+            }
+
+            html += `
+              <div class="calendar-day ${isToday ? "today" : ""} ${isFuture ? "future" : ""}"
+                   onclick="Calendar.openDayModal(${day}, ${isFuture})"
+                   title="Dia ${day}">
+                <span class="day-number">${day}</span>
+                ${displayValue ? `<span class="day-value ${valueClass}">${displayValue}</span>` : ""}
+              </div>
+            `;
+          }
+
+          // Preenche o resto da última linha para evitar bug de layout
+          const totalCells = firstDay + lastDate;
+          const remainingCells =
+            totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+          for (let i = 0; i < remainingCells; i++) {
+            html += `<div class="calendar-day empty"></div>`;
+          }
+
+          document.getElementById("calendar-grid").innerHTML = html;
+
+          if (this.selectedDay && this.selectedDay <= lastDate) {
+            this.updateSelectedDayInfo(this.selectedDay);
+          }
+        },
+      };
+
+      Calendar.init();
+    </script>
+  </body>
+</html>
