@@ -1,6 +1,6 @@
 /**
  * FinControl AI - Assistente Virtual ROBUSTO & DINÂMICO
- * Com Sugestões, Filtros Compostos e Guia de Perguntas (Cheat Sheet)
+ * Com Sugestões, Filtros Compostos (Mês+Categoria), Orçamento e Guia de Ajuda
  */
 
 const FinControlAI = {
@@ -20,7 +20,7 @@ const FinControlAI = {
         [
           "📊 Meu Resumo do Mês",
           "💸 Gastos em Agosto",
-          "📚 O que é a regra 50/30/20?",
+          "⚙️ Como está meu Orçamento?",
         ],
       );
     }, 500);
@@ -86,7 +86,29 @@ const FinControlAI = {
 
           return {
             text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Saiu: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada em onde você está gastando mais ou prefere projetar seus investimentos?`,
-            suggestions: ["Qual meu maior gasto?", "Simular um investimento"],
+            suggestions: ["Qual meu maior gasto?", "Como está meu orçamento?"],
+          };
+        },
+      },
+      {
+        patterns: ["orcamento", "orçamento", "limite", "posso gastar"],
+        handler: () => {
+          const budget = data.budgets[monthStr]?.amount || 0;
+          if (budget === 0) {
+            return {
+              text: "Você ainda não definiu um orçamento para este mês! Vá até a tela de **Visão Mensal** e defina seu limite. ⚙️",
+              suggestions: ["Meu Resumo", "O que é a regra 50/30/20?"],
+            };
+          }
+
+          const saidas = gastosMensais
+            .filter((e) => e.type === "saida" || !e.type)
+            .reduce((s, e) => s + e.value, 0);
+          const restante = budget - saidas;
+
+          return {
+            text: `⚙️ **Seu Orçamento do Mês:**\n\nLimite definido: **${this.formatMoney(budget)}**\nGastos até agora: **${this.formatMoney(saidas)}**\nSaldo restante: **${this.formatMoney(restante)}**\n\n${restante < 0 ? "⚠️ Atenção! Você já ultrapassou seu limite!" : "✅ Você ainda tem saldo para gastar com tranquilidade."}`,
+            suggestions: ["Qual meu maior gasto?", "Regra 50/30/20"],
           };
         },
       },
@@ -117,7 +139,16 @@ const FinControlAI = {
         },
       },
       {
-        patterns: ["gasto", "gastei", "despesa", "comprei", "custou"],
+        // A INTENÇÃO SUPER INTELIGENTE VOLTOU! Entende meses e categorias juntos.
+        patterns: [
+          "gasto",
+          "gastei",
+          "gastar",
+          "gastou",
+          "despesa",
+          "comprei",
+          "custou",
+        ],
         handler: (input) => {
           const mesesMap = {
             janeiro: "01",
@@ -379,7 +410,7 @@ const FinControlAI = {
         ],
         handler: () => ({
           text: "🚨 **Plano anti-dívidas:**\n1. Mapeie todas e veja o CET (Custo Efetivo Total).\n2. Estanque a sangria (esconda o cartão de crédito).\n3. Foque em pagar as mais caras primeiro (Cartão e Cheque Especial).\n4. Renegocie (use feirões do Serasa).\n\nSe as contas fecharem, use a regra 50/30/20 para não voltar a se endividar.",
-          suggestions: ["Regra 50/30/20", "Meu Resumo do Mês"],
+          suggestions: ["Regra 50/30/20", "Como está meu orçamento?"],
         }),
       },
       {
@@ -423,12 +454,16 @@ const FinControlAI = {
 
     return {
       text: "Hum, acho que não peguei essa. 🤔 Você pode consultar o Guia de Perguntas clicando no botão [❓] lá em cima, ou tentar as opções abaixo:",
-      suggestions: ["Qual meu maior gasto?", "O que é IPCA?", "Meu Saldo"],
+      suggestions: [
+        "Qual meu maior gasto?",
+        "O que é IPCA?",
+        "Como está meu orçamento?",
+      ],
     };
   },
 
   // ==========================================
-  // INTERFACE DO CHAT COM PAINEL DE AJUDA
+  // INTERFACE DO CHAT E GUIA DE AJUDA
   // ==========================================
   injectHTML() {
     if (document.getElementById("ai-chat-btn")) return;
@@ -466,6 +501,7 @@ const FinControlAI = {
             <div class="help-item">"Quais meus gastos em agosto?"</div>
             <div class="help-item">"Quanto gastei com Lazer?"</div>
             <div class="help-item">"Como está o progresso das metas?"</div>
+            <div class="help-item">"Como está meu orçamento?"</div>
             <div class="help-item">"Quais são minhas tarefas pendentes?"</div>
 
             <div class="help-category">🚀 Simulação de Investimentos</div>
@@ -548,7 +584,7 @@ const FinControlAI = {
       .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
       @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-      /* ESTILOS DO PAINEL DE AJUDA */
+      /* PAINEL DE AJUDA */
       .ai-help-panel { position: absolute; top: 70px; left: 0; right: 0; bottom: 76px; background: rgba(15, 17, 26, 0.98); backdrop-filter: blur(15px); z-index: 10; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
       .ai-help-panel.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
       
@@ -574,7 +610,7 @@ const FinControlAI = {
   },
 
   // ==========================================
-  // EVENTOS E ENVIO DE MENSAGENS
+  // EVENTOS DO CHAT
   // ==========================================
   setupEvents() {
     const btn = document.getElementById("ai-chat-btn");
@@ -583,12 +619,10 @@ const FinControlAI = {
     const sendBtn = document.getElementById("ai-chat-send");
     const input = document.getElementById("ai-chat-input");
 
-    // Controles do Painel de Ajuda
     const helpBtn = document.getElementById("ai-chat-help");
     const helpPanel = document.getElementById("ai-help-panel");
     const helpCloseBtn = document.getElementById("ai-help-close");
 
-    // Abrir/Fechar Chat
     btn.addEventListener("click", () => {
       windowEl.classList.toggle("open");
       if (windowEl.classList.contains("open")) input.focus();
@@ -596,13 +630,11 @@ const FinControlAI = {
 
     closeBtn.addEventListener("click", () => windowEl.classList.remove("open"));
 
-    // Abrir/Fechar Guia de Perguntas
     helpBtn.addEventListener("click", () => helpPanel.classList.add("show"));
     helpCloseBtn.addEventListener("click", () =>
       helpPanel.classList.remove("show"),
     );
 
-    // Enviar mensagem
     const handleSend = () => {
       const text = input.value.trim();
       if (!text) return;
@@ -638,14 +670,12 @@ const FinControlAI = {
       if (e.key === "Enter") handleSend();
     });
 
-    // Torna os itens do Guia de Perguntas Clicáveis
     document.querySelectorAll(".help-item").forEach((item) => {
       item.addEventListener("click", () => {
-        // Remove as aspas do texto do card (ex: "Qual meu saldo?" vira Qual meu saldo?)
         const textToSend = item.innerText.replace(/"/g, "");
-        helpPanel.classList.remove("show"); // Fecha o painel
-        input.value = textToSend; // Preenche o input
-        sendBtn.click(); // Clica em enviar automaticamente
+        helpPanel.classList.remove("show");
+        input.value = textToSend;
+        sendBtn.click();
       });
     });
   },
