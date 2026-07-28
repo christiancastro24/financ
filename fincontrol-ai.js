@@ -1,6 +1,6 @@
 /**
  * FinControl AI - Assistente Virtual ROBUSTO & DINÂMICO
- * Com Sugestões de Conversa e Ganchos de Retenção
+ * Com Sugestões, Filtros Compostos e Guia de Perguntas (Cheat Sheet)
  */
 
 const FinControlAI = {
@@ -13,14 +13,13 @@ const FinControlAI = {
     this.injectHTML();
     this.setupEvents();
 
-    // Mensagem inicial de boas-vindas com sugestões
     setTimeout(() => {
       this.addMessage(
         "Olá! Sou o **FinControl AI** 🧠.\n\nEstou aqui para analisar seus números ou te dar dicas sobre educação financeira. Por onde quer começar?",
         "ai",
         [
           "📊 Meu Resumo do Mês",
-          "💸 Qual meu maior gasto?",
+          "💸 Gastos em Agosto",
           "📚 O que é a regra 50/30/20?",
         ],
       );
@@ -41,8 +40,6 @@ const FinControlAI = {
         JSON.parse(localStorage.getItem(`goals_${this.activeProfile}`)) || [],
       budgets:
         JSON.parse(localStorage.getItem(`budgets_${this.activeProfile}`)) || {},
-      daily:
-        JSON.parse(localStorage.getItem(`daily_${this.activeProfile}`)) || {},
     };
   },
 
@@ -66,7 +63,8 @@ const FinControlAI = {
   getIntents() {
     const data = this.getData();
     const now = new Date();
-    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const currentYear = now.getFullYear();
+    const monthStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const gastosMensais = data.expenses.filter((e) =>
       e.date.startsWith(monthStr),
     );
@@ -119,8 +117,22 @@ const FinControlAI = {
         },
       },
       {
-        patterns: ["gasto em ", "gastei em ", "gasto com "],
+        patterns: ["gasto", "gastei", "despesa", "comprei", "custou"],
         handler: (input) => {
+          const mesesMap = {
+            janeiro: "01",
+            fevereiro: "02",
+            marco: "03",
+            abril: "04",
+            maio: "05",
+            junho: "06",
+            julho: "07",
+            agosto: "08",
+            setembro: "09",
+            outubro: "10",
+            novembro: "11",
+            dezembro: "12",
+          };
           const categoriasMap = {
             alimentacao: "Alimentação",
             educacao: "Educação",
@@ -131,27 +143,52 @@ const FinControlAI = {
             outros: "Outros",
             freelance: "Freelance",
           };
-          let found = Object.keys(categoriasMap).find((c) => input.includes(c));
 
-          if (!found)
+          let monthFound = Object.keys(mesesMap).find((m) => input.includes(m));
+          let catFound = Object.keys(categoriasMap).find((c) =>
+            input.includes(c),
+          );
+
+          let expensesToFilter = data.expenses.filter(
+            (e) => e.type === "saida" || !e.type,
+          );
+          let contextMsg = "";
+
+          if (monthFound) {
+            const monthNum = mesesMap[monthFound];
+            expensesToFilter = expensesToFilter.filter((e) =>
+              e.date.startsWith(`${currentYear}-${monthNum}`),
+            );
+            contextMsg += ` em **${monthFound.charAt(0).toUpperCase() + monthFound.slice(1)}**`;
+          }
+
+          if (catFound) {
+            const catReal = categoriasMap[catFound];
+            expensesToFilter = expensesToFilter.filter(
+              (e) => e.category === catReal,
+            );
+            contextMsg += ` com **${catReal}**`;
+          }
+
+          const total = expensesToFilter.reduce((sum, e) => sum + e.value, 0);
+
+          if (!monthFound && !catFound) {
+            const monthTotal = data.expenses
+              .filter(
+                (e) =>
+                  e.date.startsWith(monthStr) &&
+                  (e.type === "saida" || !e.type),
+              )
+              .reduce((sum, e) => sum + e.value, 0);
             return {
-              text: "Não achei essa categoria. Tente perguntar sobre Lazer, Alimentação ou Moradia.",
-              suggestions: [
-                "Quanto gastei em Alimentação?",
-                "Qual meu maior gasto?",
-              ],
+              text: `💸 Seus gastos totais neste mês estão em **${this.formatMoney(monthTotal)}**.\n\nVocê pode ser mais específico! Pergunte algo como:\n- "Quais meus gastos em agosto?"\n- "Quanto gastei com Lazer?"`,
+              suggestions: ["Gastos em Agosto", "Qual meu maior gasto?"],
             };
-
-          const catReal = categoriasMap[found];
-          const total = data.expenses
-            .filter(
-              (e) => e.category === catReal && (e.type === "saida" || !e.type),
-            )
-            .reduce((sum, e) => sum + e.value, 0);
+          }
 
           return {
-            text: `💸 Você gastou **${this.formatMoney(total)}** com **${catReal}**.\n\nSe esse valor estiver muito alto, lembre-se de sempre garantir que sua Reserva de Emergência está em dia. Sabe o que é isso?`,
-            suggestions: ["O que é reserva de emergência?", "Resumo do Mês"],
+            text: `💸 Você gastou um total de **${this.formatMoney(total)}**${contextMsg}.\n\nSe esse valor estiver muito alto, lembre-se de sempre garantir que sua Reserva de Emergência está em dia. Sabe o que é isso?`,
+            suggestions: ["O que é reserva de emergência?", "Meu Resumo"],
           };
         },
       },
@@ -231,14 +268,13 @@ const FinControlAI = {
             valMatch[1].replace(/\./g, "").replace(",", "."),
           );
           const anoAlvo = parseInt(yearMatch[1]);
-          const anoAtual = new Date().getFullYear();
-          if (anoAlvo <= anoAtual)
+          if (anoAlvo <= currentYear)
             return {
               text: "O ano precisa estar no futuro! ⏳",
               suggestions: ["Se eu investir 1000 até 2035"],
             };
 
-          const meses = (anoAlvo - anoAtual) * 12;
+          const meses = (anoAlvo - currentYear) * 12;
           const taxaMensal = Math.pow(1 + this.annualRate, 1 / 12) - 1;
           const totalAtual = data.investments.reduce(
             (sum, inv) => sum + inv.value,
@@ -255,18 +291,19 @@ const FinControlAI = {
           };
         },
       },
+      // ----------------------------------------
+      // EDUCAÇÃO FINANCEIRA
+      // ----------------------------------------
       {
         patterns: ["reserva de emergencia", "reserva de emergência", "reserva"],
-        handler: () => {
-          return {
-            text: "🛡️ **Reserva de Emergência:**\nÉ seu 'colete salva-vidas'. O ideal é guardar de **6 a 12 meses** do seu custo de vida mensal.\n\nDeve ser investida em opções ultra seguras que você possa sacar no mesmo dia, como o **CDB com Liquidez Diária** ou o **Tesouro Selic**. Quer saber o que são essas coisas?",
-            suggestions: [
-              "O que é CDB?",
-              "O que é a Taxa Selic?",
-              "Como sair das dívidas?",
-            ],
-          };
-        },
+        handler: () => ({
+          text: "🛡️ **Reserva de Emergência:**\nÉ seu 'colete salva-vidas'. O ideal é guardar de **6 a 12 meses** do seu custo de vida mensal.\n\nDeve ser investida em opções ultra seguras que você possa sacar no mesmo dia, como o **CDB com Liquidez Diária** ou o **Tesouro Selic**. Quer saber o que são essas coisas?",
+          suggestions: [
+            "O que é CDB?",
+            "O que é a Taxa Selic?",
+            "Como sair das dívidas?",
+          ],
+        }),
       },
       {
         patterns: [
@@ -276,63 +313,48 @@ const FinControlAI = {
           "dividir salario",
           "dividir dinheiro",
         ],
-        handler: () => {
-          return {
-            text: "📊 **A Regra 50/30/20:**\nDivide seu dinheiro líquido assim:\n\n• **50% Essenciais:** Moradia, mercado, saúde.\n• **30% Estilo de Vida:** Lazer, ifood, compras.\n• **20% Futuro:** Investimentos e quitação de dívidas.\n\nFalando em dívidas, você tem alguma que está incomodando, ou seu foco agora é só diversificar os investimentos?",
-            suggestions: ["Como sair das dívidas?", "Por que diversificar?"],
-          };
-        },
+        handler: () => ({
+          text: "📊 **A Regra 50/30/20:**\nDivide seu dinheiro líquido assim:\n\n• **50% Essenciais:** Moradia, mercado, saúde.\n• **30% Estilo de Vida:** Lazer, ifood, compras.\n• **20% Futuro:** Investimentos e quitação de dívidas.\n\nFalando em dívidas, você tem alguma que está incomodando, ou seu foco agora é só diversificar os investimentos?",
+          suggestions: ["Como sair das dívidas?", "Por que diversificar?"],
+        }),
       },
       {
         patterns: ["o que e selic", "taxa selic", "selic"],
-        handler: () => {
-          return {
-            text: "🏦 **Taxa Selic:**\nÉ a taxa 'mãe' da economia brasileira. Se ela sobe, a Renda Fixa fica mais atraente e pegar empréstimos fica mais caro. Se ela cai, a Bolsa de Valores (Ações e FIIs) costuma subir.\n\nVocê já investe em Ações ou quer entender como funcionam os CDBs (que são atrelados à Selic)?",
-            suggestions: ["O que é CDB?", "O que são Ações?"],
-          };
-        },
+        handler: () => ({
+          text: "🏦 **Taxa Selic:**\nÉ a taxa 'mãe' da economia brasileira. Se ela sobe, a Renda Fixa fica mais atraente e pegar empréstimos fica mais caro. Se ela cai, a Bolsa de Valores (Ações e FIIs) costuma subir.\n\nVocê já investe em Ações ou quer entender como funcionam os CDBs (que são atrelados à Selic)?",
+          suggestions: ["O que é CDB?", "O que são Ações?"],
+        }),
       },
       {
         patterns: ["o que e cdb", "cdb"],
-        handler: () => {
-          return {
-            text: "📄 **CDB (Certificado de Depósito Bancário):**\nÉ quando VOCÊ empresta dinheiro pro banco. Em troca, ele te devolve com juros.\n\nSe ele pagar '100% do CDI', ele acompanha a Taxa Selic de perto. É perfeito para a sua Reserva de Emergência! Mas atenção para a inflação, para não perder poder de compra. Sabe como a inflação age?",
-            suggestions: [
-              "O que é inflação?",
-              "O que é reserva de emergência?",
-            ],
-          };
-        },
+        handler: () => ({
+          text: "📄 **CDB (Certificado de Depósito Bancário):**\nÉ quando VOCÊ empresta dinheiro pro banco. Em troca, ele te devolve com juros.\n\nSe ele pagar '100% do CDI', ele acompanha a Taxa Selic de perto. É perfeito para a sua Reserva de Emergência! Mas atenção para a inflação, para não perder poder de compra. Sabe como a inflação age?",
+          suggestions: ["O que é inflação?", "O que é reserva de emergência?"],
+        }),
       },
       {
         patterns: ["inflacao", "ipca", "inflação"],
-        handler: () => {
-          return {
-            text: "💸 **Inflação (IPCA):**\nÉ o dragão que come o seu poder de compra. Se a inflação é 5% no ano, seu dinheiro precisa render MAIS que 5% só para você continuar comprando as mesmas coisas.\n\nÉ exatamente por isso que a gente investe buscando os 'Juros Compostos'!",
-            suggestions: ["Magia dos juros compostos", "Por que diversificar?"],
-          };
-        },
+        handler: () => ({
+          text: "💸 **Inflação (IPCA):**\nÉ o dragão que come o seu poder de compra. Se a inflação é 5% no ano, seu dinheiro precisa render MAIS que 5% só para você continuar comprando as mesmas coisas.\n\nÉ exatamente por isso que a gente investe buscando os 'Juros Compostos'!",
+          suggestions: ["Magia dos juros compostos", "Por que diversificar?"],
+        }),
       },
       {
         patterns: ["juros compostos", "magia dos juros"],
-        handler: () => {
-          return {
-            text: "❄️ **Juros Compostos (Bola de Neve):**\nSão juros rendendo sobre juros! No começo é lento, mas ao longo dos anos, o rendimento passa a ser maior que o seu próprio aporte mensal. O **Tempo** é o principal ingrediente aqui.\n\nQuer fazer uma simulação pra ver essa bola de neve girando até 2035?",
-            suggestions: ["Se eu investir 1000 até 2035", "O que são Ações?"],
-          };
-        },
+        handler: () => ({
+          text: "❄️ **Juros Compostos (Bola de Neve):**\nSão juros rendendo sobre juros! No começo é lento, mas ao longo dos anos, o rendimento passa a ser maior que o seu próprio aporte mensal. O **Tempo** é o principal ingrediente aqui.\n\nQuer fazer uma simulação pra ver essa bola de neve girando até 2035?",
+          suggestions: ["Se eu investir 1000 até 2035", "O que são Ações?"],
+        }),
       },
       {
         patterns: ["acoes", "bolsa de valores", "renda variavel", "ações"],
-        handler: () => {
-          return {
-            text: "🏢 **Ações (Renda Variável):**\nSignifica virar sócio de grandes empresas (Itaú, Petrobras, Weg, etc). Você ganha com a valorização da empresa e recebendo os lucros que eles distribuem (Dividendos).\n\nMas o risco é maior, o preço sobe e desce todo dia. Por isso a regra de ouro é **Diversificar**. Já ouviu falar em FIIs?",
-            suggestions: [
-              "O que são Fundos Imobiliários?",
-              "Por que diversificar?",
-            ],
-          };
-        },
+        handler: () => ({
+          text: "🏢 **Ações (Renda Variável):**\nSignifica virar sócio de grandes empresas (Itaú, Petrobras, Weg, etc). Você ganha com a valorização da empresa e recebendo os lucros que eles distribuem (Dividendos).\n\nMas o risco é maior, o preço sobe e desce todo dia. Por isso a regra de ouro é **Diversificar**. Já ouviu falar em FIIs?",
+          suggestions: [
+            "O que são Fundos Imobiliários?",
+            "Por que diversificar?",
+          ],
+        }),
       },
       {
         patterns: [
@@ -341,12 +363,10 @@ const FinControlAI = {
           "fundo imobiliario",
           "aluguel",
         ],
-        handler: () => {
-          return {
-            text: "🏢 **FIIs (Fundos Imobiliários):**\nVocê junta seu dinheiro com outros investidores para comprar shoppings, galpões e prédios comerciais.\n\nA mágica? Você recebe os 'aluguéis' desses imóveis todo mês direto na sua conta, isentos de Imposto de Renda. É ótimo para gerar renda passiva!",
-            suggestions: ["O que são ações?", "Por que diversificar?"],
-          };
-        },
+        handler: () => ({
+          text: "🏢 **FIIs (Fundos Imobiliários):**\nVocê junta seu dinheiro com outros investidores para comprar shoppings, galpões e prédios comerciais.\n\nA mágica? Você recebe os 'aluguéis' desses imóveis todo mês direto na sua conta, isentos de Imposto de Renda. É ótimo para gerar renda passiva!",
+          suggestions: ["O que são ações?", "Por que diversificar?"],
+        }),
       },
       {
         patterns: [
@@ -357,21 +377,17 @@ const FinControlAI = {
           "dívida",
           "sair das",
         ],
-        handler: () => {
-          return {
-            text: "🚨 **Plano anti-dívidas:**\n1. Mapeie todas e veja o CET (Custo Efetivo Total).\n2. Estanque a sangria (esconda o cartão de crédito).\n3. Foque em pagar as mais caras primeiro (Cartão e Cheque Especial).\n4. Renegocie (use feirões do Serasa).\n\nSe as contas fecharem, use a regra 50/30/20 para não voltar a se endividar.",
-            suggestions: ["Regra 50/30/20", "Meu Resumo do Mês"],
-          };
-        },
+        handler: () => ({
+          text: "🚨 **Plano anti-dívidas:**\n1. Mapeie todas e veja o CET (Custo Efetivo Total).\n2. Estanque a sangria (esconda o cartão de crédito).\n3. Foque em pagar as mais caras primeiro (Cartão e Cheque Especial).\n4. Renegocie (use feirões do Serasa).\n\nSe as contas fecharem, use a regra 50/30/20 para não voltar a se endividar.",
+          suggestions: ["Regra 50/30/20", "Meu Resumo do Mês"],
+        }),
       },
       {
         patterns: ["diversificar", "diversificacao", "risco"],
-        handler: () => {
-          return {
-            text: "🥚 **Diversificação:**\n'Não coloque todos os ovos na mesma cesta'.\nSe você tiver Renda Fixa, Ações, FIIs e Investimento no Exterior, quando uma coisa cair, a outra sobe e protege o seu patrimônio. Simples e essencial!",
-            suggestions: ["O que é CDB?", "O que são Fundos Imobiliários?"],
-          };
-        },
+        handler: () => ({
+          text: "🥚 **Diversificação:**\n'Não coloque todos os ovos na mesma cesta'.\nSe você tiver Renda Fixa, Ações, FIIs e Investimento no Exterior, quando uma coisa cair, a outra sobe e protege o seu patrimônio. Simples e essencial!",
+          suggestions: ["O que é CDB?", "O que são Fundos Imobiliários?"],
+        }),
       },
       {
         patterns: [
@@ -383,16 +399,14 @@ const FinControlAI = {
           "fala ai",
           "tudo bem",
         ],
-        handler: () => {
-          return {
-            text: "Olá de novo! 👋 Por onde quer que eu comece a te ajudar agora?",
-            suggestions: [
-              "Meu Resumo do Mês",
-              "Regra 50/30/20",
-              "Tarefas Pendentes",
-            ],
-          };
-        },
+        handler: () => ({
+          text: "Olá de novo! 👋 Por onde quer que eu comece a te ajudar agora?",
+          suggestions: [
+            "Meu Resumo do Mês",
+            "Regra 50/30/20",
+            "Gastos em Agosto",
+          ],
+        }),
       },
     ];
   },
@@ -408,17 +422,13 @@ const FinControlAI = {
     }
 
     return {
-      text: "Hum, acho que não peguei essa. 🤔 Tente fazer perguntas como as sugestões abaixo:",
-      suggestions: [
-        "Qual meu maior gasto?",
-        "O que é CDB?",
-        "Se eu investir R$ 800 até 2040",
-      ],
+      text: "Hum, acho que não peguei essa. 🤔 Você pode consultar o Guia de Perguntas clicando no botão [❓] lá em cima, ou tentar as opções abaixo:",
+      suggestions: ["Qual meu maior gasto?", "O que é IPCA?", "Meu Saldo"],
     };
   },
 
   // ==========================================
-  // INTERFACE DO CHAT COM CHIPS DE SUGESTÃO
+  // INTERFACE DO CHAT COM PAINEL DE AJUDA
   // ==========================================
   injectHTML() {
     if (document.getElementById("ai-chat-btn")) return;
@@ -433,9 +443,46 @@ const FinControlAI = {
             <span class="pulse-dot"></span>
             <strong>FinControl AI</strong>
           </div>
-          <button id="ai-chat-close">✕</button>
+          <div style="display:flex; gap: 8px;">
+            <button id="ai-chat-help" title="Guia de Perguntas">❓</button>
+            <button id="ai-chat-close" title="Fechar">✕</button>
+          </div>
         </div>
+
         <div class="ai-chat-body" id="ai-chat-body"></div>
+
+        <!-- PAINEL DE AJUDA (CHEAT SHEET) -->
+        <div id="ai-help-panel" class="ai-help-panel">
+          <div class="help-panel-header">
+            <strong>💡 Guia de Perguntas</strong>
+            <button id="ai-help-close">✕</button>
+          </div>
+          <div class="help-panel-body">
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Clique em qualquer pergunta abaixo para enviar para a IA:</p>
+            
+            <div class="help-category">📊 Seus Dados Financeiros</div>
+            <div class="help-item">"Me dê um resumo do mês"</div>
+            <div class="help-item">"Qual foi meu maior gasto?"</div>
+            <div class="help-item">"Quais meus gastos em agosto?"</div>
+            <div class="help-item">"Quanto gastei com Lazer?"</div>
+            <div class="help-item">"Como está o progresso das metas?"</div>
+            <div class="help-item">"Quais são minhas tarefas pendentes?"</div>
+
+            <div class="help-category">🚀 Simulação de Investimentos</div>
+            <div class="help-item">"Se eu investir R$ 500 por mês até 2030, quanto terei?"</div>
+            <div class="help-item">"Projetar aporte de R$ 1500 até 2045"</div>
+
+            <div class="help-category">📚 Educação Financeira</div>
+            <div class="help-item">"Como funciona a regra 50/30/20?"</div>
+            <div class="help-item">"O que é Reserva de Emergência?"</div>
+            <div class="help-item">"O que é a Taxa Selic?"</div>
+            <div class="help-item">"Como funcionam os Juros Compostos?"</div>
+            <div class="help-item">"O que é CDB?"</div>
+            <div class="help-item">"O que são Fundos Imobiliários?"</div>
+            <div class="help-item">"Como sair das dívidas?"</div>
+          </div>
+        </div>
+
         <div class="ai-chat-input-area">
           <input type="text" id="ai-chat-input" placeholder="Pergunte sobre finanças..." autocomplete="off"/>
           <button id="ai-chat-send">➤</button>
@@ -460,15 +507,16 @@ const FinControlAI = {
       #ai-chat-window { position: fixed; bottom: 100px; right: 30px; width: 380px; height: 550px; background: rgba(19, 23, 34, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 9998; transform: translateY(40px) scale(0.95); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
       #ai-chat-window.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
       
-      .ai-chat-header { padding: 18px 24px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+      .ai-chat-header { padding: 18px 24px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; z-index: 2; }
       .header-title { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 16px; font-weight: 600; }
       .pulse-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite; }
       @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
       
-      #ai-chat-close { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 14px; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+      #ai-chat-help, #ai-chat-close { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 14px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+      #ai-chat-help:hover { background: #6366f1; color: white; border-color: #6366f1; }
       #ai-chat-close:hover { background: #ef4444; color: white; border-color: #ef4444; }
       
-      .ai-chat-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+      .ai-chat-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; position: relative; z-index: 1;}
       .ai-chat-body::-webkit-scrollbar { width: 6px; }
       .ai-chat-body::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.5); border-radius: 10px; }
       
@@ -481,12 +529,11 @@ const FinControlAI = {
       .msg-container.user .msg-bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
       .msg-container.ai .msg-bubble { background: #1a1d2d; border: 1px solid rgba(255,255,255,0.06); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
       
-      /* Botões de Sugestão */
       .ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
       .ai-suggestion-btn { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a855f7; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; line-height: 1.3; }
       .ai-suggestion-btn:hover { background: rgba(99, 102, 241, 0.25); transform: translateY(-2px); color: #fff; border-color: #a855f7; }
 
-      .ai-chat-input-area { padding: 16px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
+      .ai-chat-input-area { padding: 16px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; z-index: 2; position: relative;}
       #ai-chat-input { flex: 1; background: #0f111a; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 12px 18px; color: #fff; font-size: 14px; outline: none; transition: all 0.3s; }
       #ai-chat-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
       #ai-chat-send { background: linear-gradient(135deg, #6366f1, #a855f7); border: none; width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
@@ -500,6 +547,24 @@ const FinControlAI = {
       .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
       .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
       @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+      /* ESTILOS DO PAINEL DE AJUDA */
+      .ai-help-panel { position: absolute; top: 70px; left: 0; right: 0; bottom: 76px; background: rgba(15, 17, 26, 0.98); backdrop-filter: blur(15px); z-index: 10; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+      .ai-help-panel.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+      
+      .help-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; font-size: 15px; }
+      #ai-help-close { background: none; border: none; color: #cbd5e1; font-size: 18px; cursor: pointer; }
+      #ai-help-close:hover { color: #ef4444; }
+
+      .help-panel-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+      .help-panel-body::-webkit-scrollbar { width: 4px; }
+      .help-panel-body::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+
+      .help-category { font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px 0; }
+      .help-category:first-of-type { margin-top: 0; }
+
+      .help-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; font-size: 13px; color: #cbd5e1; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+      .help-item:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #fff; transform: translateX(4px); }
       
       @media (max-width: 480px) {
         #ai-chat-window { width: 90%; right: 5%; bottom: 100px; height: 65vh; }
@@ -518,6 +583,12 @@ const FinControlAI = {
     const sendBtn = document.getElementById("ai-chat-send");
     const input = document.getElementById("ai-chat-input");
 
+    // Controles do Painel de Ajuda
+    const helpBtn = document.getElementById("ai-chat-help");
+    const helpPanel = document.getElementById("ai-help-panel");
+    const helpCloseBtn = document.getElementById("ai-help-close");
+
+    // Abrir/Fechar Chat
     btn.addEventListener("click", () => {
       windowEl.classList.toggle("open");
       if (windowEl.classList.contains("open")) input.focus();
@@ -525,11 +596,17 @@ const FinControlAI = {
 
     closeBtn.addEventListener("click", () => windowEl.classList.remove("open"));
 
+    // Abrir/Fechar Guia de Perguntas
+    helpBtn.addEventListener("click", () => helpPanel.classList.add("show"));
+    helpCloseBtn.addEventListener("click", () =>
+      helpPanel.classList.remove("show"),
+    );
+
+    // Enviar mensagem
     const handleSend = () => {
       const text = input.value.trim();
       if (!text) return;
 
-      // Remove botões de sugestão antigos da tela quando o usuário digita
       document.querySelectorAll(".ai-suggestions").forEach((el) => el.remove());
 
       this.addMessage(text, "user");
@@ -560,20 +637,29 @@ const FinControlAI = {
     input.addEventListener("keypress", (e) => {
       if (e.key === "Enter") handleSend();
     });
+
+    // Torna os itens do Guia de Perguntas Clicáveis
+    document.querySelectorAll(".help-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        // Remove as aspas do texto do card (ex: "Qual meu saldo?" vira Qual meu saldo?)
+        const textToSend = item.innerText.replace(/"/g, "");
+        helpPanel.classList.remove("show"); // Fecha o painel
+        input.value = textToSend; // Preenche o input
+        sendBtn.click(); // Clica em enviar automaticamente
+      });
+    });
   },
 
   formatMarkdown(text) {
     return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   },
 
-  // Recebe text, sender, e um array de suggestions [opcional]
   addMessage(text, sender, suggestions = []) {
     const body = document.getElementById("ai-chat-body");
     const msgDiv = document.createElement("div");
     msgDiv.className = `msg-container ${sender}`;
     msgDiv.innerHTML = `<div class="msg-bubble">${text}</div>`;
 
-    // Se a mensagem for da IA e houver sugestões, insere os Chips
     if (sender === "ai" && suggestions && suggestions.length > 0) {
       const suggWrapper = document.createElement("div");
       suggWrapper.className = "ai-suggestions";
@@ -583,8 +669,7 @@ const FinControlAI = {
         btn.className = "ai-suggestion-btn";
         btn.innerText = sugText;
         btn.onclick = () => {
-          // Quando clicar no chip, ele age como se o usuário digitasse e enviasse
-          suggWrapper.remove(); // Some com os chips
+          suggWrapper.remove();
           document.getElementById("ai-chat-input").value = sugText;
           document.getElementById("ai-chat-send").click();
         };
