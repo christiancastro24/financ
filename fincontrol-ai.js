@@ -1,11 +1,11 @@
 /**
  * FinControl AI - Assistente Virtual ROBUSTO & DINÂMICO
- * Previsões de Gastos, Filtros Compostos, Status de Pagamento e Guia de Ajuda
+ * Com Cálculo Reverso de Metas, Reconhecimento de "Mil/K" e Correção de Intenções
  */
 
 const FinControlAI = {
   activeProfile: "personal",
-  annualRate: 0.12,
+  annualRate: 0.12, // Rentabilidade anual base (12%)
 
   init() {
     this.activeProfile = localStorage.getItem("activeProfile") || "personal";
@@ -18,9 +18,9 @@ const FinControlAI = {
         "Olá! Sou o **FinControl AI** 🧠.\n\nEstou aqui para analisar seus números ou te dar dicas sobre educação financeira. Por onde quer começar?",
         "ai",
         [
-          "📊 Meu Resumo do Mês",
-          "🔮 Quanto vou gastar em Agosto?",
-          "⚙️ Como está meu Orçamento?",
+          "📊 Meu Resumo",
+          "🎯 Quanto preciso investir para ter 100 mil em 2030?",
+          "📈 Quanto eu tenho investido?",
         ],
       );
     }, 500);
@@ -57,8 +57,26 @@ const FinControlAI = {
       .toLowerCase();
   },
 
+  // Helper para extrair valores com "mil", "k", etc, sem precisar de decimais
+  extractValue(text) {
+    const match = text
+      .toLowerCase()
+      .match(
+        /(?:r\$)?\s*(\d+(?:\.\d{3})*(?:,\d{2})?|\d+)\s*(mil|k|milhoes|milhões)?/,
+      );
+    if (!match) return null;
+
+    let value = parseFloat(match[1].replace(/\./g, "").replace(",", "."));
+    const multiplier = match[2];
+
+    if (multiplier === "mil" || multiplier === "k") value *= 1000;
+    if (multiplier === "milhoes" || multiplier === "milhões") value *= 1000000;
+
+    return value;
+  },
+
   // ==========================================
-  // INTENÇÕES COM GANCHOS E SUGESTÕES
+  // INTENÇÕES DE CONVERSA
   // ==========================================
   getIntents() {
     const data = this.getData();
@@ -70,6 +88,29 @@ const FinControlAI = {
     );
 
     return [
+      {
+        // NOVO: Quanto tenho investido
+        patterns: [
+          "quanto eu tenho investido",
+          "meus investimentos",
+          "total investido",
+          "meu patrimonio",
+          "meu patrimônio",
+        ],
+        handler: () => {
+          const invTotal = data.investments.reduce(
+            (sum, inv) => sum + inv.value,
+            0,
+          );
+          return {
+            text: `💰 Você tem um total de **${this.formatMoney(invTotal)}** investidos atualmente.\n\nQuer ver uma projeção de quanto isso pode virar no futuro ou prefere ver como estão suas metas?`,
+            suggestions: [
+              "Se eu investir 500 até 2030",
+              "Como estão minhas metas?",
+            ],
+          };
+        },
+      },
       {
         patterns: ["resumo", "situacao", "como estou", "meu saldo"],
         handler: () => {
@@ -90,10 +131,10 @@ const FinControlAI = {
           );
 
           return {
-            text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Planejado de Saída: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada no detalhamento dos seus gastos ou projetar seus investimentos?`,
+            text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Saiu: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada no detalhamento dos seus gastos ou projetar seus investimentos?`,
             suggestions: [
               "Quanto vou gastar esse mês?",
-              "Simular um investimento",
+              "Quanto eu tenho investido?",
             ],
           };
         },
@@ -155,7 +196,6 @@ const FinControlAI = {
         },
       },
       {
-        // INTENÇÃO DE GASTOS SUPREMA (Prevê, Filtra Pagos/Pendentes, Entende Mês e Ano)
         patterns: [
           "gasto",
           "gastei",
@@ -200,18 +240,15 @@ const FinControlAI = {
           let catFound = Object.keys(categoriasMap).find((c) =>
             input.includes(c),
           );
-
           let yearMatch = input.match(/(20\d{2})/);
           let targetYear = yearMatch ? yearMatch[1] : currentYear;
 
-          // Filtra todas as despesas ignorando case-sensitive e acentos
           let expensesToFilter = data.expenses.filter(
             (e) =>
               !e.type ||
               e.type.toLowerCase().includes("said") ||
               e.type.toLowerCase().includes("saíd"),
           );
-
           let contextMsg = "";
 
           if (monthFound) {
@@ -240,7 +277,6 @@ const FinControlAI = {
             .filter((e) => !e.paid)
             .reduce((sum, e) => sum + e.value, 0);
 
-          // Se a pessoa perguntou genérico sem mês nem categoria
           if (!monthFound && !catFound) {
             const monthExps = data.expenses.filter(
               (e) =>
@@ -264,7 +300,6 @@ const FinControlAI = {
             };
           }
 
-          // Se a pessoa perguntou usando verbos no futuro ou pedindo projeção
           const isFutureOrPending =
             input.includes("irei") ||
             input.includes("vou") ||
@@ -273,7 +308,6 @@ const FinControlAI = {
             input.includes("pagar");
 
           let textResponse = "";
-
           if (isFutureOrPending) {
             textResponse = `🔮 **Projeção de Despesas${contextMsg}:**\n\nO seu planejamento total (pagos + pendentes) é de **${this.formatMoney(total)}**.\n\n**Detalhamento:**\n✅ Já pago: ${this.formatMoney(pagos)}\n⏳ **Falta pagar (Pendente): ${this.formatMoney(pendentes)}**`;
           } else {
@@ -331,43 +365,104 @@ const FinControlAI = {
           return {
             text: `Sua meta principal é **${mainGoal.name}** (${this.formatMoney(mainGoal.target)}).\n\nVocê já alcançou **${progress.toFixed(1)}%**! Patrimônio atual: ${this.formatMoney(invTotal)}.\n\nQuer simular como aportes mensais podem acelerar isso com a ajuda dos juros compostos?`,
             suggestions: [
-              "Se eu investir 500 até 2030",
+              "Quanto preciso investir para ter 100 mil em 2027?",
               "Magia dos Juros Compostos",
             ],
           };
         },
       },
       {
+        // NOVO: CÁLCULO REVERSO (Quanto preciso investir para chegar em X)
         patterns: [
-          "investir",
-          "juntar",
-          "simular",
-          "projecao",
-          "projetar",
-          "terei",
+          "preciso investir",
+          "para chegar",
+          "para ter",
+          "para juntar",
+          "alcancar",
+          "alcançar",
         ],
         handler: (input, rawInput) => {
-          const valMatch = rawInput.match(
-            /(?:R\$)?\s*(\d+(?:\.\d{3})*(?:,\d{2})?|\d+)/,
-          );
+          const targetValue = this.extractValue(rawInput);
           const yearMatch = rawInput.match(/(20\d{2})/);
-          if (!valMatch || !yearMatch)
+
+          if (!targetValue || !yearMatch) {
             return {
-              text: "Para projetar, eu preciso do valor e do ano. Exemplo: 'Quanto terei se investir 500 até 2030?'",
+              text: "Para esse cálculo, eu preciso do valor alvo e do ano. Exemplo: 'Quanto preciso investir para ter 100 mil em 2028?'",
               suggestions: [
-                "Se eu investir R$ 800 até 2032",
-                "O que são juros compostos?",
+                "Quanto preciso investir para chegar em 100k até 2027?",
+              ],
+            };
+          }
+
+          const targetYear = parseInt(yearMatch[1]);
+          if (targetYear <= currentYear)
+            return {
+              text: "O ano precisa estar no futuro! ⏳",
+              suggestions: [
+                "Quanto preciso investir para ter 100 mil em 2030?",
               ],
             };
 
-          const aporte = parseFloat(
-            valMatch[1].replace(/\./g, "").replace(",", "."),
+          const meses = (targetYear - currentYear) * 12;
+          const taxaMensal = Math.pow(1 + this.annualRate, 1 / 12) - 1; // 12% a.a. para mensal
+          const totalAtual = data.investments.reduce(
+            (sum, inv) => sum + inv.value,
+            0,
           );
+
+          // Fórmula de Juros Compostos: FV = PV*(1+i)^n + PMT*[((1+i)^n - 1)/i]
+          // Isolando PMT (Aporte Mensal)
+          const fatorJuros = Math.pow(1 + taxaMensal, meses);
+          const montanteInicialAcumulado = totalAtual * fatorJuros;
+          const valorFaltante = targetValue - montanteInicialAcumulado;
+
+          if (valorFaltante <= 0) {
+            return {
+              text: `🎉 Você já tem o suficiente! Seus **${this.formatMoney(totalAtual)}** rendendo a 12% a.a. já vão ultrapassar os ${this.formatMoney(targetValue)} até ${targetYear} sozinhos!`,
+              suggestions: ["Meu Resumo", "Magia dos Juros Compostos"],
+            };
+          }
+
+          const aporteMensalNecessario =
+            valorFaltante / ((fatorJuros - 1) / taxaMensal);
+
+          return {
+            text: `🎯 **Plano para alcançar ${this.formatMoney(targetValue)} até ${targetYear}:**\n\nPatrimônio atual: ${this.formatMoney(totalAtual)}\nTempo: ${meses} meses\nRentabilidade est.: 12% a.a.\n\nPara chegar lá, você precisará investir aproximadamente **${this.formatMoney(aporteMensalNecessario)} por mês**.\n\nLembre-se: Juros Compostos e consistência são seus melhores amigos! Bora começar?`,
+            suggestions: [
+              "Magia dos Juros Compostos",
+              "Como está meu orçamento?",
+            ],
+          };
+        },
+      },
+      {
+        // PROJEÇÃO NORMAL: Se eu investir X até ano Y
+        patterns: [
+          "se eu investir",
+          "simular",
+          "projetar",
+          "rendimento de",
+          "quanto terei",
+          "vou ter",
+        ],
+        handler: (input, rawInput) => {
+          const aporte = this.extractValue(rawInput);
+          const yearMatch = rawInput.match(/(20\d{2})/);
+
+          if (!aporte || !yearMatch)
+            return {
+              text: "Para projetar, me diga o valor e o ano. Exemplo: 'Quanto terei se investir 500 até 2030?'",
+              suggestions: [
+                "Se eu investir R$ 800 até 2032",
+                "Quanto preciso investir para ter 100 mil em 2027?",
+              ],
+            };
+
           const anoAlvo = parseInt(yearMatch[1]);
           if (anoAlvo <= currentYear)
             return {
               text: "O ano precisa estar no futuro! ⏳",
-              suggestions: ["Se eu investir 1000 até 2035"],
+              suggestions: ["Se eu investir 1k até 2035"],
             };
 
           const meses = (anoAlvo - currentYear) * 12;
@@ -382,7 +477,7 @@ const FinControlAI = {
             aporte * ((Math.pow(1 + taxaMensal, meses) - 1) / taxaMensal);
 
           return {
-            text: `📈 **Projeção para ${anoAlvo}:**\n\nConsiderando aportes de ${this.formatMoney(aporte)}/mês e rentabilidade de 12% a.a.\n\n🎯 **Valor Estimado:** **${this.formatMoney(vfTotal)}**!\n\nIsso acontece graças aos Juros Compostos. Vale lembrar que a Inflação também afeta o poder de compra no futuro. Quer entender mais sobre algum desses dois?`,
+            text: `📈 **Projeção para ${anoAlvo}:**\n\nConsiderando aportes de ${this.formatMoney(aporte)}/mês e rentabilidade de 12% a.a.\n\n🎯 **Valor Estimado:** **${this.formatMoney(vfTotal)}**!\n\nIsso acontece graças aos Juros Compostos. Vale lembrar que a Inflação também afeta o poder de compra no futuro.`,
             suggestions: ["Magia dos Juros Compostos", "O que é inflação?"],
           };
         },
@@ -438,8 +533,11 @@ const FinControlAI = {
       {
         patterns: ["juros compostos", "magia dos juros"],
         handler: () => ({
-          text: "❄️ **Juros Compostos (Bola de Neve):**\nSão juros rendendo sobre juros! No começo é lento, mas ao longo dos anos, o rendimento passa a ser maior que o seu próprio aporte mensal. O **Tempo** é o principal ingrediente aqui.\n\nQuer fazer uma simulação pra ver essa bola de neve girando até 2035?",
-          suggestions: ["Se eu investir 1000 até 2035", "O que são Ações?"],
+          text: "❄️ **Juros Compostos (Bola de Neve):**\nSão juros rendendo sobre juros! No começo é lento, mas ao longo dos anos, o rendimento passa a ser maior que o seu próprio aporte mensal. O **Tempo** é o principal ingrediente aqui.",
+          suggestions: [
+            "Quanto preciso investir para ter 100 mil em 2030?",
+            "O que são Ações?",
+          ],
         }),
       },
       {
@@ -518,10 +616,10 @@ const FinControlAI = {
     }
 
     return {
-      text: "Hum, acho que não peguei essa. 🤔 Você pode consultar o Guia de Perguntas clicando no botão [❓] lá em cima, ou tentar as opções abaixo:",
+      text: "Hum, acho que não peguei essa. 🧐 Você pode consultar o Guia de Perguntas clicando no botão [ ❓ ] lá em cima, ou tentar as opções abaixo:",
       suggestions: [
-        "Qual meu maior gasto?",
-        "O que é IPCA?",
+        "Quanto eu tenho investido?",
+        "Quanto irei gastar em Agosto?",
         "Como está meu orçamento?",
       ],
     };
@@ -562,6 +660,7 @@ const FinControlAI = {
             
             <div class="help-category">📊 Seus Dados Financeiros</div>
             <div class="help-item">"Me dê um resumo do mês"</div>
+            <div class="help-item">"Quanto eu tenho investido?"</div>
             <div class="help-item">"Qual foi meu maior gasto?"</div>
             <div class="help-item">"Quanto irei gastar em agosto?"</div>
             <div class="help-item">"Quanto gastei com Lazer?"</div>
@@ -570,8 +669,9 @@ const FinControlAI = {
             <div class="help-item">"Quais são minhas tarefas pendentes?"</div>
 
             <div class="help-category">🚀 Simulação de Investimentos</div>
+            <div class="help-item">"Quanto preciso investir para chegar em 100 mil até 2027?"</div>
             <div class="help-item">"Se eu investir R$ 500 por mês até 2030, quanto terei?"</div>
-            <div class="help-item">"Projetar aporte de R$ 1500 até 2045"</div>
+            <div class="help-item">"Projetar aporte de 10k até 2045"</div>
 
             <div class="help-category">📚 Educação Financeira</div>
             <div class="help-item">"Como funciona a regra 50/30/20?"</div>
@@ -614,7 +714,7 @@ const FinControlAI = {
       @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
       
       #ai-chat-help, #ai-chat-close { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 14px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-      #ai-chat-help:hover { background: #6366f1; color: white; border-color: #6366f1; }
+      #ai-chat-help:hover { background: #ef4444; color: white; border-color: #ef4444; }
       #ai-chat-close:hover { background: #ef4444; color: white; border-color: #ef4444; }
       
       .ai-chat-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; position: relative; z-index: 1;}
@@ -666,12 +766,16 @@ const FinControlAI = {
 
       .help-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; font-size: 13px; color: #cbd5e1; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
       .help-item:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #fff; transform: translateX(4px); }
+      
+      @media (max-width: 480px) {
+        #ai-chat-window { width: 90%; right: 5%; bottom: 100px; height: 65vh; }
+      }
     `;
     document.head.appendChild(style);
   },
 
   // ==========================================
-  // EVENTOS DO CHAT
+  // EVENTOS E ENVIO DE MENSAGENS
   // ==========================================
   setupEvents() {
     const btn = document.getElementById("ai-chat-btn");
