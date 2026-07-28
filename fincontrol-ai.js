@@ -1,26 +1,32 @@
 /**
- * FinControl AI - Assistente Virtual ROBUSTO
- * Motor NLP Local baseado em Padrões e Regex
+ * FinControl AI - Assistente Virtual ROBUSTO & DINÂMICO
+ * Com Sugestões de Conversa e Ganchos de Retenção
  */
 
 const FinControlAI = {
   activeProfile: "personal",
-  annualRate: 0.12, // 12% ao ano para projeções padrão
+  annualRate: 0.12,
 
   init() {
     this.activeProfile = localStorage.getItem("activeProfile") || "personal";
     this.injectStyles();
     this.injectHTML();
     this.setupEvents();
-    this.addMessage(
-      "Olá! Sou o **FinControl AI** 🧠.\n\nPosso analisar seus dados ou te ensinar sobre finanças. Experimente perguntar:\n\n• *Qual meu maior gasto?*\n• *O que é a regra 50/30/20?*\n• *Como funciona a Selic?*\n• *Me dê um resumo do mês.*",
-      "ai",
-    );
+
+    // Mensagem inicial de boas-vindas com sugestões
+    setTimeout(() => {
+      this.addMessage(
+        "Olá! Sou o **FinControl AI** 🧠.\n\nEstou aqui para analisar seus números ou te dar dicas sobre educação financeira. Por onde quer começar?",
+        "ai",
+        [
+          "📊 Meu Resumo do Mês",
+          "💸 Qual meu maior gasto?",
+          "📚 O que é a regra 50/30/20?",
+        ],
+      );
+    }, 500);
   },
 
-  // ==========================================
-  // ACESSO AOS DADOS LOCAIS
-  // ==========================================
   getData() {
     return {
       expenses:
@@ -55,7 +61,7 @@ const FinControlAI = {
   },
 
   // ==========================================
-  // BIBLIOTECA DE INTENÇÕES (KNOWLEDGE BASE)
+  // INTENÇÕES COM GANCHOS E SUGESTÕES
   // ==========================================
   getIntents() {
     const data = this.getData();
@@ -66,9 +72,6 @@ const FinControlAI = {
     );
 
     return [
-      // ----------------------------------------
-      // 1. ANÁLISE DE DADOS DO USUÁRIO
-      // ----------------------------------------
       {
         patterns: ["resumo", "situacao", "como estou", "meu saldo"],
         handler: () => {
@@ -82,7 +85,11 @@ const FinControlAI = {
             (sum, inv) => sum + inv.value,
             0,
           );
-          return `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Saiu: ${this.formatMoney(saidas)})\n\n**Patrimônio Investido:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas Pendentes:** ${data.todos.filter((t) => !t.done).length}`;
+
+          return {
+            text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Saiu: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada em onde você está gastando mais ou prefere projetar seus investimentos?`,
+            suggestions: ["Qual meu maior gasto?", "Simular um investimento"],
+          };
         },
       },
       {
@@ -97,11 +104,18 @@ const FinControlAI = {
             (e) => e.type === "saida" || !e.type,
           );
           if (saidas.length === 0)
-            return "Você ainda não registrou nenhum gasto!";
+            return {
+              text: "Você ainda não registrou nenhum gasto!",
+              suggestions: ["Meu Resumo", "O que é Reserva de Emergência?"],
+            };
+
           const max = saidas.reduce((prev, current) =>
             prev.value > current.value ? prev : current,
           );
-          return `🚨 O seu maior gasto registrado foi **${max.name}**, no valor de **${this.formatMoney(max.value)}** (Categoria: ${max.category}). Pegue leve!`;
+          return {
+            text: `🚨 O seu maior tomador de dinheiro foi **${max.name}**, custando **${this.formatMoney(max.value)}** (na categoria ${max.category}).\n\nFicar de olho nesses super-gastos é vital. Que tal aprender uma regra simples para dividir melhor seu orçamento?`,
+            suggestions: ["Regra 50/30/20", "Quanto gastei em Lazer?"],
+          };
         },
       },
       {
@@ -118,8 +132,15 @@ const FinControlAI = {
             freelance: "Freelance",
           };
           let found = Object.keys(categoriasMap).find((c) => input.includes(c));
+
           if (!found)
-            return "Não consegui identificar a categoria. Tente perguntar: 'Quanto gastei em alimentação?'";
+            return {
+              text: "Não achei essa categoria. Tente perguntar sobre Lazer, Alimentação ou Moradia.",
+              suggestions: [
+                "Quanto gastei em Alimentação?",
+                "Qual meu maior gasto?",
+              ],
+            };
 
           const catReal = categoriasMap[found];
           const total = data.expenses
@@ -127,7 +148,11 @@ const FinControlAI = {
               (e) => e.category === catReal && (e.type === "saida" || !e.type),
             )
             .reduce((sum, e) => sum + e.value, 0);
-          return `💸 Você gastou um total de **${this.formatMoney(total)}** com **${catReal}**.`;
+
+          return {
+            text: `💸 Você gastou **${this.formatMoney(total)}** com **${catReal}**.\n\nSe esse valor estiver muito alto, lembre-se de sempre garantir que sua Reserva de Emergência está em dia. Sabe o que é isso?`,
+            suggestions: ["O que é reserva de emergência?", "Resumo do Mês"],
+          };
         },
       },
       {
@@ -135,45 +160,83 @@ const FinControlAI = {
         handler: () => {
           const pendentes = data.todos.filter((t) => !t.done);
           if (pendentes.length === 0)
-            return "Tudo limpo! Nenhuma tarefa pendente no momento. ✨";
+            return {
+              text: "Tudo limpo! Nenhuma tarefa pendente no momento. ✨",
+              suggestions: ["Como estão minhas metas?", "Meu Resumo"],
+            };
+
           let msg = `Você tem **${pendentes.length} tarefas pendentes**:\n`;
-          pendentes.slice(0, 4).forEach((t) => (msg += `\n• ${t.text}`));
-          if (pendentes.length > 4)
-            msg += `\n\n...e mais ${pendentes.length - 4} outras.`;
-          return msg;
+          pendentes.slice(0, 3).forEach((t) => (msg += `\n• ${t.text}`));
+          if (pendentes.length > 3)
+            msg += `\n\n...e mais ${pendentes.length - 3} outras.\n\nUm passo de cada vez. Quer dar uma olhada nas suas metas de longo prazo para se motivar?`;
+
+          return {
+            text: msg,
+            suggestions: [
+              "Como estão minhas metas?",
+              "Simular um investimento",
+            ],
+          };
         },
       },
       {
         patterns: ["meta", "objetivo", "sonho", "progresso"],
         handler: () => {
           if (data.goals.length === 0)
-            return "Você não possui metas ativas. Crie uma na aba de Investimentos! 🎯";
+            return {
+              text: "Você não possui metas ativas! Crie uma na aba de Investimentos. 🎯",
+              suggestions: ["Simular um investimento", "Regra 50/30/20"],
+            };
+
           const mainGoal = data.goals[0];
           const invTotal = data.investments.reduce(
             (sum, inv) => sum + inv.value,
             0,
           );
           const progress = Math.min((invTotal / mainGoal.target) * 100, 100);
-          return `Sua meta principal é **${mainGoal.name}** (${this.formatMoney(mainGoal.target)}).\n\nVocê já alcançou **${progress.toFixed(1)}%**! O valor acumulado da sua carteira é de ${this.formatMoney(invTotal)}.`;
+
+          return {
+            text: `Sua meta principal é **${mainGoal.name}** (${this.formatMoney(mainGoal.target)}).\n\nVocê já alcançou **${progress.toFixed(1)}%**! Patrimônio atual: ${this.formatMoney(invTotal)}.\n\nQuer simular como aportes mensais podem acelerar isso com a ajuda dos juros compostos?`,
+            suggestions: [
+              "Se eu investir 500 até 2030",
+              "Magia dos Juros Compostos",
+            ],
+          };
         },
       },
       {
-        // Simulador Complexo: "Se eu investir 500 ate 2030"
-        patterns: ["investir", "juntar", "simular", "projecao", "projetar"],
+        patterns: [
+          "investir",
+          "juntar",
+          "simular",
+          "projecao",
+          "projetar",
+          "terei",
+        ],
         handler: (input, rawInput) => {
           const valMatch = rawInput.match(
             /(?:R\$)?\s*(\d+(?:\.\d{3})*(?:,\d{2})?|\d+)/,
           );
           const yearMatch = rawInput.match(/(20\d{2})/);
           if (!valMatch || !yearMatch)
-            return "Para projetar, eu preciso do valor e do ano. Exemplo: 'Quanto terei se investir 500 até 2030?'";
+            return {
+              text: "Para projetar, eu preciso do valor e do ano. Exemplo: 'Quanto terei se investir 500 até 2030?'",
+              suggestions: [
+                "Se eu investir R$ 800 até 2032",
+                "O que são juros compostos?",
+              ],
+            };
 
           const aporte = parseFloat(
             valMatch[1].replace(/\./g, "").replace(",", "."),
           );
           const anoAlvo = parseInt(yearMatch[1]);
           const anoAtual = new Date().getFullYear();
-          if (anoAlvo <= anoAtual) return "O ano precisa estar no futuro! ⏳";
+          if (anoAlvo <= anoAtual)
+            return {
+              text: "O ano precisa estar no futuro! ⏳",
+              suggestions: ["Se eu investir 1000 até 2035"],
+            };
 
           const meses = (anoAlvo - anoAtual) * 12;
           const taxaMensal = Math.pow(1 + this.annualRate, 1 / 12) - 1;
@@ -186,17 +249,24 @@ const FinControlAI = {
             totalAtual * Math.pow(1 + taxaMensal, meses) +
             aporte * ((Math.pow(1 + taxaMensal, meses) - 1) / taxaMensal);
 
-          return `📈 **Projeção para ${anoAlvo}:**\n\nPatrimônio atual: ${this.formatMoney(totalAtual)}\nAporte mensal: ${this.formatMoney(aporte)}\nRentabilidade projetada: 12% a.a.\n\n🎯 **Valor Final Estimado:** **${this.formatMoney(vfTotal)}**!`;
+          return {
+            text: `📈 **Projeção para ${anoAlvo}:**\n\nConsiderando aportes de ${this.formatMoney(aporte)}/mês e rentabilidade de 12% a.a.\n\n🎯 **Valor Estimado:** **${this.formatMoney(vfTotal)}**!\n\nIsso acontece graças aos Juros Compostos. Vale lembrar que a Inflação também afeta o poder de compra no futuro. Quer entender mais sobre algum desses dois?`,
+            suggestions: ["Magia dos Juros Compostos", "O que é inflação?"],
+          };
         },
       },
-
-      // ----------------------------------------
-      // 2. EDUCAÇÃO FINANCEIRA (A ROBUSTEZ)
-      // ----------------------------------------
       {
-        patterns: ["reserva de emergencia", "reserva de emergência"],
-        handler: () =>
-          "🛡️ **Reserva de Emergência:**\nÉ um dinheiro guardado para imprevistos (desemprego, saúde). O ideal é que seja de **6 a 12 meses** do seu custo de vida mensal.\n\n*Exemplo:* Se você gasta R$ 2.000/mês, sua reserva deve ser entre R$ 12.000 e R$ 24.000. Deve ser investida em locais seguros e com liquidez diária (CDB de liquidez diária, Tesouro Selic).",
+        patterns: ["reserva de emergencia", "reserva de emergência", "reserva"],
+        handler: () => {
+          return {
+            text: "🛡️ **Reserva de Emergência:**\nÉ seu 'colete salva-vidas'. O ideal é guardar de **6 a 12 meses** do seu custo de vida mensal.\n\nDeve ser investida em opções ultra seguras que você possa sacar no mesmo dia, como o **CDB com Liquidez Diária** ou o **Tesouro Selic**. Quer saber o que são essas coisas?",
+            suggestions: [
+              "O que é CDB?",
+              "O que é a Taxa Selic?",
+              "Como sair das dívidas?",
+            ],
+          };
+        },
       },
       {
         patterns: [
@@ -206,33 +276,63 @@ const FinControlAI = {
           "dividir salario",
           "dividir dinheiro",
         ],
-        handler: () =>
-          "📊 **A Regra 50/30/20:**\nÉ um método excelente de orçamento. Consiste em dividir sua renda líquida em três blocos:\n\n• **50% Gastos Essenciais:** Aluguel, contas de luz, mercado, saúde.\n• **30% Estilo de Vida:** Lazer, restaurantes, hobbies, compras não essenciais.\n• **20% Futuro:** Investimentos, quitação de dívidas e Reserva de Emergência.",
+        handler: () => {
+          return {
+            text: "📊 **A Regra 50/30/20:**\nDivide seu dinheiro líquido assim:\n\n• **50% Essenciais:** Moradia, mercado, saúde.\n• **30% Estilo de Vida:** Lazer, ifood, compras.\n• **20% Futuro:** Investimentos e quitação de dívidas.\n\nFalando em dívidas, você tem alguma que está incomodando, ou seu foco agora é só diversificar os investimentos?",
+            suggestions: ["Como sair das dívidas?", "Por que diversificar?"],
+          };
+        },
       },
       {
         patterns: ["o que e selic", "taxa selic", "selic"],
-        handler: () =>
-          "🏦 **Taxa Selic:**\nÉ a taxa básica de juros da economia brasileira. Ela serve de referência para todas as outras taxas (empréstimos, financiamentos e investimentos de Renda Fixa).\n\nQuando a Selic sobe, a Renda Fixa rende mais, mas pegar dinheiro emprestado fica mais caro. Quando cai, o crédito fica barato e a Bolsa de Valores (Renda Variável) costuma se beneficiar.",
+        handler: () => {
+          return {
+            text: "🏦 **Taxa Selic:**\nÉ a taxa 'mãe' da economia brasileira. Se ela sobe, a Renda Fixa fica mais atraente e pegar empréstimos fica mais caro. Se ela cai, a Bolsa de Valores (Ações e FIIs) costuma subir.\n\nVocê já investe em Ações ou quer entender como funcionam os CDBs (que são atrelados à Selic)?",
+            suggestions: ["O que é CDB?", "O que são Ações?"],
+          };
+        },
       },
       {
         patterns: ["o que e cdb", "cdb"],
-        handler: () =>
-          "📄 **CDB (Certificado de Depósito Bancário):**\nVocê empresta dinheiro para um banco e ele te devolve com juros.\n\nEles geralmente rendem uma porcentagem do CDI (que acompanha a Selic). Um CDB de '100% do CDI com Liquidez Diária' é um dos investimentos mais populares e seguros para montar sua Reserva de Emergência.",
+        handler: () => {
+          return {
+            text: "📄 **CDB (Certificado de Depósito Bancário):**\nÉ quando VOCÊ empresta dinheiro pro banco. Em troca, ele te devolve com juros.\n\nSe ele pagar '100% do CDI', ele acompanha a Taxa Selic de perto. É perfeito para a sua Reserva de Emergência! Mas atenção para a inflação, para não perder poder de compra. Sabe como a inflação age?",
+            suggestions: [
+              "O que é inflação?",
+              "O que é reserva de emergência?",
+            ],
+          };
+        },
       },
       {
         patterns: ["inflacao", "ipca", "inflação"],
-        handler: () =>
-          "💸 **Inflação (IPCA):**\nÉ o aumento generalizado dos preços ao longo do tempo. Sabe quando 100 Reais compravam um carrinho cheio no mercado anos atrás e hoje compram duas sacolas? Isso é a inflação corroendo seu poder de compra.\n\nPor isso é vital **investir**: seu dinheiro precisa render *acima* da inflação para gerar ganho real.",
+        handler: () => {
+          return {
+            text: "💸 **Inflação (IPCA):**\nÉ o dragão que come o seu poder de compra. Se a inflação é 5% no ano, seu dinheiro precisa render MAIS que 5% só para você continuar comprando as mesmas coisas.\n\nÉ exatamente por isso que a gente investe buscando os 'Juros Compostos'!",
+            suggestions: ["Magia dos juros compostos", "Por que diversificar?"],
+          };
+        },
       },
       {
         patterns: ["juros compostos", "magia dos juros"],
-        handler: () =>
-          "❄️ **Juros Compostos (O Efeito Bola de Neve):**\nÉ quando os juros de um mês rendem sobre os juros do mês anterior, e não apenas sobre o valor inicial.\n\nNo começo, parece pouco, mas ao longo dos anos a curva sobe exponencialmente. É por isso que no mundo dos investimentos, o **Tempo** é o seu maior aliado. Quanto mais cedo começar, menos esforço terá que fazer no futuro.",
+        handler: () => {
+          return {
+            text: "❄️ **Juros Compostos (Bola de Neve):**\nSão juros rendendo sobre juros! No começo é lento, mas ao longo dos anos, o rendimento passa a ser maior que o seu próprio aporte mensal. O **Tempo** é o principal ingrediente aqui.\n\nQuer fazer uma simulação pra ver essa bola de neve girando até 2035?",
+            suggestions: ["Se eu investir 1000 até 2035", "O que são Ações?"],
+          };
+        },
       },
       {
         patterns: ["acoes", "bolsa de valores", "renda variavel", "ações"],
-        handler: () =>
-          "🏢 **Ações e Renda Variável:**\nComprar uma ação significa comprar um 'pedacinho' de uma empresa listada na Bolsa de Valores. Se a empresa lucra e cresce, o valor do seu pedaço sobe e você também pode receber parte dos lucros (Dividendos).\n\nMas cuidado: os preços variam (sobem e descem) diariamente conforme o mercado. É um investimento para o **longo prazo**.",
+        handler: () => {
+          return {
+            text: "🏢 **Ações (Renda Variável):**\nSignifica virar sócio de grandes empresas (Itaú, Petrobras, Weg, etc). Você ganha com a valorização da empresa e recebendo os lucros que eles distribuem (Dividendos).\n\nMas o risco é maior, o preço sobe e desce todo dia. Por isso a regra de ouro é **Diversificar**. Já ouviu falar em FIIs?",
+            suggestions: [
+              "O que são Fundos Imobiliários?",
+              "Por que diversificar?",
+            ],
+          };
+        },
       },
       {
         patterns: [
@@ -241,23 +341,38 @@ const FinControlAI = {
           "fundo imobiliario",
           "aluguel",
         ],
-        handler: () =>
-          "🏢 **FIIs (Fundos de Investimento Imobiliário):**\nÉ como investir em imóveis (shoppings, galpões, prédios comerciais) junto com várias outras pessoas, sem precisar comprar um imóvel inteiro. A grande vantagem é que você recebe 'aluguéis' (dividendos) mensais proporcionais à quantidade de cotas que você possui. São isentos de Imposto de Renda para pessoa física.",
+        handler: () => {
+          return {
+            text: "🏢 **FIIs (Fundos Imobiliários):**\nVocê junta seu dinheiro com outros investidores para comprar shoppings, galpões e prédios comerciais.\n\nA mágica? Você recebe os 'aluguéis' desses imóveis todo mês direto na sua conta, isentos de Imposto de Renda. É ótimo para gerar renda passiva!",
+            suggestions: ["O que são ações?", "Por que diversificar?"],
+          };
+        },
       },
       {
-        patterns: ["divida", "dividas", "endividado", "nome sujo", "dívida"],
-        handler: () =>
-          "🚨 **Como sair das dívidas?**\n1. **Mapeie tudo:** Liste pra quem você deve, o valor e a taxa de juros.\n2. **Ataque os juros altos:** Foque em pagar primeiro as dívidas que crescem mais rápido (Cartão de Crédito e Cheque Especial).\n3. **Negocie:** Ligue para os credores ou use os feirões do Serasa para pedir descontos à vista.\n4. **Estanque o sangramento:** Pare de criar novas dívidas enquanto quita as antigas.",
+        patterns: [
+          "divida",
+          "dividas",
+          "endividado",
+          "nome sujo",
+          "dívida",
+          "sair das",
+        ],
+        handler: () => {
+          return {
+            text: "🚨 **Plano anti-dívidas:**\n1. Mapeie todas e veja o CET (Custo Efetivo Total).\n2. Estanque a sangria (esconda o cartão de crédito).\n3. Foque em pagar as mais caras primeiro (Cartão e Cheque Especial).\n4. Renegocie (use feirões do Serasa).\n\nSe as contas fecharem, use a regra 50/30/20 para não voltar a se endividar.",
+            suggestions: ["Regra 50/30/20", "Meu Resumo do Mês"],
+          };
+        },
       },
       {
         patterns: ["diversificar", "diversificacao", "risco"],
-        handler: () =>
-          "🥚 **Diversificação:**\nA regra de ouro é: *'Não coloque todos os ovos na mesma cesta'*.\n\nSe você investe tudo na Empresa X e ela faliu, você perde tudo. Se você investe em Renda Fixa, FIIs, Ações e Moeda Estrangeira, se um setor for mal, os outros seguram as pontas e garantem a saúde do seu patrimônio.",
+        handler: () => {
+          return {
+            text: "🥚 **Diversificação:**\n'Não coloque todos os ovos na mesma cesta'.\nSe você tiver Renda Fixa, Ações, FIIs e Investimento no Exterior, quando uma coisa cair, a outra sobe e protege o seu patrimônio. Simples e essencial!",
+            suggestions: ["O que é CDB?", "O que são Fundos Imobiliários?"],
+          };
+        },
       },
-
-      // ----------------------------------------
-      // 3. SAUDAÇÕES E FALLBACKS
-      // ----------------------------------------
       {
         patterns: [
           "ola",
@@ -268,50 +383,45 @@ const FinControlAI = {
           "fala ai",
           "tudo bem",
         ],
-        handler: () =>
-          "Olá! 👋 Estou aqui para ajudar com seus números, fazer projeções e tirar dúvidas financeiras. O que manda hoje?",
-      },
-      {
-        patterns: [
-          "quem e voce",
-          "o que voce faz",
-          "o que e voce",
-          "inteligencia",
-        ],
-        handler: () =>
-          "Eu sou o **FinControl AI** 🤖.\n\nFui projetado para ser seu braço direito. Como os seus dados financeiros ficam salvos direto no seu navegador (com total privacidade), eu consigo ler esses números e te entregar relatórios, buscar seus maiores gastos ou calcular quanto dinheiro você terá no futuro!",
-      },
-      {
-        patterns: ["te amo", "obrigado", "valeu", "show", "top", "legal"],
-        handler: () =>
-          "Tamo junto! 🚀 O seu foco no futuro financeiro é o que me motiva. Mande a próxima dúvida quando quiser!",
+        handler: () => {
+          return {
+            text: "Olá de novo! 👋 Por onde quer que eu comece a te ajudar agora?",
+            suggestions: [
+              "Meu Resumo do Mês",
+              "Regra 50/30/20",
+              "Tarefas Pendentes",
+            ],
+          };
+        },
       },
     ];
   },
 
-  // ==========================================
-  // PROCESSADOR CENTRAL
-  // ==========================================
   processInput(rawInput) {
     const inputClean = this.removeAccents(rawInput);
     const intents = this.getIntents();
 
-    // Varre todas as intenções buscando match
     for (const intent of intents) {
       if (intent.patterns.some((pattern) => inputClean.includes(pattern))) {
         return intent.handler(inputClean, rawInput);
       }
     }
 
-    // Fallback se não encontrar nada
-    return "Hum, não captei a ideia. 🤔\n\nTente algo mais específico, como:\n\n• *O que é CDB?*\n• *Qual meu saldo?*\n• *Gastei quanto com saúde?*\n• *Quanto terei se investir R$ 1000 até 2035?*";
+    return {
+      text: "Hum, acho que não peguei essa. 🤔 Tente fazer perguntas como as sugestões abaixo:",
+      suggestions: [
+        "Qual meu maior gasto?",
+        "O que é CDB?",
+        "Se eu investir R$ 800 até 2040",
+      ],
+    };
   },
 
   // ==========================================
-  // INTERFACE DO USUÁRIO (UI) - KANBAN/GLASSMORPHISM STYLE
+  // INTERFACE DO CHAT COM CHIPS DE SUGESTÃO
   // ==========================================
   injectHTML() {
-    if (document.getElementById("ai-chat-btn")) return; // Previne duplicidade
+    if (document.getElementById("ai-chat-btn")) return;
 
     const html = `
       <div id="ai-chat-btn" title="Falar com Assistente IA">
@@ -371,15 +481,19 @@ const FinControlAI = {
       .msg-container.user .msg-bubble { background: linear-gradient(135deg, #6366f1, #4f46e5); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
       .msg-container.ai .msg-bubble { background: #1a1d2d; border: 1px solid rgba(255,255,255,0.06); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
       
+      /* Botões de Sugestão */
+      .ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .ai-suggestion-btn { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a855f7; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; line-height: 1.3; }
+      .ai-suggestion-btn:hover { background: rgba(99, 102, 241, 0.25); transform: translateY(-2px); color: #fff; border-color: #a855f7; }
+
       .ai-chat-input-area { padding: 16px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
       #ai-chat-input { flex: 1; background: #0f111a; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 12px 18px; color: #fff; font-size: 14px; outline: none; transition: all 0.3s; }
       #ai-chat-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
       #ai-chat-send { background: linear-gradient(135deg, #6366f1, #a855f7); border: none; width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
       #ai-chat-send:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5); }
       
-      /* Estilização do texto Markdown na Bolha */
       .msg-bubble strong { color: #a855f7; font-weight: 700; }
-      .msg-container.user .msg-bubble strong { color: #fff; } /* Override for user msg */
+      .msg-container.user .msg-bubble strong { color: #fff; }
       
       .typing-indicator { display: flex; gap: 4px; padding: 4px 8px; }
       .typing-indicator span { width: 6px; height: 6px; background: #6366f1; border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; }
@@ -388,14 +502,14 @@ const FinControlAI = {
       @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
       
       @media (max-width: 480px) {
-        #ai-chat-window { width: 90%; right: 5%; bottom: 100px; height: 60vh; }
+        #ai-chat-window { width: 90%; right: 5%; bottom: 100px; height: 65vh; }
       }
     `;
     document.head.appendChild(style);
   },
 
   // ==========================================
-  // LÓGICA DE EVENTOS DA UI
+  // EVENTOS E ENVIO DE MENSAGENS
   // ==========================================
   setupEvents() {
     const btn = document.getElementById("ai-chat-btn");
@@ -415,10 +529,12 @@ const FinControlAI = {
       const text = input.value.trim();
       if (!text) return;
 
+      // Remove botões de sugestão antigos da tela quando o usuário digita
+      document.querySelectorAll(".ai-suggestions").forEach((el) => el.remove());
+
       this.addMessage(text, "user");
       input.value = "";
 
-      // Indicador de "Digitando..."
       const body = document.getElementById("ai-chat-body");
       const typingDiv = document.createElement("div");
       typingDiv.className = `msg-container ai typing-box`;
@@ -426,15 +542,18 @@ const FinControlAI = {
       body.appendChild(typingDiv);
       body.scrollTop = body.scrollHeight;
 
-      // Simula o tempo de raciocínio da IA
       setTimeout(
         () => {
-          typingDiv.remove(); // Remove o digitando
-          const resposta = this.processInput(text);
-          this.addMessage(this.formatMarkdown(resposta), "ai");
+          typingDiv.remove();
+          const responseObj = this.processInput(text);
+          this.addMessage(
+            this.formatMarkdown(responseObj.text),
+            "ai",
+            responseObj.suggestions,
+          );
         },
-        800 + Math.random() * 600,
-      ); // Entre 0.8s e 1.4s
+        800 + Math.random() * 500,
+      );
     };
 
     sendBtn.addEventListener("click", handleSend);
@@ -447,17 +566,38 @@ const FinControlAI = {
     return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   },
 
-  addMessage(text, sender) {
+  // Recebe text, sender, e um array de suggestions [opcional]
+  addMessage(text, sender, suggestions = []) {
     const body = document.getElementById("ai-chat-body");
     const msgDiv = document.createElement("div");
     msgDiv.className = `msg-container ${sender}`;
     msgDiv.innerHTML = `<div class="msg-bubble">${text}</div>`;
+
+    // Se a mensagem for da IA e houver sugestões, insere os Chips
+    if (sender === "ai" && suggestions && suggestions.length > 0) {
+      const suggWrapper = document.createElement("div");
+      suggWrapper.className = "ai-suggestions";
+
+      suggestions.forEach((sugText) => {
+        const btn = document.createElement("button");
+        btn.className = "ai-suggestion-btn";
+        btn.innerText = sugText;
+        btn.onclick = () => {
+          // Quando clicar no chip, ele age como se o usuário digitasse e enviasse
+          suggWrapper.remove(); // Some com os chips
+          document.getElementById("ai-chat-input").value = sugText;
+          document.getElementById("ai-chat-send").click();
+        };
+        suggWrapper.appendChild(btn);
+      });
+      msgDiv.appendChild(suggWrapper);
+    }
+
     body.appendChild(msgDiv);
     body.scrollTop = body.scrollHeight;
   },
 };
 
-// Inicia automaticamente quando a página carrega
 document.addEventListener("DOMContentLoaded", () => {
   FinControlAI.init();
 });
