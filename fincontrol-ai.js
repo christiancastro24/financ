@@ -1,6 +1,6 @@
 /**
  * FinControl AI - Assistente Virtual ROBUSTO & DINÂMICO
- * Com Sugestões, Filtros Compostos (Mês+Categoria), Orçamento e Guia de Ajuda
+ * Previsões de Gastos, Filtros Compostos, Status de Pagamento e Guia de Ajuda
  */
 
 const FinControlAI = {
@@ -19,7 +19,7 @@ const FinControlAI = {
         "ai",
         [
           "📊 Meu Resumo do Mês",
-          "💸 Gastos em Agosto",
+          "🔮 Quanto vou gastar em Agosto?",
           "⚙️ Como está meu Orçamento?",
         ],
       );
@@ -65,8 +65,8 @@ const FinControlAI = {
     const now = new Date();
     const currentYear = now.getFullYear();
     const monthStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    const gastosMensais = data.expenses.filter((e) =>
-      e.date.startsWith(monthStr),
+    const gastosMensais = data.expenses.filter(
+      (e) => e.date && e.date.startsWith(monthStr),
     );
 
     return [
@@ -77,7 +77,12 @@ const FinControlAI = {
             .filter((e) => e.type === "entrada")
             .reduce((s, e) => s + e.value, 0);
           const saidas = gastosMensais
-            .filter((e) => e.type === "saida" || !e.type)
+            .filter(
+              (e) =>
+                !e.type ||
+                e.type.toLowerCase().includes("said") ||
+                e.type.toLowerCase().includes("saíd"),
+            )
             .reduce((s, e) => s + e.value, 0);
           const invTotal = data.investments.reduce(
             (sum, inv) => sum + inv.value,
@@ -85,8 +90,11 @@ const FinControlAI = {
           );
 
           return {
-            text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Saiu: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada em onde você está gastando mais ou prefere projetar seus investimentos?`,
-            suggestions: ["Qual meu maior gasto?", "Como está meu orçamento?"],
+            text: `📊 **Resumo de ${now.toLocaleDateString("pt-BR", { month: "long" })}:**\n\n**Caixa do Mês:** ${this.formatMoney(entradas - saidas)}\n(Entrou: ${this.formatMoney(entradas)} | Planejado de Saída: ${this.formatMoney(saidas)})\n\n**Patrimônio:** ${this.formatMoney(invTotal)}\n**Metas Ativas:** ${data.goals.length}\n**Tarefas:** ${data.todos.filter((t) => !t.done).length} pendentes.\n\nQuer dar uma olhada no detalhamento dos seus gastos ou projetar seus investimentos?`,
+            suggestions: [
+              "Quanto vou gastar esse mês?",
+              "Simular um investimento",
+            ],
           };
         },
       },
@@ -102,12 +110,17 @@ const FinControlAI = {
           }
 
           const saidas = gastosMensais
-            .filter((e) => e.type === "saida" || !e.type)
+            .filter(
+              (e) =>
+                !e.type ||
+                e.type.toLowerCase().includes("said") ||
+                e.type.toLowerCase().includes("saíd"),
+            )
             .reduce((s, e) => s + e.value, 0);
           const restante = budget - saidas;
 
           return {
-            text: `⚙️ **Seu Orçamento do Mês:**\n\nLimite definido: **${this.formatMoney(budget)}**\nGastos até agora: **${this.formatMoney(saidas)}**\nSaldo restante: **${this.formatMoney(restante)}**\n\n${restante < 0 ? "⚠️ Atenção! Você já ultrapassou seu limite!" : "✅ Você ainda tem saldo para gastar com tranquilidade."}`,
+            text: `⚙️ **Seu Orçamento do Mês:**\n\nLimite definido: **${this.formatMoney(budget)}**\nGastos planejados até agora: **${this.formatMoney(saidas)}**\nSaldo restante no limite: **${this.formatMoney(restante)}**\n\n${restante < 0 ? "⚠️ Atenção! Você já ultrapassou o seu teto de gastos!" : "✅ Você ainda tem folga no orçamento."}`,
             suggestions: ["Qual meu maior gasto?", "Regra 50/30/20"],
           };
         },
@@ -121,7 +134,10 @@ const FinControlAI = {
         ],
         handler: () => {
           const saidas = data.expenses.filter(
-            (e) => e.type === "saida" || !e.type,
+            (e) =>
+              !e.type ||
+              e.type.toLowerCase().includes("said") ||
+              e.type.toLowerCase().includes("saíd"),
           );
           if (saidas.length === 0)
             return {
@@ -139,15 +155,20 @@ const FinControlAI = {
         },
       },
       {
-        // A INTENÇÃO SUPER INTELIGENTE VOLTOU! Entende meses e categorias juntos.
+        // INTENÇÃO DE GASTOS SUPREMA (Prevê, Filtra Pagos/Pendentes, Entende Mês e Ano)
         patterns: [
           "gasto",
           "gastei",
           "gastar",
-          "gastou",
           "despesa",
           "comprei",
           "custou",
+          "pagar",
+          "vou",
+          "irei",
+          "previsao",
+          "previsto",
+          "falta",
         ],
         handler: (input) => {
           const mesesMap = {
@@ -180,17 +201,27 @@ const FinControlAI = {
             input.includes(c),
           );
 
+          let yearMatch = input.match(/(20\d{2})/);
+          let targetYear = yearMatch ? yearMatch[1] : currentYear;
+
+          // Filtra todas as despesas ignorando case-sensitive e acentos
           let expensesToFilter = data.expenses.filter(
-            (e) => e.type === "saida" || !e.type,
+            (e) =>
+              !e.type ||
+              e.type.toLowerCase().includes("said") ||
+              e.type.toLowerCase().includes("saíd"),
           );
+
           let contextMsg = "";
 
           if (monthFound) {
             const monthNum = mesesMap[monthFound];
-            expensesToFilter = expensesToFilter.filter((e) =>
-              e.date.startsWith(`${currentYear}-${monthNum}`),
-            );
-            contextMsg += ` em **${monthFound.charAt(0).toUpperCase() + monthFound.slice(1)}**`;
+            expensesToFilter = expensesToFilter.filter((e) => {
+              if (!e.date) return false;
+              const parts = e.date.split("-");
+              return parts[0] == targetYear && parts[1] == monthNum;
+            });
+            contextMsg += ` em **${monthFound.charAt(0).toUpperCase() + monthFound.slice(1)} de ${targetYear}**`;
           }
 
           if (catFound) {
@@ -202,24 +233,58 @@ const FinControlAI = {
           }
 
           const total = expensesToFilter.reduce((sum, e) => sum + e.value, 0);
+          const pagos = expensesToFilter
+            .filter((e) => e.paid)
+            .reduce((sum, e) => sum + e.value, 0);
+          const pendentes = expensesToFilter
+            .filter((e) => !e.paid)
+            .reduce((sum, e) => sum + e.value, 0);
 
+          // Se a pessoa perguntou genérico sem mês nem categoria
           if (!monthFound && !catFound) {
-            const monthTotal = data.expenses
-              .filter(
-                (e) =>
-                  e.date.startsWith(monthStr) &&
-                  (e.type === "saida" || !e.type),
-              )
+            const monthExps = data.expenses.filter(
+              (e) =>
+                e.date &&
+                e.date.startsWith(monthStr) &&
+                (!e.type ||
+                  e.type.toLowerCase().includes("said") ||
+                  e.type.toLowerCase().includes("saíd")),
+            );
+            const mTotal = monthExps.reduce((sum, e) => sum + e.value, 0);
+            const mPendentes = monthExps
+              .filter((e) => !e.paid)
               .reduce((sum, e) => sum + e.value, 0);
+
             return {
-              text: `💸 Seus gastos totais neste mês estão em **${this.formatMoney(monthTotal)}**.\n\nVocê pode ser mais específico! Pergunte algo como:\n- "Quais meus gastos em agosto?"\n- "Quanto gastei com Lazer?"`,
-              suggestions: ["Gastos em Agosto", "Qual meu maior gasto?"],
+              text: `💸 O total de despesas projetadas (pagas + pendentes) para este mês está em **${this.formatMoney(mTotal)}**.\n\nDeste valor, você ainda tem que pagar: **${this.formatMoney(mPendentes)}**.\n\nVocê pode ser mais específico! Pergunte algo como:\n- "Quanto vou gastar em agosto?"\n- "Quanto irei gastar com Lazer em 2026?"`,
+              suggestions: [
+                "Quanto vou gastar em Agosto?",
+                "Como está meu orçamento?",
+              ],
             };
           }
 
+          // Se a pessoa perguntou usando verbos no futuro ou pedindo projeção
+          const isFutureOrPending =
+            input.includes("irei") ||
+            input.includes("vou") ||
+            input.includes("falta") ||
+            input.includes("previsao") ||
+            input.includes("pagar");
+
+          let textResponse = "";
+
+          if (isFutureOrPending) {
+            textResponse = `🔮 **Projeção de Despesas${contextMsg}:**\n\nO seu planejamento total (pagos + pendentes) é de **${this.formatMoney(total)}**.\n\n**Detalhamento:**\n✅ Já pago: ${this.formatMoney(pagos)}\n⏳ **Falta pagar (Pendente): ${this.formatMoney(pendentes)}**`;
+          } else {
+            textResponse = `💸 **Resumo de Despesas${contextMsg}:**\n\nTotal contabilizado: **${this.formatMoney(total)}**.\n\n**Detalhamento:**\n✅ Já pago: ${this.formatMoney(pagos)}\n⏳ Pendente: ${this.formatMoney(pendentes)}`;
+          }
+
           return {
-            text: `💸 Você gastou um total de **${this.formatMoney(total)}**${contextMsg}.\n\nSe esse valor estiver muito alto, lembre-se de sempre garantir que sua Reserva de Emergência está em dia. Sabe o que é isso?`,
-            suggestions: ["O que é reserva de emergência?", "Meu Resumo"],
+            text:
+              textResponse +
+              `\n\nSe esse valor estiver muito alto, lembre-se de consultar seu orçamento definido!`,
+            suggestions: ["Como está meu orçamento?", "Meu Resumo"],
           };
         },
       },
@@ -435,7 +500,7 @@ const FinControlAI = {
           suggestions: [
             "Meu Resumo do Mês",
             "Regra 50/30/20",
-            "Gastos em Agosto",
+            "Quanto vou gastar em Agosto?",
           ],
         }),
       },
@@ -498,7 +563,7 @@ const FinControlAI = {
             <div class="help-category">📊 Seus Dados Financeiros</div>
             <div class="help-item">"Me dê um resumo do mês"</div>
             <div class="help-item">"Qual foi meu maior gasto?"</div>
-            <div class="help-item">"Quais meus gastos em agosto?"</div>
+            <div class="help-item">"Quanto irei gastar em agosto?"</div>
             <div class="help-item">"Quanto gastei com Lazer?"</div>
             <div class="help-item">"Como está o progresso das metas?"</div>
             <div class="help-item">"Como está meu orçamento?"</div>
@@ -601,10 +666,6 @@ const FinControlAI = {
 
       .help-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; font-size: 13px; color: #cbd5e1; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
       .help-item:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #fff; transform: translateX(4px); }
-      
-      @media (max-width: 480px) {
-        #ai-chat-window { width: 90%; right: 5%; bottom: 100px; height: 65vh; }
-      }
     `;
     document.head.appendChild(style);
   },
