@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinControl - Tarefas</title>
+    <title>FinControl - Projeto 31 Dias</title>
     <style>
       /* ============================================
          CSS VARIÁVEIS - TEMA MODERNO
@@ -25,6 +25,8 @@
         --accent-green: #10b981;
         --accent-amber: #f59e0b;
         --accent-red: #ef4444;
+        --accent-pink: #ec4899;
+        --accent-cyan: #22d3ee;
 
         --gradient-primary: linear-gradient(135deg, #6366f1, #a855f7);
         --gradient-card: linear-gradient(
@@ -87,6 +89,7 @@
         left: 0;
         height: 100vh;
         z-index: 100;
+        transition: var(--transition);
       }
 
       .menu-logo {
@@ -279,10 +282,12 @@
         flex: 1;
         padding: 32px 40px;
         min-height: calc(100vh - 70px);
+        max-width: calc(100vw - 250px);
+        overflow-x: hidden;
       }
 
       /* ============================================
-         TODO - FORMULÁRIOS E KANBAN
+         TODO - FORMULÁRIOS E KANBAN (TRELLO STYLE)
       ============================================ */
       .form-card {
         background: var(--gradient-card);
@@ -405,7 +410,6 @@
         font-weight: 500;
       }
 
-      /* CORREÇÃO DOS SELECTS DA TOOLBAR AQUI 👇 */
       .todo-toolbar .todo-day-select,
       .todo-toolbar .filter-select {
         background: var(--bg-input);
@@ -439,20 +443,38 @@
         font-weight: 500;
       }
 
-      /* KANBAN */
-      .kanban-container {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 12px;
-        margin-top: 20px;
+      /* KANBAN - SCROLL HORIZONTAL */
+      .kanban-scroll {
+        overflow-x: auto;
+        padding: 4px 0 20px 0;
+        display: flex;
+        gap: 16px;
+        scroll-snap-type: x mandatory;
+      }
+
+      .kanban-scroll::-webkit-scrollbar {
+        height: 8px;
+      }
+      .kanban-scroll::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .kanban-scroll::-webkit-scrollbar-thumb {
+        background: var(--accent-blue);
+        border-radius: 10px;
       }
 
       .kanban-column {
+        flex: 0 0 280px;
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 16px;
         min-height: 350px;
+        max-height: 70vh;
+        overflow-y: auto;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
       }
 
       .kanban-column .column-header {
@@ -462,12 +484,13 @@
         margin-bottom: 12px;
         padding-bottom: 10px;
         border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
       }
 
       .kanban-column .column-header h3 {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
-        color: var(--text-muted);
+        color: var(--text-primary);
       }
 
       .kanban-column .column-header .day-today {
@@ -488,6 +511,11 @@
 
       .kanban-column.weekend {
         background: rgba(255, 255, 255, 0.02);
+      }
+
+      .kanban-column .column-body {
+        flex: 1;
+        overflow-y: auto;
       }
 
       .kanban-card {
@@ -609,6 +637,7 @@
         padding-top: 12px;
         margin-top: 8px;
         border-top: 1px solid var(--border-color);
+        flex-shrink: 0;
       }
 
       .kanban-column .column-actions button {
@@ -718,16 +747,6 @@
       }
 
       /* RESPONSIVIDADE */
-      @media (max-width: 1200px) {
-        .kanban-container {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-      @media (max-width: 992px) {
-        .kanban-container {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
       @media (max-width: 768px) {
         aside {
           width: 80px;
@@ -762,19 +781,17 @@
         main {
           margin-left: 80px;
           padding: 20px;
-        }
-        .kanban-container {
-          grid-template-columns: 1fr;
+          max-width: calc(100vw - 80px);
         }
         .kanban-column {
-          min-height: auto;
+          flex: 0 0 240px;
         }
       }
     </style>
   </head>
   <body>
     <!-- ============================================
-    MENU LATERAL PADRONIZADO (VISÃO MENSAL)
+    MENU LATERAL PADRONIZADO
     ============================================ -->
     <aside>
       <div class="menu-logo">
@@ -833,7 +850,7 @@
     ============================================ -->
     <header class="top-header">
       <div class="header-left">
-        <h1>Organização de Tarefas</h1>
+        <h1>📅 Projeto 31 Dias</h1>
       </div>
       <div class="header-right">
         <span class="date-display" id="current-date-display"></span>
@@ -849,32 +866,18 @@
     <div class="modal-overlay" id="copy-modal">
       <div class="modal">
         <h2>📋 Copiar Tarefas</h2>
-        <p class="modal-subtitle">Escolha de qual dia copiar e para qual dia</p>
+        <p class="modal-subtitle">
+          Copie tarefas de um dia para outro do projeto
+        </p>
 
         <div class="form-group">
           <label for="copy-source-day">📤 Copiar de:</label>
-          <select id="copy-source-day">
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-            <option value="6">Sábado</option>
-            <option value="0">Domingo</option>
-          </select>
+          <select id="copy-source-day"></select>
         </div>
 
         <div class="form-group">
           <label for="copy-target-day">📥 Copiar para:</label>
-          <select id="copy-target-day">
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-            <option value="6">Sábado</option>
-            <option value="0">Domingo</option>
-          </select>
+          <select id="copy-target-day"></select>
         </div>
 
         <div
@@ -903,7 +906,7 @@
     <div class="modal-overlay" id="edit-todo-modal">
       <div class="modal">
         <h2>✏️ Editar Tarefa</h2>
-        <p class="modal-subtitle">Altere o texto, dia ou categoria da tarefa</p>
+        <p class="modal-subtitle">Altere o texto, dia ou categoria</p>
         <form id="edit-todo-form">
           <div class="form-group">
             <label for="edit-todo-text">Descrição</label>
@@ -914,16 +917,8 @@
             ></textarea>
           </div>
           <div class="form-group">
-            <label for="edit-todo-day">Dia da Semana</label>
-            <select id="edit-todo-day">
-              <option value="1">Segunda-feira</option>
-              <option value="2">Terça-feira</option>
-              <option value="3">Quarta-feira</option>
-              <option value="4">Quinta-feira</option>
-              <option value="5">Sexta-feira</option>
-              <option value="6">Sábado</option>
-              <option value="0">Domingo</option>
-            </select>
+            <label for="edit-todo-day">Dia do Projeto</label>
+            <select id="edit-todo-day"></select>
           </div>
           <div class="form-group">
             <label for="edit-todo-tag">Categoria</label>
@@ -956,7 +951,7 @@
     <main>
       <!-- FORMULÁRIO DE TAREFA -->
       <div class="form-card">
-        <div class="form-title">➕ Nova Tarefa Rápida</div>
+        <div class="form-title">➕ Nova Tarefa</div>
         <form id="todo-form" class="form-group">
           <input
             type="text"
@@ -965,15 +960,7 @@
             required
             style="flex: 2"
           />
-          <select id="todo-day">
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-            <option value="6">Sábado</option>
-            <option value="0">Domingo</option>
-          </select>
+          <select id="todo-day"></select>
           <select id="todo-tag">
             <option value="estudos">📚 Estudos</option>
             <option value="exercicios">💪 Exercícios</option>
@@ -988,22 +975,14 @@
         </form>
       </div>
 
-      <!-- BARRA DE FERRAMENTAS DO KANBAN -->
+      <!-- BARRA DE FERRAMENTAS -->
       <div class="todo-toolbar">
         <div class="toolbar-left">
           <span class="toolbar-label">Gerenciar:</span>
           <button class="btn btn-sm btn-outline" id="clear-todo-day">
             🗑️ Limpar Dia
           </button>
-          <select id="todo-clear-day" class="todo-day-select">
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-            <option value="6">Sábado</option>
-            <option value="0">Domingo</option>
-          </select>
+          <select id="todo-clear-day" class="todo-day-select"></select>
         </div>
         <div class="toolbar-right">
           <span class="toolbar-label">Filtrar:</span>
@@ -1025,8 +1004,8 @@
         </div>
       </div>
 
-      <!-- KANBAN -->
-      <div class="kanban-container" id="kanban-container"></div>
+      <!-- KANBAN COM SCROLL -->
+      <div class="kanban-scroll" id="kanban-scroll"></div>
     </main>
 
     <!-- TOAST -->
@@ -1034,42 +1013,31 @@
 
     <!-- JAVASCRIPT -->
     <script>
-      // Utils
+      // ============================================
+      // UTILITÁRIOS
+      // ============================================
+      function formatDate(date) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d.toISOString().split("T")[0];
+      }
+
       function getDayName(dayIndex) {
         const days = [
           "Domingo",
-          "Segunda-feira",
-          "Terça-feira",
-          "Quarta-feira",
-          "Quinta-feira",
-          "Sexta-feira",
+          "Segunda",
+          "Terça",
+          "Quarta",
+          "Quinta",
+          "Sexta",
           "Sábado",
         ];
         return days[dayIndex];
       }
+
       function getShortDayName(dayIndex) {
         const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
         return days[dayIndex];
-      }
-      function updateDateDisplay() {
-        document.getElementById("current-date-display").textContent =
-          new Date().toLocaleDateString("pt-BR", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-      }
-
-      function detectUrls(text) {
-        return text.match(/(https?:\/\/[^\s]+)/g) || [];
-      }
-      function formatTextWithLinks(text) {
-        return text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-          let display = url.replace(/^https?:\/\//, "");
-          if (display.length > 35) display = display.substring(0, 35) + "...";
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer">🔗 ${display}</a>`;
-        });
       }
 
       function getTagClass(tag) {
@@ -1085,6 +1053,7 @@
         };
         return map[tag] || "tag-outros";
       }
+
       function getTagIcon(tag) {
         const map = {
           estudos: "📚",
@@ -1098,6 +1067,7 @@
         };
         return map[tag] || "📌";
       }
+
       function getTagName(tag) {
         const map = {
           estudos: "Estudos",
@@ -1112,11 +1082,24 @@
         return map[tag] || "Outros";
       }
 
+      function detectUrls(text) {
+        return text.match(/(https?:\/\/[^\s]+)/g) || [];
+      }
+
+      function formatTextWithLinks(text) {
+        return text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+          let display = url.replace(/^https?:\/\//, "");
+          if (display.length > 35) display = display.substring(0, 35) + "...";
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer">🔗 ${display}</a>`;
+        });
+      }
+
       function showToast(message, type = "success") {
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        toast.innerHTML = `<span>${{ success: "✅", error: "❌", warning: "⚠️" }[type] || "📌"}</span> ${message}`;
+        const icons = { success: "✅", error: "❌", warning: "⚠️" };
+        toast.innerHTML = `<span>${icons[type] || "📌"}</span> ${message}`;
         container.appendChild(toast);
         setTimeout(() => {
           toast.style.opacity = "0";
@@ -1125,7 +1108,19 @@
         }, 3000);
       }
 
-      // Banco de Dados Local
+      function updateDateDisplay() {
+        document.getElementById("current-date-display").textContent =
+          new Date().toLocaleDateString("pt-BR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+      }
+
+      // ============================================
+      // DATA MANAGER
+      // ============================================
       const DataManager = {
         get(key, defaultValue) {
           try {
@@ -1159,41 +1154,91 @@
         },
       };
 
+      // ============================================
+      // APLICAÇÃO PRINCIPAL
+      // ============================================
       const Todos = {
         data: [],
         editingId: null,
         activeProfile: "personal",
+        projectDays: [], // [{ date, dayIndex, label, dateStr }]
 
         init() {
           this.migrateOldData();
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getTodos(this.activeProfile);
+          this.buildProjectDays(31); // <-- agora 31 dias
+          this.migrateTasksToDates();
           this.updateProfileUI();
           this.render();
           this.setupEvents();
-
-          const today = new Date().getDay();
-          document.getElementById("todo-day").value = today;
-          document.getElementById("todo-clear-day").value = today;
+          this.populateSelectors();
         },
 
-        migrateOldData() {
-          try {
-            const oldData = localStorage.getItem("todos");
-            if (oldData && !localStorage.getItem("todos_personal")) {
-              localStorage.setItem("todos_personal", oldData);
-              setTimeout(
-                () =>
-                  showToast(
-                    `📦 Tarefas antigas restauradas com sucesso!`,
-                    "success",
-                  ),
-                1000,
-              );
-            }
-          } catch (e) {
-            console.error("Erro na migração do To-Do:", e);
+        // === CONSTRÓI 31 DIAS A PARTIR DE HOJE ===
+        buildProjectDays(totalDays = 31) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          this.projectDays = [];
+          for (let i = 0; i < totalDays; i++) {
+            const d = new Date(today);
+            d.setDate(d.getDate() + i);
+            const dayOfMonth = d.getDate().toString().padStart(2, "0");
+            const month = (d.getMonth() + 1).toString().padStart(2, "0");
+            this.projectDays.push({
+              date: d,
+              dayIndex: d.getDay(),
+              label: `${getShortDayName(d.getDay())} - Dia ${String(i + 1).padStart(2, "0")} (${dayOfMonth}/${month})`,
+              dateStr: formatDate(d),
+            });
           }
+        },
+
+        // === MIGRA TAREFAS ANTIGAS (COM 'day') PARA 'date' ===
+        migrateTasksToDates() {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          let changed = false;
+          this.data.forEach((task) => {
+            if (!task.date && task.day !== undefined) {
+              const targetDay = task.day; // 0-6
+              let diff = targetDay - today.getDay();
+              if (diff < 0) diff += 7;
+              const targetDate = new Date(today);
+              targetDate.setDate(targetDate.getDate() + diff);
+              task.date = formatDate(targetDate);
+              changed = true;
+            }
+          });
+          if (changed) {
+            DataManager.setTodos(this.data, this.activeProfile);
+          }
+        },
+
+        populateSelectors() {
+          const selects = [
+            "todo-day",
+            "todo-clear-day",
+            "edit-todo-day",
+            "copy-source-day",
+            "copy-target-day",
+          ];
+          selects.forEach((id) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = "";
+            this.projectDays.forEach((pd, index) => {
+              const opt = document.createElement("option");
+              opt.value = index;
+              opt.textContent = pd.label;
+              el.appendChild(opt);
+            });
+          });
+          document.getElementById("todo-day").value = 0;
+          document.getElementById("todo-clear-day").value = 0;
+          document.getElementById("copy-source-day").value = 0;
+          document.getElementById("copy-target-day").value = 1;
+          this.updateCopyInfo();
         },
 
         setupEvents() {
@@ -1258,8 +1303,9 @@
           this.activeProfile = profileId;
           this.updateProfileUI();
           this.data = DataManager.getTodos(this.activeProfile);
+          this.migrateTasksToDates();
           this.render();
-          showToast(`Perfil alterado!`, "success");
+          showToast("Perfil alterado!", "success");
         },
 
         updateProfileUI() {
@@ -1274,15 +1320,16 @@
         add() {
           const input = document.getElementById("todo-input"),
             text = input.value.trim();
-          const day = parseInt(document.getElementById("todo-day").value),
-            tag = document.getElementById("todo-tag").value;
+          const dayIndex = parseInt(document.getElementById("todo-day").value);
+          const tag = document.getElementById("todo-tag").value;
           if (!text) return showToast("Digite uma tarefa!", "warning");
 
+          const dateStr = this.projectDays[dayIndex].dateStr;
           const urls = detectUrls(text);
           this.data.push({
             id: Date.now(),
             text,
-            day,
+            date: dateStr,
             tag,
             done: false,
             hasLink: urls.length > 0,
@@ -1291,7 +1338,7 @@
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           input.value = "";
-          showToast(`✅ Tarefa adicionada!`);
+          showToast("✅ Tarefa adicionada!");
         },
 
         toggle(id) {
@@ -1316,7 +1363,10 @@
           if (!todo) return;
           this.editingId = id;
           document.getElementById("edit-todo-text").value = todo.text;
-          document.getElementById("edit-todo-day").value = todo.day;
+          const idx = this.projectDays.findIndex(
+            (d) => d.dateStr === todo.date,
+          );
+          document.getElementById("edit-todo-day").value = idx >= 0 ? idx : 0;
           document.getElementById("edit-todo-tag").value = todo.tag || "outros";
           document.getElementById("edit-todo-modal").classList.add("active");
         },
@@ -1328,30 +1378,28 @@
 
         saveEdit() {
           const text = document.getElementById("edit-todo-text").value.trim();
-          const day = parseInt(document.getElementById("edit-todo-day").value);
+          const dayIndex = parseInt(
+            document.getElementById("edit-todo-day").value,
+          );
           const tag = document.getElementById("edit-todo-tag").value;
           if (!text) return showToast("Digite a tarefa!", "warning");
 
           const todo = this.data.find((t) => t.id === this.editingId);
           if (todo) {
             todo.text = text;
-            todo.day = day;
+            todo.date = this.projectDays[dayIndex].dateStr;
             todo.tag = tag;
             todo.urls = detectUrls(text);
             todo.hasLink = todo.urls.length > 0;
             DataManager.setTodos(this.data, this.activeProfile);
             this.closeEditModal();
             this.render();
-            showToast(`✏️ Tarefa atualizada!`);
+            showToast("✏️ Tarefa atualizada!");
           }
         },
 
-        openCopyModal(targetDay) {
-          document.getElementById("copy-target-day").value = targetDay;
-          let sourceDay = targetDay > 1 ? targetDay - 1 : 6;
-          if (targetDay === 0) sourceDay = 6;
-          document.getElementById("copy-source-day").value = sourceDay;
-          this.updateCopyInfo();
+        openCopyModal() {
+          this.populateSelectors();
           document.getElementById("copy-modal").classList.add("active");
         },
 
@@ -1360,49 +1408,53 @@
         },
 
         updateCopyInfo() {
-          const sourceDay = parseInt(
+          const sourceIdx = parseInt(
             document.getElementById("copy-source-day").value,
           );
-          const targetDay = parseInt(
+          const targetIdx = parseInt(
             document.getElementById("copy-target-day").value,
           );
           const info = document.getElementById("copy-info");
+          const sourceDate = this.projectDays[sourceIdx]?.dateStr;
           const sourceTasks = this.data.filter(
-            (t) => t.day === sourceDay && !t.done,
+            (t) => t.date === sourceDate && !t.done,
           );
 
-          if (sourceDay === targetDay) {
+          if (sourceIdx === targetIdx) {
             info.innerHTML = "⚠️ Você está copiando para o mesmo dia!";
             info.style.color = "var(--accent-red)";
           } else if (sourceTasks.length === 0) {
             info.innerHTML = "📭 Não há tarefas pendentes na origem.";
             info.style.color = "var(--text-muted)";
           } else {
-            info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefas de <strong>${getDayName(sourceDay)}</strong> para <strong>${getDayName(targetDay)}</strong>`;
+            info.innerHTML = `📋 Copiar <strong>${sourceTasks.length}</strong> tarefas de <strong>${this.projectDays[sourceIdx].label}</strong> para <strong>${this.projectDays[targetIdx].label}</strong>`;
             info.style.color = "var(--accent-blue)";
           }
         },
 
         executeCopy() {
-          const sourceDay = parseInt(
+          const sourceIdx = parseInt(
             document.getElementById("copy-source-day").value,
           );
-          const targetDay = parseInt(
+          const targetIdx = parseInt(
             document.getElementById("copy-target-day").value,
           );
-          if (sourceDay === targetDay)
+          if (sourceIdx === targetIdx)
             return showToast("Selecione dias diferentes!", "warning");
 
+          const sourceDate = this.projectDays[sourceIdx].dateStr;
+          const targetDate = this.projectDays[targetIdx].dateStr;
           const sourceTasks = this.data.filter(
-            (t) => t.day === sourceDay && !t.done,
+            (t) => t.date === sourceDate && !t.done,
           );
+
           if (sourceTasks.length === 0)
             return showToast("Nenhuma tarefa para copiar!", "warning");
 
           const newTasks = sourceTasks.map((task) => ({
             id: Date.now() + Math.random() * 1000,
             text: task.text,
-            day: targetDay,
+            date: targetDate,
             tag: task.tag,
             done: false,
             hasLink: task.hasLink,
@@ -1417,26 +1469,29 @@
         },
 
         clearDay() {
-          const day = parseInt(document.getElementById("todo-clear-day").value);
-          const tasks = this.data.filter((t) => t.day === day);
+          const dayIndex = parseInt(
+            document.getElementById("todo-clear-day").value,
+          );
+          const dateStr = this.projectDays[dayIndex].dateStr;
+          const tasks = this.data.filter((t) => t.date === dateStr);
           if (tasks.length === 0)
             return showToast("Nenhuma tarefa no dia!", "warning");
           if (!confirm(`Excluir todas as ${tasks.length} tarefas deste dia?`))
             return;
-          this.data = this.data.filter((t) => t.day !== day);
+          this.data = this.data.filter((t) => t.date !== dateStr);
           DataManager.setTodos(this.data, this.activeProfile);
           this.render();
           showToast("🗑️ Limpeza concluída!");
         },
 
-        clearSpecificDay(day) {
-          document.getElementById("todo-clear-day").value = day;
+        clearSpecificDay(dayIndex) {
+          document.getElementById("todo-clear-day").value = dayIndex;
           this.clearDay();
         },
 
         toggleAllToday() {
-          const today = new Date().getDay();
-          const todayTasks = this.data.filter((t) => t.day === today);
+          const todayDate = this.projectDays[0].dateStr;
+          const todayTasks = this.data.filter((t) => t.date === todayDate);
           if (todayTasks.length === 0)
             return showToast("Sem tarefas hoje!", "warning");
           const allDone = todayTasks.every((t) => t.done);
@@ -1447,39 +1502,45 @@
         },
 
         render() {
-          const container = document.getElementById("kanban-container");
+          const container = document.getElementById("kanban-scroll");
           const filterTag = document.getElementById("filter-tag").value;
-          const today = new Date().getDay();
 
           let filteredData =
             filterTag !== "all"
               ? this.data.filter((t) => t.tag === filterTag)
               : this.data;
 
+          const totalPending = filteredData.filter((t) => !t.done).length;
           document.getElementById("todo-stats").textContent =
-            `${filteredData.filter((t) => !t.done).length} pendentes`;
+            `${totalPending} pendentes`;
 
-          const dayOrder = [1, 2, 3, 4, 5, 6, 0];
+          // Agrupar por data
+          const tasksByDate = {};
+          filteredData.forEach((t) => {
+            if (!tasksByDate[t.date]) tasksByDate[t.date] = [];
+            tasksByDate[t.date].push(t);
+          });
+
           let html = "";
+          this.projectDays.forEach((pd, idx) => {
+            const dateStr = pd.dateStr;
+            const dayTodos = tasksByDate[dateStr] || [];
+            const isToday = idx === 0;
+            const isWeekend = pd.dayIndex === 0 || pd.dayIndex === 6;
 
-          dayOrder.forEach((day) => {
-            const shortName = getShortDayName(day);
-            const isToday = day === today;
-            const isWeekend = day === 0 || day === 6;
-            const dayTodos = filteredData.filter((t) => t.day === day);
-
-            const groupedByTag = {};
+            // Agrupar por categoria
+            const grouped = {};
             dayTodos.forEach((t) => {
               const tag = t.tag || "outros";
-              if (!groupedByTag[tag]) groupedByTag[tag] = [];
-              groupedByTag[tag].push(t);
+              if (!grouped[tag]) grouped[tag] = [];
+              grouped[tag].push(t);
             });
 
             let todosHtml = "";
             if (dayTodos.length === 0) {
               todosHtml = `<div class="empty-day">Nenhuma tarefa</div>`;
             } else {
-              [
+              const order = [
                 "estudos",
                 "exercicios",
                 "saude",
@@ -1488,10 +1549,11 @@
                 "casa",
                 "financas",
                 "outros",
-              ].forEach((tag) => {
-                if (groupedByTag[tag]) {
+              ];
+              order.forEach((tag) => {
+                if (grouped[tag]) {
                   todosHtml += `<div style="margin: 12px 0 6px 0; font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">${getTagIcon(tag)} ${getTagName(tag)}</div>`;
-                  groupedByTag[tag].forEach((todo) => {
+                  grouped[tag].forEach((todo) => {
                     todosHtml += `
                       <div class="kanban-card ${todo.done ? "done" : ""}">
                         <div class="card-top">
@@ -1512,13 +1574,13 @@
             html += `
               <div class="kanban-column ${isWeekend ? "weekend" : ""}">
                 <div class="column-header">
-                  <h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${shortName}</h3>
+                  <h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${pd.label}</h3>
                   <span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length}</span>
                 </div>
-                <div>${todosHtml}</div>
+                <div class="column-body">${todosHtml}</div>
                 <div class="column-actions">
-                  <button onclick="Todos.openCopyModal(${day})">📋 Copiar</button>
-                  <button onclick="Todos.clearSpecificDay(${day})">🗑️ Limpar</button>
+                  <button onclick="Todos.openCopyModal()">📋 Copiar</button>
+                  <button onclick="Todos.clearSpecificDay(${idx})">🗑️ Limpar</button>
                 </div>
               </div>
             `;
@@ -1526,9 +1588,26 @@
 
           container.innerHTML = html;
         },
+
+        migrateOldData() {
+          try {
+            const oldData = localStorage.getItem("todos");
+            if (oldData && !localStorage.getItem("todos_personal")) {
+              localStorage.setItem("todos_personal", oldData);
+              setTimeout(
+                () => showToast("📦 Tarefas antigas migradas!", "success"),
+                500,
+              );
+            }
+          } catch (e) {
+            console.error("Erro na migração:", e);
+          }
+        },
       };
 
-      // Tema
+      // ============================================
+      // TEMA
+      // ============================================
       let darkTheme = true;
       document
         .getElementById("themeToggle")
@@ -1558,11 +1637,12 @@
           }
         });
 
-      // Iniciar
+      // ============================================
+      // INICIALIZAÇÃO
+      // ============================================
       updateDateDisplay();
       Todos.init();
     </script>
-
     <script src="fincontrol-ai.js"></script>
   </body>
 </html>
