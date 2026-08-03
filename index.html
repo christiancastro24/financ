@@ -443,7 +443,7 @@
         font-weight: 500;
       }
 
-      /* KANBAN - SCROLL HORIZONTAL - COLUNAS MAIS FINAS (6 POR TELA) */
+      /* KANBAN - SCROLL HORIZONTAL - 6 COLUNAS POR TELA */
       .kanban-scroll {
         overflow-x: auto;
         padding: 4px 0 20px 0;
@@ -463,8 +463,10 @@
         border-radius: 10px;
       }
 
+      /* Cada coluna ocupa exatamente 1/6 da largura disponível, respeitando o gap */
       .kanban-column {
-        flex: 0 0 220px; /* Largura reduzida para caber 6 colunas */
+        flex: 0 0 calc((100% - 5 * 12px) / 6);
+        min-width: 180px;
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
@@ -488,7 +490,7 @@
       }
 
       .kanban-column .column-header h3 {
-        font-size: 13px; /* um pouco menor */
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-primary);
         white-space: nowrap;
@@ -529,7 +531,7 @@
         padding: 10px 12px;
         margin-bottom: 8px;
         transition: var(--transition);
-        font-size: 12px; /* texto menor para caber mais */
+        font-size: 12px;
       }
 
       .kanban-card:hover {
@@ -754,12 +756,14 @@
       /* RESPONSIVIDADE */
       @media (max-width: 1200px) {
         .kanban-column {
-          flex: 0 0 200px; /* ainda menor para telas médias */
+          flex: 0 0 calc((100% - 5 * 12px) / 6);
+          min-width: 160px;
         }
       }
       @media (max-width: 992px) {
         .kanban-column {
-          flex: 0 0 180px;
+          flex: 0 0 calc((100% - 4 * 12px) / 5);
+          min-width: 150px;
         }
       }
       @media (max-width: 768px) {
@@ -799,7 +803,14 @@
           max-width: calc(100vw - 80px);
         }
         .kanban-column {
-          flex: 0 0 200px;
+          flex: 0 0 calc((100% - 3 * 12px) / 4);
+          min-width: 140px;
+        }
+      }
+      @media (max-width: 480px) {
+        .kanban-column {
+          flex: 0 0 calc((100% - 1 * 12px) / 2);
+          min-width: 120px;
         }
       }
     </style>
