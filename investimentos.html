@@ -950,6 +950,33 @@
         font-weight: 600;
       }
 
+      .attachment-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+      }
+      .attachment-thumb:hover {
+        transform: scale(1.1);
+        border-color: var(--accent-blue);
+      }
+      .attachment-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        background: var(--bg-input);
+        border: 1px dashed var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--text-muted);
+        cursor: default;
+      }
+
       /* MODAIS */
       .modal-overlay {
         display: none;
@@ -973,7 +1000,7 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 32px;
-        max-width: 550px;
+        max-width: 600px;
         width: 95%;
         max-height: 90vh;
         overflow-y: auto;
@@ -1116,6 +1143,48 @@
         align-items: center;
         gap: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      /* LIGHTBOX */
+      .lightbox-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(4px);
+        z-index: 3000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .lightbox-overlay.active {
+        display: flex;
+      }
+      .lightbox-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: var(--radius);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        object-fit: contain;
+      }
+      .lightbox-close {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        font-size: 32px;
+        color: #fff;
+        background: none;
+        border: none;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: var(--transition);
+      }
+      .lightbox-close:hover {
+        opacity: 1;
       }
 
       /* RESPONSIVIDADE */
@@ -1404,6 +1473,111 @@
     </div>
 
     <!-- ============================================
+    MODAL DE EDITAR APORTE
+    ============================================ -->
+    <div class="modal-overlay" id="edit-invest-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>✏️ Editar Aporte</h2>
+          <button class="modal-close" id="close-edit-invest-modal">✕</button>
+        </div>
+        <form id="edit-invest-form">
+          <input type="hidden" id="edit-invest-id" />
+          <div class="form-group">
+            <label for="edit-invest-name">Nome do Ativo</label>
+            <input type="text" id="edit-invest-name" required />
+          </div>
+          <div class="form-group">
+            <label for="edit-invest-type">Tipo</label>
+            <select id="edit-invest-type" required>
+              <option value="Ações">Ações</option>
+              <option value="Renda Fixa">Renda Fixa</option>
+              <option value="Cripto">Cripto</option>
+              <option value="Fundos">Fundos</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-invest-value">Valor (R$)</label>
+            <input type="number" id="edit-invest-value" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="edit-invest-date">Data</label>
+            <input type="date" id="edit-invest-date" required />
+          </div>
+          <div class="form-group">
+            <label for="edit-invest-attachment">Anexo (imagem)</label>
+            <input
+              type="file"
+              id="edit-invest-attachment"
+              accept="image/*"
+              style="
+                padding: 8px;
+                background: var(--bg-input);
+                border-radius: var(--radius-sm);
+                border: 1px solid var(--border-color);
+                color: var(--text-primary);
+              "
+            />
+            <div
+              style="
+                margin-top: 8px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+              "
+            >
+              <span style="font-size: 13px; color: var(--text-muted)"
+                >Imagem atual:</span
+              >
+              <img
+                id="edit-invest-current-attachment"
+                style="
+                  max-height: 60px;
+                  max-width: 100px;
+                  border-radius: 6px;
+                  border: 1px solid var(--border-color);
+                  object-fit: contain;
+                  background: var(--bg-input);
+                "
+                src=""
+                alt="Anexo atual"
+              />
+              <button
+                type="button"
+                class="btn btn-outline"
+                id="remove-attachment-btn"
+                style="padding: 4px 12px; font-size: 12px"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-outline"
+              id="cancel-edit-invest"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              💾 Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================
+    LIGHTBOX PARA VISUALIZAR ANEXO
+    ============================================ -->
+    <div class="lightbox-overlay" id="lightbox-overlay">
+      <button class="lightbox-close" id="lightbox-close">✕</button>
+      <img id="lightbox-image" src="" alt="Anexo" />
+    </div>
+
+    <!-- ============================================
     MAIN - CONTEÚDO PRINCIPAL
     ============================================ -->
     <main>
@@ -1636,6 +1810,7 @@
         <table>
           <thead>
             <tr>
+              <th>Anexo</th>
               <th>Ativo</th>
               <th>Tipo</th>
               <th>Valor</th>
@@ -1971,6 +2146,48 @@
               this.saveEditGoal();
             });
 
+          // Eventos do modal de edição de aporte
+          document
+            .getElementById("close-edit-invest-modal")
+            .addEventListener("click", () => this.closeEditInvestModal());
+          document
+            .getElementById("edit-invest-modal")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeEditInvestModal();
+            });
+          document
+            .getElementById("cancel-edit-invest")
+            .addEventListener("click", () => this.closeEditInvestModal());
+          document
+            .getElementById("edit-invest-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+              this.saveEditInvest();
+            });
+
+          // Remover anexo no modal de edição
+          document
+            .getElementById("remove-attachment-btn")
+            .addEventListener("click", () => {
+              document.getElementById("edit-invest-attachment").value = "";
+              document.getElementById("edit-invest-current-attachment").src =
+                "";
+              document.getElementById(
+                "edit-invest-current-attachment",
+              ).style.display = "none";
+              showToast("Anexo removido (salve para confirmar)", "warning");
+            });
+
+          // Lightbox
+          document
+            .getElementById("lightbox-close")
+            .addEventListener("click", () => this.closeLightbox());
+          document
+            .getElementById("lightbox-overlay")
+            .addEventListener("click", (e) => {
+              if (e.target === e.currentTarget) this.closeLightbox();
+            });
+
           document
             .querySelectorAll("#emoji-grid .emoji-option")
             .forEach((el) => {
@@ -2166,14 +2383,21 @@
           if (!name || !type || !value || !date)
             return showToast("Preencha todos os campos!", "warning");
 
-          this.data.push({ id: Date.now(), name, type, value, date });
+          this.data.push({
+            id: Date.now(),
+            name,
+            type,
+            value,
+            date,
+            attachment: null,
+          });
           DataManager.setInvestments(this.data, this.activeProfile);
           this.render();
           document.getElementById("invest-form").reset();
           showToast(`🚀 Aporte de ${formatBRL(value)} adicionado!`);
         },
 
-        delete(id) {
+        deleteInvest(id) {
           if (!confirm("Excluir este aporte?")) return;
           this.data = this.data.filter((inv) => inv.id !== id);
           DataManager.setInvestments(this.data, this.activeProfile);
@@ -2181,70 +2405,109 @@
           showToast("Investimento removido!", "warning");
         },
 
-        calculateReturn(value, months) {
-          const monthlyRate = Math.pow(1 + this.annualReturn, 1 / 12) - 1;
-          return value * Math.pow(1 + monthlyRate, months) - value;
+        // ===== EDITAR APORTE =====
+        openEditInvestModal(id) {
+          const inv = this.data.find((i) => i.id === id);
+          if (!inv) return;
+          document.getElementById("edit-invest-id").value = inv.id;
+          document.getElementById("edit-invest-name").value = inv.name;
+          document.getElementById("edit-invest-type").value = inv.type;
+          document.getElementById("edit-invest-value").value = inv.value;
+          document.getElementById("edit-invest-date").value = inv.date;
+
+          const currentImg = document.getElementById(
+            "edit-invest-current-attachment",
+          );
+          if (inv.attachment) {
+            currentImg.src = inv.attachment;
+            currentImg.style.display = "block";
+          } else {
+            currentImg.src = "";
+            currentImg.style.display = "none";
+          }
+          // Reset file input
+          document.getElementById("edit-invest-attachment").value = "";
+          document.getElementById("edit-invest-modal").classList.add("active");
         },
 
-        calculateGoalMetrics(goal) {
-          const total = this.getTotal();
-          const target = goal.target;
-          const initialValue = goal.initialValue || 0;
-          const currentValue = Math.max(total, initialValue);
-          const progress = Math.min((currentValue / target) * 100, 100);
+        closeEditInvestModal() {
+          document
+            .getElementById("edit-invest-modal")
+            .classList.remove("active");
+        },
 
-          let startDate = goal.startDate;
-          if (!startDate && this.data.length > 0) {
-            const sorted = [...this.data].sort(
-              (a, b) => new Date(a.date) - new Date(b.date),
-            );
-            startDate = sorted[0]?.date || null;
-          }
+        saveEditInvest() {
+          const id = parseInt(document.getElementById("edit-invest-id").value);
+          const inv = this.data.find((i) => i.id === id);
+          if (!inv) return;
 
-          const now = new Date();
-          const targetDate = new Date(goal.targetDate);
-          const monthsRemaining = Math.max(
-            (targetDate.getFullYear() - now.getFullYear()) * 12 +
-              (targetDate.getMonth() - now.getMonth()),
-            1,
+          const name = document.getElementById("edit-invest-name").value.trim();
+          const type = document.getElementById("edit-invest-type").value;
+          const value = parseFloat(
+            document.getElementById("edit-invest-value").value,
           );
-          const remaining = Math.max(target - currentValue, 0);
-          const monthlyNeed =
-            monthsRemaining > 0 ? remaining / monthsRemaining : remaining;
+          const date = document.getElementById("edit-invest-date").value;
 
-          let projectedDate = null;
-          if (this.data.length > 0 && currentValue > 0) {
-            const sorted = [...this.data].sort(
-              (a, b) => new Date(a.date) - new Date(b.date),
+          if (!name || !type || !value || !date)
+            return showToast("Preencha todos os campos!", "warning");
+
+          // Verificar se há nova imagem
+          const fileInput = document.getElementById("edit-invest-attachment");
+          const file = fileInput.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              inv.attachment = e.target.result;
+              inv.name = name;
+              inv.type = type;
+              inv.value = value;
+              inv.date = date;
+              DataManager.setInvestments(this.data, this.activeProfile);
+              this.closeEditInvestModal();
+              this.render();
+              showToast("✏️ Aporte atualizado com sucesso!", "success");
+            };
+            reader.readAsDataURL(file);
+          } else {
+            // Mantém attachment atual ou remove se o usuário clicou em "Remover" (já limpamos o src)
+            // Mas se o usuário não selecionou novo arquivo, mantém o que já tinha.
+            // Se o usuário removeu via botão, o attachment já foi removido do objeto?
+            // Na verdade, o botão de remover só limpa a exibição, não o dado.
+            // Vamos permitir que o usuário remova definitivamente clicando em "Remover" e salvando.
+            // O estado atual da imagem exibida é controlado, mas o dado ainda está no objeto.
+            // Vamos verificar se a imagem exibida foi removida pelo usuário (src vazio) e se ele quer remover.
+            const currentImg = document.getElementById(
+              "edit-invest-current-attachment",
             );
-            const firstDate = new Date(sorted[0].date);
-            const monthsInvested =
-              (now.getFullYear() - firstDate.getFullYear()) * 12 +
-              (now.getMonth() - firstDate.getMonth()) +
-              1;
-            if (monthsInvested > 0) {
-              const monthlyAvg = currentValue / monthsInvested;
-              if (monthlyAvg > 0) {
-                const projected = new Date(now);
-                projected.setMonth(
-                  projected.getMonth() + Math.ceil(remaining / monthlyAvg),
-                );
-                projectedDate = projected;
-              }
+            if (currentImg.style.display === "none" || currentImg.src === "") {
+              // Usuário removeu a imagem visualmente, então removemos do objeto
+              inv.attachment = null;
             }
+            inv.name = name;
+            inv.type = type;
+            inv.value = value;
+            inv.date = date;
+            DataManager.setInvestments(this.data, this.activeProfile);
+            this.closeEditInvestModal();
+            this.render();
+            showToast("✏️ Aporte atualizado com sucesso!", "success");
           }
+        },
 
-          return {
-            progress,
-            remaining,
-            monthlyNeed,
-            monthsRemaining,
-            projectedDate,
-            startDate,
-            isCompleted: currentValue >= target,
-            currentValue,
-            initialValue,
-          };
+        // ===== LIGHTBOX =====
+        openLightbox(src) {
+          const overlay = document.getElementById("lightbox-overlay");
+          const img = document.getElementById("lightbox-image");
+          img.src = src;
+          overlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        },
+
+        closeLightbox() {
+          document
+            .getElementById("lightbox-overlay")
+            .classList.remove("active");
+          document.body.style.overflow = "";
         },
 
         // ============================================
@@ -2403,7 +2666,7 @@
           const now = new Date();
 
           if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum investimento encontrado</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhum investimento encontrado</td></tr>`;
           } else {
             tbody.innerHTML = filtered
               .map((inv) => {
@@ -2417,8 +2680,18 @@
                 );
                 const returnPercentInv =
                   inv.value > 0 ? (returnValue / inv.value) * 100 : 0;
+
+                // Anexo
+                let attachmentHtml = "";
+                if (inv.attachment) {
+                  attachmentHtml = `<img src="${inv.attachment}" class="attachment-thumb" onclick="Investments.openLightbox('${inv.attachment}')" alt="Anexo" />`;
+                } else {
+                  attachmentHtml = `<div class="attachment-placeholder">📎</div>`;
+                }
+
                 return `
                 <tr>
+                  <td>${attachmentHtml}</td>
                   <td><strong>${inv.name}</strong></td>
                   <td><span class="badge-status" style="background:rgba(99,102,241,0.1);color:var(--accent-blue);">${inv.type}</span></td>
                   <td>${formatBRL(inv.value)}</td>
@@ -2427,7 +2700,10 @@
                     ${returnPercentInv >= 0 ? "+" : ""}${returnPercentInv.toFixed(1)}%
                     <br><small style="color:var(--text-muted);">${formatBRL(returnValue)}</small>
                   </td>
-                  <td><button class="btn btn-danger btn-sm" onclick="Investments.delete(${inv.id})">🗑️</button></td>
+                  <td>
+                    <button class="btn btn-outline" style="padding:4px 8px; margin-right:4px;" onclick="Investments.openEditInvestModal(${inv.id})">✏️</button>
+                    <button class="btn btn-danger" style="padding:4px 8px;" onclick="Investments.deleteInvest(${inv.id})">🗑️</button>
+                  </td>
                 </tr>`;
               })
               .join("");
@@ -2497,7 +2773,6 @@
           document.getElementById("modal-progress").textContent =
             `${Math.round((unlocked.length / total) * 100)}%`;
 
-          // Exibe TODAS as conquistas. Se não estiver em 'unlocked', exibe bloqueada.
           grid.innerHTML = this.achievementDefinitions
             .map((def) => {
               const isUnlocked = unlocked.includes(def.id);
@@ -2745,6 +3020,72 @@
           a.click();
           URL.revokeObjectURL(url);
           showToast("CSV exportado!");
+        },
+
+        calculateReturn(value, months) {
+          const monthlyRate = Math.pow(1 + this.annualReturn, 1 / 12) - 1;
+          return value * Math.pow(1 + monthlyRate, months) - value;
+        },
+
+        calculateGoalMetrics(goal) {
+          const total = this.getTotal();
+          const target = goal.target;
+          const initialValue = goal.initialValue || 0;
+          const currentValue = Math.max(total, initialValue);
+          const progress = Math.min((currentValue / target) * 100, 100);
+
+          let startDate = goal.startDate;
+          if (!startDate && this.data.length > 0) {
+            const sorted = [...this.data].sort(
+              (a, b) => new Date(a.date) - new Date(b.date),
+            );
+            startDate = sorted[0]?.date || null;
+          }
+
+          const now = new Date();
+          const targetDate = new Date(goal.targetDate);
+          const monthsRemaining = Math.max(
+            (targetDate.getFullYear() - now.getFullYear()) * 12 +
+              (targetDate.getMonth() - now.getMonth()),
+            1,
+          );
+          const remaining = Math.max(target - currentValue, 0);
+          const monthlyNeed =
+            monthsRemaining > 0 ? remaining / monthsRemaining : remaining;
+
+          let projectedDate = null;
+          if (this.data.length > 0 && currentValue > 0) {
+            const sorted = [...this.data].sort(
+              (a, b) => new Date(a.date) - new Date(b.date),
+            );
+            const firstDate = new Date(sorted[0].date);
+            const monthsInvested =
+              (now.getFullYear() - firstDate.getFullYear()) * 12 +
+              (now.getMonth() - firstDate.getMonth()) +
+              1;
+            if (monthsInvested > 0) {
+              const monthlyAvg = currentValue / monthsInvested;
+              if (monthlyAvg > 0) {
+                const projected = new Date(now);
+                projected.setMonth(
+                  projected.getMonth() + Math.ceil(remaining / monthlyAvg),
+                );
+                projectedDate = projected;
+              }
+            }
+          }
+
+          return {
+            progress,
+            remaining,
+            monthlyNeed,
+            monthsRemaining,
+            projectedDate,
+            startDate,
+            isCompleted: currentValue >= target,
+            currentValue,
+            initialValue,
+          };
         },
       };
 
