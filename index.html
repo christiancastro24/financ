@@ -463,7 +463,6 @@
         border-radius: 10px;
       }
 
-      /* Cada coluna ocupa exatamente 1/6 da largura disponível, respeitando o gap */
       .kanban-column {
         flex: 0 0 calc((100% - 5 * 12px) / 6);
         min-width: 180px;
@@ -522,6 +521,7 @@
       .kanban-column .column-body {
         flex: 1;
         overflow-y: auto;
+        min-height: 100px;
       }
 
       .kanban-card {
@@ -532,6 +532,12 @@
         margin-bottom: 8px;
         transition: var(--transition);
         font-size: 12px;
+        cursor: grab;
+        user-select: none;
+      }
+
+      .kanban-card:active {
+        cursor: grabbing;
       }
 
       .kanban-card:hover {
@@ -660,6 +666,17 @@
       .kanban-column .column-actions button:hover {
         background: rgba(255, 255, 255, 0.05);
         color: #fff;
+      }
+
+      /* DESTAQUE PARA DROP */
+      .kanban-column.drag-over {
+        border-color: var(--accent-blue);
+        background: rgba(99, 102, 241, 0.05);
+      }
+
+      .kanban-card.drag-over {
+        border-color: var(--accent-blue);
+        background: rgba(99, 102, 241, 0.1);
       }
 
       /* MODAIS */
@@ -1188,6 +1205,9 @@
         editingId: null,
         activeProfile: "personal",
         projectDays: [], // [{ date, dayIndex, label, dateStr }]
+        draggedId: null,
+        draggedElement: null,
+        dragSourceDate: null,
 
         init() {
           this.migrateOldData();
@@ -1525,6 +1545,130 @@
           showToast(allDone ? "Desmarcadas!" : "Todas marcadas!", "success");
         },
 
+        // ============================================
+        // DRAG AND DROP
+        // ============================================
+        dragStart(e) {
+          const card = e.target.closest(".kanban-card");
+          if (!card) return;
+          const id = parseInt(card.dataset.id);
+          this.draggedId = id;
+          this.draggedElement = card;
+          this.dragSourceDate = card.closest(".kanban-column").dataset.date;
+          card.style.opacity = "0.5";
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", id);
+        },
+
+        dragOver(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          const target =
+            e.target.closest(".kanban-card") ||
+            e.target.closest(".kanban-column");
+          if (!target) return;
+          // Remove highlight de todos
+          document
+            .querySelectorAll(".kanban-card.drag-over")
+            .forEach((el) => el.classList.remove("drag-over"));
+          document
+            .querySelectorAll(".kanban-column.drag-over")
+            .forEach((el) => el.classList.remove("drag-over"));
+          if (target.classList.contains("kanban-card")) {
+            target.classList.add("drag-over");
+          } else if (target.classList.contains("kanban-column")) {
+            target.classList.add("drag-over");
+          }
+        },
+
+        drop(e) {
+          e.preventDefault();
+          const targetCard = e.target.closest(".kanban-card");
+          const targetColumn = e.target.closest(".kanban-column");
+          if (!targetColumn) return;
+
+          const sourceId = parseInt(e.dataTransfer.getData("text/plain"));
+          if (isNaN(sourceId)) return;
+
+          const sourceTodo = this.data.find((t) => t.id === sourceId);
+          if (!sourceTodo) return;
+
+          const targetDate = targetColumn.dataset.date;
+          const sourceDate = sourceTodo.date;
+
+          // Se for o mesmo card, não faz nada
+          if (targetCard && parseInt(targetCard.dataset.id) === sourceId) {
+            this.clearDragHighlights();
+            return;
+          }
+
+          // Se estiver movendo para a mesma coluna, reordenar
+          // Se mover para coluna diferente, mudar a data
+
+          // Remover o card da lista
+          const index = this.data.findIndex((t) => t.id === sourceId);
+          if (index === -1) return;
+          this.data.splice(index, 1);
+
+          // Atualizar a data se mudou de coluna
+          if (sourceDate !== targetDate) {
+            sourceTodo.date = targetDate;
+          }
+
+          // Determinar a posição de inserção
+          let insertIndex = -1;
+          if (targetCard) {
+            const targetId = parseInt(targetCard.dataset.id);
+            // Encontrar o índice do card alvo na lista atual (que já não contém o source)
+            const targetIndex = this.data.findIndex((t) => t.id === targetId);
+            if (targetIndex !== -1) {
+              insertIndex = targetIndex;
+            } else {
+              // Se não encontrar, insere no final da coluna
+              insertIndex = this.data.length;
+            }
+          } else {
+            // Soltou na coluna vazia: insere no final daquela data
+            // Encontrar o último índice daquela data
+            const lastIndex = this.data.reduce((last, t, idx) => {
+              if (t.date === targetDate) return idx;
+              return last;
+            }, -1);
+            insertIndex = lastIndex === -1 ? this.data.length : lastIndex + 1;
+          }
+
+          // Inserir na posição correta
+          if (insertIndex === -1) insertIndex = this.data.length;
+          this.data.splice(insertIndex, 0, sourceTodo);
+
+          // Salvar e renderizar
+          DataManager.setTodos(this.data, this.activeProfile);
+          this.clearDragHighlights();
+          this.render();
+          showToast("📦 Tarefa movida!", "success");
+        },
+
+        dragEnd(e) {
+          const card = e.target.closest(".kanban-card");
+          if (card) card.style.opacity = "1";
+          this.clearDragHighlights();
+          this.draggedId = null;
+          this.draggedElement = null;
+          this.dragSourceDate = null;
+        },
+
+        clearDragHighlights() {
+          document
+            .querySelectorAll(".kanban-card.drag-over")
+            .forEach((el) => el.classList.remove("drag-over"));
+          document
+            .querySelectorAll(".kanban-column.drag-over")
+            .forEach((el) => el.classList.remove("drag-over"));
+        },
+
+        // ============================================
+        // RENDER
+        // ============================================
         render() {
           const container = document.getElementById("kanban-scroll");
           const filterTag = document.getElementById("filter-tag").value;
@@ -1552,56 +1696,55 @@
             const isToday = idx === 0;
             const isWeekend = pd.dayIndex === 0 || pd.dayIndex === 6;
 
-            // Agrupar por categoria
-            const grouped = {};
-            dayTodos.forEach((t) => {
-              const tag = t.tag || "outros";
-              if (!grouped[tag]) grouped[tag] = [];
-              grouped[tag].push(t);
-            });
+            // Agrupar por categoria (opcional, mas mantido para exibição)
+            // Mas agora com drag and drop, a ordem é global por data, não por categoria.
+            // Para manter a hierarquia de categoria visual, vamos apenas renderizar os cards na ordem em que aparecem no array.
+            // Para fins de visualização, podemos ainda agrupar por categoria, mas a ordem de arrasto será global.
+            // Vou optar por manter a ordem global por data, sem agrupar por categoria, para que o drag funcione de forma linear.
+            // Mas para preservar a experiência anterior, vou manter o agrupamento visual por categoria, mas a ordem de arrasto será global.
+            // Para isso, preciso renderizar os cards na ordem em que aparecem no array (que já está ordenado pela data e posição).
+            // Vou construir uma lista de cards sem agrupar, apenas na ordem do array.
 
             let todosHtml = "";
             if (dayTodos.length === 0) {
               todosHtml = `<div class="empty-day">Nenhuma tarefa</div>`;
             } else {
-              const order = [
-                "estudos",
-                "exercicios",
-                "saude",
-                "trabalho",
-                "pessoal",
-                "casa",
-                "financas",
-                "outros",
-              ];
-              order.forEach((tag) => {
-                if (grouped[tag]) {
-                  todosHtml += `<div style="margin: 10px 0 4px 0; font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">${getTagIcon(tag)} ${getTagName(tag)}</div>`;
-                  grouped[tag].forEach((todo) => {
-                    todosHtml += `
-                      <div class="kanban-card ${todo.done ? "done" : ""}">
-                        <div class="card-top">
-                          <div class="card-text">${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}</div>
-                        </div>
-                        <div class="card-actions">
-                          <button onclick="Todos.toggle(${todo.id})" title="Marcar feito">${todo.done ? "↩️" : "✅"}</button>
-                          <button onclick="Todos.openEditModal(${todo.id})" title="Editar">✏️</button>
-                          <button onclick="Todos.delete(${todo.id})" title="Excluir">🗑️</button>
-                        </div>
-                      </div>
-                    `;
-                  });
-                }
+              // Renderiza na ordem do array (preservada pelo drag)
+              dayTodos.forEach((todo) => {
+                todosHtml += `
+                  <div class="kanban-card ${todo.done ? "done" : ""}" 
+                       draggable="true"
+                       data-id="${todo.id}"
+                       ondragstart="Todos.dragStart(event)"
+                       ondragover="Todos.dragOver(event)"
+                       ondrop="Todos.drop(event)"
+                       ondragend="Todos.dragEnd(event)">
+                    <div class="card-top">
+                      <div class="card-text">${todo.hasLink ? formatTextWithLinks(todo.text) : todo.text}</div>
+                      <span class="card-tag ${getTagClass(todo.tag)}">${getTagIcon(todo.tag)}</span>
+                    </div>
+                    <div class="card-actions">
+                      <button onclick="Todos.toggle(${todo.id})" title="Marcar feito">${todo.done ? "↩️" : "✅"}</button>
+                      <button onclick="Todos.openEditModal(${todo.id})" title="Editar">✏️</button>
+                      <button onclick="Todos.delete(${todo.id})" title="Excluir">🗑️</button>
+                    </div>
+                  </div>
+                `;
               });
             }
 
             html += `
-              <div class="kanban-column ${isWeekend ? "weekend" : ""}">
+              <div class="kanban-column ${isWeekend ? "weekend" : ""}" 
+                   data-date="${dateStr}"
+                   ondragover="Todos.dragOver(event)"
+                   ondrop="Todos.drop(event)">
                 <div class="column-header">
                   <h3 class="${isToday ? "day-today" : ""}">${isToday ? "⭐ " : ""}${pd.label}</h3>
                   <span class="day-count ${dayTodos.length > 0 ? "has-tasks" : ""}">${dayTodos.length}</span>
                 </div>
-                <div class="column-body">${todosHtml}</div>
+                <div class="column-body">
+                  ${todosHtml}
+                </div>
                 <div class="column-actions">
                   <button onclick="Todos.openCopyModal()">📋 Copiar</button>
                   <button onclick="Todos.clearSpecificDay(${idx})">🗑️ Limpar</button>
