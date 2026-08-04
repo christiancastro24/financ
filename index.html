@@ -1255,6 +1255,13 @@
         setCategoryOrder(order, profile = this.getActiveProfile()) {
           this.set(`categoryOrder_${profile}`, order);
         },
+        // Data de início fixa do projeto
+        getProjectStart(profile = this.getActiveProfile()) {
+          return this.get(`projectStart_${profile}`, null);
+        },
+        setProjectStart(dateStr, profile = this.getActiveProfile()) {
+          this.set(`projectStart_${profile}`, dateStr);
+        },
       };
 
       // ============================================
@@ -1270,12 +1277,29 @@
         dragSourceDate: null,
         dragSourceTag: null,
         categoryOrder: {}, // { '2026-08-03': ['estudos','exercicios',...] }
+        projectStartDate: null, // data fixa de início
 
         init() {
           this.migrateOldData();
           this.activeProfile = DataManager.getActiveProfile();
           this.data = DataManager.getTodos(this.activeProfile);
           this.categoryOrder = DataManager.getCategoryOrder(this.activeProfile);
+
+          // Carregar ou criar data de início fixa
+          const savedStart = DataManager.getProjectStart(this.activeProfile);
+          if (savedStart) {
+            this.projectStartDate = new Date(savedStart);
+            this.projectStartDate.setHours(0, 0, 0, 0);
+          } else {
+            // Primeira execução: define hoje como data de início
+            this.projectStartDate = new Date();
+            this.projectStartDate.setHours(0, 0, 0, 0);
+            DataManager.setProjectStart(
+              formatDate(this.projectStartDate),
+              this.activeProfile,
+            );
+          }
+
           this.buildProjectDays(31);
           this.migrateTasksToDates();
           this.updateProfileUI();
@@ -1285,11 +1309,12 @@
         },
 
         buildProjectDays(totalDays = 31) {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+          // Usa a data de início fixa, não a data atual
+          const start = new Date(this.projectStartDate);
+          start.setHours(0, 0, 0, 0);
           this.projectDays = [];
           for (let i = 0; i < totalDays; i++) {
-            const d = new Date(today);
+            const d = new Date(start);
             d.setDate(d.getDate() + i);
             const dayOfMonth = d.getDate().toString().padStart(2, "0");
             const month = (d.getMonth() + 1).toString().padStart(2, "0");
@@ -1303,15 +1328,16 @@
         },
 
         migrateTasksToDates() {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+          // Tarefas antigas com 'day' (0-6) são migradas com base na data de início
+          const start = new Date(this.projectStartDate);
+          start.setHours(0, 0, 0, 0);
           let changed = false;
           this.data.forEach((task) => {
             if (!task.date && task.day !== undefined) {
               const targetDay = task.day; // 0-6
-              let diff = targetDay - today.getDay();
+              let diff = targetDay - start.getDay();
               if (diff < 0) diff += 7;
-              const targetDate = new Date(today);
+              const targetDate = new Date(start);
               targetDate.setDate(targetDate.getDate() + diff);
               task.date = formatDate(targetDate);
               changed = true;
@@ -1411,6 +1437,22 @@
           this.updateProfileUI();
           this.data = DataManager.getTodos(this.activeProfile);
           this.categoryOrder = DataManager.getCategoryOrder(this.activeProfile);
+
+          // Carregar data de início do perfil
+          const savedStart = DataManager.getProjectStart(this.activeProfile);
+          if (savedStart) {
+            this.projectStartDate = new Date(savedStart);
+            this.projectStartDate.setHours(0, 0, 0, 0);
+          } else {
+            this.projectStartDate = new Date();
+            this.projectStartDate.setHours(0, 0, 0, 0);
+            DataManager.setProjectStart(
+              formatDate(this.projectStartDate),
+              this.activeProfile,
+            );
+          }
+
+          this.buildProjectDays(31);
           this.migrateTasksToDates();
           this.render();
           showToast("Perfil alterado!", "success");
@@ -1598,6 +1640,7 @@
         },
 
         toggleAllToday() {
+          // "Hoje" no contexto do projeto é o dia 0 (primeiro dia)
           const todayDate = this.projectDays[0].dateStr;
           const todayTasks = this.data.filter((t) => t.date === todayDate);
           if (todayTasks.length === 0)
@@ -1645,21 +1688,14 @@
             .querySelectorAll(".kanban-column.drag-over")
             .forEach((el) => el.classList.remove("drag-over"));
 
-          // Se não tem alvo, não faz nada
           if (!targetGroup && !targetColumn) return;
 
-          // Verifica se a tag do alvo é a mesma do card arrastado
           let targetTag = null;
           if (targetCard) {
             targetTag = targetCard.dataset.tag;
           } else if (targetGroup) {
             targetTag = targetGroup.dataset.tag;
           } else if (targetColumn) {
-            // Se soltar na coluna, verifica se existe alguma categoria com a mesma tag?
-            // Para simplificar, vamos permitir soltar na coluna apenas se a coluna tiver a mesma tag?
-            // Na verdade, o usuário quer mover apenas dentro da mesma categoria.
-            // Então se não houver card ou group com a mesma tag, não permite.
-            // Vamos verificar se existe algum grupo com a tag do drag na coluna.
             const groups = targetColumn.querySelectorAll(".category-group");
             for (let g of groups) {
               if (g.dataset.tag === this.dragSourceTag) {
@@ -1670,11 +1706,9 @@
           }
 
           if (targetTag !== this.dragSourceTag) {
-            // Tag diferente: não permite drop
             return;
           }
 
-          // Destacar o alvo
           if (targetCard && targetCard.dataset.tag === this.dragSourceTag) {
             targetCard.classList.add("drag-over");
           } else if (
@@ -1707,14 +1741,12 @@
           const targetDate = targetColumn.dataset.date;
           const sourceDate = sourceTodo.date;
 
-          // Verifica se está movendo para a mesma categoria
           let targetTag = null;
           if (targetCard) {
             targetTag = targetCard.dataset.tag;
           } else if (targetGroup) {
             targetTag = targetGroup.dataset.tag;
           } else {
-            // Se soltou na coluna, tenta encontrar a tag do card arrastado
             targetTag = sourceTodo.tag;
           }
 
@@ -1727,8 +1759,6 @@
             return;
           }
 
-          // Se estiver movendo para a mesma coluna e mesma tag, reordenar
-          // Remover da posição atual
           const index = this.data.findIndex((t) => t.id === sourceId);
           if (index === -1) {
             this.clearDragHighlights();
@@ -1736,12 +1766,10 @@
           }
           this.data.splice(index, 1);
 
-          // Atualizar a data se mudou de coluna
           if (sourceDate !== targetDate) {
             sourceTodo.date = targetDate;
           }
 
-          // Determinar a posição de inserção
           let insertIndex = -1;
           if (targetCard) {
             const targetId = parseInt(targetCard.dataset.id);
@@ -1749,21 +1777,17 @@
             if (targetIndex !== -1) {
               insertIndex = targetIndex;
             } else {
-              // Se não encontrar, insere no final da categoria
               insertIndex = this.data.length;
             }
           } else if (targetGroup) {
-            // Soltou no grupo vazio: insere no final daquele grupo
             const tag = sourceTodo.tag;
             const date = sourceTodo.date;
-            // Encontrar o último índice daquela data+tag
             const lastIndex = this.data.reduce((last, t, idx) => {
               if (t.date === date && t.tag === tag) return idx;
               return last;
             }, -1);
             insertIndex = lastIndex === -1 ? this.data.length : lastIndex + 1;
           } else {
-            // Soltou na coluna: insere no final da categoria
             const tag = sourceTodo.tag;
             const date = sourceTodo.date;
             const lastIndex = this.data.reduce((last, t, idx) => {
@@ -1776,7 +1800,6 @@
           if (insertIndex === -1) insertIndex = this.data.length;
           this.data.splice(insertIndex, 0, sourceTodo);
 
-          // Salvar e renderizar
           DataManager.setTodos(this.data, this.activeProfile);
           this.clearDragHighlights();
           this.render();
@@ -1809,9 +1832,7 @@
         // REORDENAÇÃO DE CATEGORIAS
         // ============================================
         moveCategory(dateStr, tag, direction) {
-          // direction: -1 (subir) ou +1 (descer)
           if (!this.categoryOrder[dateStr]) {
-            // Inicializa com a ordem padrão
             const defaultOrder = [
               "estudos",
               "exercicios",
@@ -1831,7 +1852,6 @@
           if (idx === -1) return;
           const newIdx = idx + direction;
           if (newIdx < 0 || newIdx >= order.length) return;
-          // Trocar
           [order[idx], order[newIdx]] = [order[newIdx], order[idx]];
           DataManager.setCategoryOrder(this.categoryOrder, this.activeProfile);
           this.render();
@@ -1857,7 +1877,6 @@
           document.getElementById("todo-stats").textContent =
             `${totalPending} pendentes`;
 
-          // Agrupar por data
           const tasksByDate = {};
           filteredData.forEach((t) => {
             if (!tasksByDate[t.date]) tasksByDate[t.date] = [];
@@ -1868,13 +1887,11 @@
           this.projectDays.forEach((pd, idx) => {
             const dateStr = pd.dateStr;
             const dayTodos = tasksByDate[dateStr] || [];
-            const isToday = idx === 0;
+            const isToday = idx === 0; // primeiro dia sempre será "hoje" no projeto
             const isWeekend = pd.dayIndex === 0 || pd.dayIndex === 6;
 
-            // Obter ordem de categorias para esta data
             let categoryOrder = this.categoryOrder[dateStr];
             if (!categoryOrder) {
-              // Inicializar com as categorias que têm tarefas
               const tagsPresent = [...new Set(dayTodos.map((t) => t.tag))];
               const defaultOrder = [
                 "estudos",
@@ -1889,7 +1906,6 @@
               categoryOrder = defaultOrder.filter((t) =>
                 tagsPresent.includes(t),
               );
-              // Se ainda estiver vazio, usar todas as categorias (para permitir adicionar depois)
               if (categoryOrder.length === 0) categoryOrder = [...defaultOrder];
               this.categoryOrder[dateStr] = categoryOrder;
               DataManager.setCategoryOrder(
@@ -1898,7 +1914,6 @@
               );
             }
 
-            // Agrupar tarefas por tag
             const tasksByTag = {};
             dayTodos.forEach((t) => {
               if (!tasksByTag[t.tag]) tasksByTag[t.tag] = [];
@@ -1909,7 +1924,6 @@
             if (dayTodos.length === 0) {
               todosHtml = `<div class="empty-day">Nenhuma tarefa</div>`;
             } else {
-              // Renderizar categorias na ordem definida
               categoryOrder.forEach((tag) => {
                 const tasks = tasksByTag[tag] || [];
                 if (tasks.length === 0) return;
@@ -1918,7 +1932,6 @@
                 const tagName = getTagName(tag);
                 const tagClass = getTagClass(tag);
 
-                // Botões de seta para subir/descer categoria
                 const order = this.categoryOrder[dateStr];
                 const idxCat = order.indexOf(tag);
                 const canMoveUp = idxCat > 0;
